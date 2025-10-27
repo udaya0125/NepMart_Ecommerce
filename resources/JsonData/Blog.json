@@ -1,0 +1,136 @@
+{
+  "blogPosts": [
+    {
+      "id": 1,
+      "title": "Top 10 Fashion Trends for Fall 2025",
+      "slug": "Top-10-Fashion-Trends-for-Fall-2025",
+      "excerpt": "Discover the hottest fashion trends this season, from cozy knits to bold patterns that will elevate your wardrobe.",
+      "image": "https://images.unsplash.com/photo-1483985988355-763728e1935b?w=800&q=80",
+      "author": "Sarah Johnson",
+      "date": "Oct 12, 2025",
+      "category": "Fashion",
+      "readTime": "5 min read"
+    },
+    {
+      "id": 2,
+      "title": "Smart Home Gadgets Worth Your Investment",
+      "slug": "Smart-Home-Gadgets-Worth-Your-Investment",
+      "excerpt": "Explore the latest smart home technology that combines convenience, security, and energy efficiency.",
+      "image": "https://images.unsplash.com/photo-1558002038-1055907df827?w=800&q=80",
+      "author": "Michael Chen",
+      "date": "Oct 10, 2025",
+      "category": "Electronics",
+      "readTime": "7 min read"
+    },
+    {
+      "id": 3,
+      "title": "Sustainable Shopping: A Complete Guide",
+      "slug": "Sustainable-Shopping-A-Complete-Guide",
+      "excerpt": "Learn how to make eco-friendly choices while shopping online and support brands that care about the planet.",
+      "image": "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=800&q=80",
+      "author": "Emma Green",
+      "date": "Oct 8, 2025",
+      "category": "Lifestyle",
+      "readTime": "6 min read"
+    },
+    {
+      "id": 4,
+      "title": "Essential Kitchen Tools Every Home Chef Needs",
+      "slug": "Essential-Kitchen-Tools-Every-Home-Chef-Needs",
+      "excerpt": "Upgrade your cooking game with these must-have kitchen gadgets and tools for the modern home chef.",
+      "image": "https://images.unsplash.com/photo-1556911220-bff31c812dba?w=800&q=80",
+      "author": "David Miller",
+      "date": "Oct 5, 2025",
+      "category": "Home & Kitchen",
+      "readTime": "4 min read"
+    },
+    {
+      "id": 5,
+      "title": "Beauty Hacks: Budget-Friendly Skincare Routine",
+      "slug": "Beauty-Hacks-Budget-Friendly-Skincare-Routine",
+      "excerpt": "Achieve glowing skin without breaking the bank with these affordable skincare tips and product recommendations.",
+      "image": "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=800&q=80",
+      "author": "Lisa Anderson",
+      "date": "Oct 3, 2025",
+      "category": "Beauty",
+      "readTime": "5 min read"
+    },
+    {
+      "id": 6,
+      "title": "Fitness Tech: Best Wearables of 2025",
+      "slug": "Fitness-Tech-Best-Wearables-of-2025",
+      "excerpt": "Compare the top fitness trackers and smartwatches to find the perfect companion for your wellness journey.",
+      "image": "https://images.unsplash.com/photo-1575313281549-6071bc7cfd9b?w=800&q=80",
+      "author": "Ryan Taylor",
+      "date": "Oct 1, 2025",
+      "category": "Electronics",
+      "readTime": "6 min read"
+    },
+    {
+      "id": 7,
+      "title": "Minimalist Home Decor Ideas for 2025",
+      "slug": "Minimalist-Home-Decor-Ideas-for-2025",
+      "excerpt": "Transform your living space with these minimalist decor ideas that promote peace and organization.",
+      "image": "https://images.unsplash.com/photo-1513694203232-719a280e022f?w=800&q=80",
+      "author": "Sophia Martinez",
+      "date": "Sep 28, 2025",
+      "category": "Home & Kitchen",
+      "readTime": "5 min read"
+    },
+    {
+      "id": 8,
+      "title": "The Future of Electric Vehicles",
+      "slug": "The-Future-of-Electric-Vehicles",
+      "excerpt": "Discover what's next in the world of electric vehicles and sustainable transportation.",
+      "image": "https://images.unsplash.com/photo-1560958089-b8a1929cea89?w=800&q=80",
+      "author": "James Wilson",
+      "date": "Sep 25, 2025",
+      "category": "Technology",
+      "readTime": "8 min read"
+    },
+    {
+      "id": 9,
+      "title": "Healthy Meal Prep for Busy Professionals",
+      "slug": "Healthy-Meal-Prep-for-Busy-Professionals",
+      "excerpt": "Learn how to prepare nutritious meals in advance to maintain a healthy lifestyle during busy weeks.",
+      "image": "https://images.unsplash.com/photo-1547592180-85f173990554?w=800&q=80",
+      "author": "Maria Garcia",
+      "date": "Sep 22, 2025",
+      "category": "Lifestyle",
+      "readTime": "6 min read"
+    },
+    {
+      "id": 10,
+      "title": "Digital Detox: Reclaim Your Time",
+      "slug": "Digital-Detox-Reclaim-Your-Time",
+      "excerpt": "Practical tips for reducing screen time and improving your mental health through digital detox.",
+      "image": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+      "author": "Thomas Brown",
+      "date": "Sep 18, 2025",
+      "category": "Wellness",
+      "readTime": "7 min read"
+    },
+    {
+      "id": 11,
+      "title": "Remote Work Setup Essentials",
+      "slug": "Remote-Work-Setup-Essentials",
+      "excerpt": "Create the perfect home office with these essential gadgets and ergonomic furniture pieces.",
+      "image": "https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=800&q=80",
+      "author": "Jennifer Lee",
+      "date": "Sep 15, 2025",
+      "category": "Lifestyle",
+      "readTime": "5 min read"
+    },
+    {
+      "id": 12,
+      "title": "Sustainable Fashion Brands to Watch",
+      "slug": "Sustainable-Fashion-Brands-to-Watch",
+      "excerpt": "Explore eco-friendly fashion brands that are making a positive impact on the environment.",
+      "image": "https://images.unsplash.com/photo-1445205170230-053b83016050?w=800&q=80",
+      "author": "Robert Davis",
+      "date": "Sep 12, 2025",
+      "category": "Fashion",
+      "readTime": "6 min read"
+    }
+  ]
+}

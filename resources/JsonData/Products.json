@@ -1,0 +1,607 @@
+{
+  "products": {
+    "Fashion": [
+      {
+        "id": 1,
+        "name": "Longines Watchmaking Tradition 25.5 mm Watch",
+        "slug": "longines-watchmaking-tradition-25-5-mm-watch",
+        "price": 22,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1547996160-81dfd9c4b1cd?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1518131672697-613becd4fab5?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400&h=400&fit=crop"
+        ],
+        "discount": null,
+        "shortDescription": "Elegant traditional watch with precision movement and classic design.",
+        "longDescription": "The Longines Watchmaking Tradition collection embodies the brand's expertise and heritage. This 25.5 mm watch features a sleek stainless steel case, scratch-resistant sapphire crystal, and a precise quartz movement. The elegant white dial with Roman numerals and blue hands offers a timeless look suitable for both formal and casual occasions.",
+        "sizes": ["20mm", "22mm", "25.5mm"],
+        "colors": ["Silver", "Rose Gold", "Black"],
+        "inStock": true,
+        "stockQuantity": 15,
+        "reviews": [
+          {
+            "user": "Sarah Johnson",
+            "rating": 5,
+            "comment": "Absolutely beautiful! The craftsmanship is outstanding and it keeps perfect time.",
+            "date": "2024-01-15"
+          },
+          {
+            "user": "Michael Chen",
+            "rating": 5,
+            "comment": "Great value for money. Looks much more expensive than it is.",
+            "date": "2024-01-08"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Water Resistant", "Sapphire Crystal", "Stainless Steel", "Quartz Movement"],
+        "brand": "Longines",
+        "category": "Watches",
+        "sku": "LNG-TRD-255"
+      },
+      {
+        "id": 2,
+        "name": "Cindy & Wendy Large Soft Cashmere Silky Shawl",
+        "slug": "cindy-wendy-large-soft-cashmere-silky-shawl",
+        "price": 16,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=400&fit=crop"
+        ],
+        "discount": null,
+        "shortDescription": "Luxuriously soft cashmere blend shawl for ultimate comfort and style.",
+        "longDescription": "Wrap yourself in luxury with our Cindy & Wendy Cashmere Silky Shawl. Made from a premium blend of cashmere and silk, this oversized shawl offers exceptional softness and warmth. Its lightweight design makes it perfect for chilly evenings, travel, or adding an elegant touch to any outfit. The delicate fringe detailing adds a sophisticated finish.",
+        "sizes": ["Large (70x200cm)"],
+        "colors": ["Cream", "Charcoal Grey", "Burgundy", "Navy Blue"],
+        "inStock": true,
+        "stockQuantity": 25,
+        "reviews": [
+          {
+            "user": "Emma Wilson",
+            "rating": 5,
+            "comment": "Incredibly soft and warm! I get compliments every time I wear it.",
+            "date": "2024-01-12"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Cashmere Blend", "Oversized", "Fringe Detailing", "Lightweight"],
+        "brand": "Cindy & Wendy",
+        "category": "Accessories",
+        "sku": "CNW-SHL-001"
+      },
+      {
+        "id": 3,
+        "name": "Moshi Latest Venturo Premium Laptop Backpack",
+        "slug": "moshi-latest-venturo-premium-laptop-backpack",
+        "price": 22,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=left",
+          "https://images.unsplash.com/photo-1585916420730-d7f95e942d43?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=right"
+        ],
+        "discount": null,
+        "shortDescription": "Durable and stylish backpack with dedicated laptop compartment and smart organization.",
+        "longDescription": "The Moshi Venturo Premium Laptop Backpack combines modern design with practical functionality. Featuring a dedicated padded laptop compartment that fits up to 15-inch devices, multiple organizational pockets for accessories, and water-resistant materials to protect your belongings. The ergonomic shoulder straps and back padding ensure comfortable carrying throughout your day.",
+        "sizes": ["15-inch", "17-inch"],
+        "colors": ["Black", "Navy Blue", "Charcoal"],
+        "inStock": true,
+        "stockQuantity": 18,
+        "reviews": [
+          {
+            "user": "David Thompson",
+            "rating": 5,
+            "comment": "Perfect for work and travel. So many compartments and very comfortable to carry.",
+            "date": "2024-01-10"
+          },
+          {
+            "user": "Lisa Rodriguez",
+            "rating": 5,
+            "comment": "Love the design and quality. Fits my laptop and all my work essentials perfectly.",
+            "date": "2024-01-05"
+          }
+        ],
+        "estimatedDelivery": "4-6 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Laptop Compartment", "Water Resistant", "Multiple Pockets", "Ergonomic Design"],
+        "brand": "Moshi",
+        "category": "Bags",
+        "sku": "MSH-VTR-001"
+      },
+      {
+        "id": 4,
+        "name": "Denim Jean Top Jacket Sleeve Crop Women",
+        "slug": "denim-jean-top-jacket-sleeve-crop-women",
+        "price": 16,
+        "priceMax": 28,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1582418702059-97ebafb35d09?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1583496661160-fb5886a13d77?w=400&h=400&fit=crop"
+        ],
+        "discount": 5,
+        "shortDescription": "Trendy cropped denim jacket with classic wash and modern fit.",
+        "longDescription": "This denim crop jacket offers the perfect blend of vintage inspiration and contemporary style. Made from medium-weight denim with a comfortable stretch, it features a cropped length that pairs beautifully with high-waisted bottoms. The classic five-pocket design and adjustable cuffs make it versatile for layering over dresses or pairing with your favorite jeans.",
+        "sizes": ["XS", "S", "M", "L", "XL"],
+        "colors": ["Light Wash", "Medium Wash", "Dark Wash"],
+        "inStock": true,
+        "stockQuantity": 32,
+        "reviews": [
+          {
+            "user": "Jessica Miller",
+            "rating": 4,
+            "comment": "Love the fit and style! Perfect length for my petite frame.",
+            "date": "2024-01-14"
+          },
+          {
+            "user": "Amanda Park",
+            "rating": 4,
+            "comment": "Good quality denim and comfortable to wear. Shipping was fast.",
+            "date": "2024-01-09"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Stretch Denim", "Cropped Fit", "Five-Pocket Design", "Adjustable Cuffs"],
+        "brand": "Denim Culture",
+        "category": "Clothing",
+        "sku": "DNC-CRP-001"
+      },
+      {
+        "id": 5,
+        "name": "Just Style Men Black Artificial Leather Belt",
+        "slug": "just-style-men-black-artificial-leather-belt",
+        "price": 21,
+        "priceMax": 28,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=400&h=400&fit=crop&crop=bottom"
+        ],
+        "discount": 5,
+        "shortDescription": "Classic black artificial leather belt with sleek silver buckle.",
+        "longDescription": "Complete your look with the Just Style Men's Artificial Leather Belt. Crafted from high-quality synthetic leather that mimics the look and feel of genuine leather, this belt features a durable construction and versatile design. The sleek silver buckle provides a polished finish that works equally well with casual jeans or formal trousers.",
+        "sizes": ["32", "34", "36", "38", "40"],
+        "colors": ["Black", "Brown"],
+        "inStock": true,
+        "stockQuantity": 45,
+        "reviews": [
+          {
+            "user": "Robert Kim",
+            "rating": 4,
+            "comment": "Good quality for the price. Looks great with both casual and formal wear.",
+            "date": "2024-01-11"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Artificial Leather", "Silver Buckle", "Multiple Sizes", "Versatile Design"],
+        "brand": "Just Style",
+        "category": "Accessories",
+        "sku": "JST-BLT-001"
+      }
+    ],
+    "Accessories": [
+      {
+        "id": 6,
+        "name": "Wireless Bluetooth Headphones",
+        "slug": "wireless-bluetooth-headphones",
+        "price": 45,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&h=400&fit=crop"
+        ],
+        "discount": 10,
+        "shortDescription": "High-quality wireless headphones with noise cancellation and superior sound.",
+        "longDescription": "Immerse yourself in crystal-clear audio with our Wireless Bluetooth Headphones. Featuring active noise cancellation technology, these headphones block out ambient noise for an unparalleled listening experience. With up to 30 hours of battery life, comfortable over-ear design, and built-in microphone for hands-free calls, they're perfect for travel, work, or relaxation.",
+        "sizes": ["One Size"],
+        "colors": ["Black", "White", "Blue"],
+        "inStock": true,
+        "stockQuantity": 22,
+        "reviews": [
+          {
+            "user": "Mark Johnson",
+            "rating": 5,
+            "comment": "Excellent sound quality and battery life. The noise cancellation is impressive!",
+            "date": "2024-01-13"
+          },
+          {
+            "user": "Sophie Williams",
+            "rating": 5,
+            "comment": "Most comfortable headphones I've owned. Great for long listening sessions.",
+            "date": "2024-01-07"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Noise Cancellation", "30-hour Battery", "Bluetooth 5.0", "Built-in Mic"],
+        "brand": "AudioPro",
+        "category": "Electronics",
+        "sku": "AUD-WHP-001"
+      },
+      {
+        "id": 7,
+        "name": "Designer Sunglasses UV Protection",
+        "slug": "designer-sunglasses-uv-protection",
+        "price": 35,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1577803645773-f96470509666?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400&h=400&fit=crop&crop=left"
+        ],
+        "discount": null,
+        "shortDescription": "Stylish sunglasses with 100% UV protection and polarized lenses.",
+        "longDescription": "Protect your eyes in style with our Designer Sunglasses featuring 100% UV protection and polarized lenses that reduce glare and enhance visual clarity. The lightweight frame and comfortable nose pads ensure all-day wearability, while the contemporary design adds a touch of sophistication to any outfit. Includes a protective case and cleaning cloth.",
+        "sizes": ["One Size"],
+        "colors": ["Black Frame", "Tortoise Shell", "Gold Frame"],
+        "inStock": true,
+        "stockQuantity": 30,
+        "reviews": [
+          {
+            "user": "Alex Turner",
+            "rating": 4,
+            "comment": "Great sunglasses at a reasonable price. The polarization really works well.",
+            "date": "2024-01-10"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["100% UV Protection", "Polarized Lenses", "Lightweight Frame", "Includes Case"],
+        "brand": "VisionStyle",
+        "category": "Accessories",
+        "sku": "VIS-SUN-001"
+      },
+      {
+        "id": 8,
+        "name": "Leather Wallet Card Holder",
+        "slug": "leather-wallet-card-holder",
+        "price": 28,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&h=400&fit=crop&crop=bottom"
+        ],
+        "discount": null,
+        "shortDescription": "Slim genuine leather wallet with multiple card slots and cash compartment.",
+        "longDescription": "This genuine leather wallet combines minimalist design with practical functionality. Crafted from premium leather that develops a beautiful patina over time, it features multiple card slots, a transparent ID window, and a central cash compartment. The slim profile ensures comfort when carried in your pocket while providing ample storage for your daily essentials.",
+        "sizes": ["One Size"],
+        "colors": ["Brown", "Black", "Tan"],
+        "inStock": true,
+        "stockQuantity": 28,
+        "reviews": [
+          {
+            "user": "Daniel Lee",
+            "rating": 5,
+            "comment": "Perfect slim wallet! Great quality leather and holds everything I need.",
+            "date": "2024-01-12"
+          },
+          {
+            "user": "Kevin Martinez",
+            "rating": 5,
+            "comment": "Love the leather quality and the compact design. Exactly what I was looking for.",
+            "date": "2024-01-06"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Genuine Leather", "Multiple Card Slots", "ID Window", "Slim Design"],
+        "brand": "LeatherCraft",
+        "category": "Accessories",
+        "sku": "LTH-WLT-001"
+      },
+      {
+        "id": 9,
+        "name": "Smart Watch Fitness Tracker",
+        "slug": "smart-watch-fitness-tracker",
+        "price": 89,
+        "priceMax": 120,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1434493652601-8d45cb8c0117?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop&crop=right"
+        ],
+        "discount": 15,
+        "shortDescription": "Advanced smartwatch with health monitoring, GPS, and 7-day battery life.",
+        "longDescription": "Stay connected and monitor your health with our advanced Smart Watch Fitness Tracker. This feature-rich device tracks heart rate, blood oxygen levels, sleep patterns, and over 20 different exercise modes. With built-in GPS, smartphone notifications, and 7-day battery life, it's your perfect companion for an active lifestyle. The customizable watch faces and interchangeable bands let you personalize your look.",
+        "sizes": ["Small", "Medium", "Large"],
+        "colors": ["Black", "Silver", "Midnight Blue"],
+        "inStock": true,
+        "stockQuantity": 16,
+        "reviews": [
+          {
+            "user": "Jennifer Adams",
+            "rating": 5,
+            "comment": "Amazing features for the price! The heart rate monitor is very accurate.",
+            "date": "2024-01-14"
+          },
+          {
+            "user": "Mike Peterson",
+            "rating": 5,
+            "comment": "Battery life is incredible and the GPS tracking works perfectly for my runs.",
+            "date": "2024-01-08"
+          }
+        ],
+        "estimatedDelivery": "4-6 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Heart Rate Monitor", "GPS", "Sleep Tracking", "7-day Battery"],
+        "brand": "FitTech",
+        "category": "Electronics",
+        "sku": "FIT-WCH-001"
+      },
+      {
+        "id": 10,
+        "name": "Premium Phone Case Leather",
+        "slug": "premium-phone-case-leather",
+        "price": 18,
+        "priceMax": 25,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&h=400&fit=crop&crop=left",
+          "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&h=400&fit=crop&crop=right"
+        ],
+        "discount": null,
+        "shortDescription": "Protective genuine leather case with card slots and kickstand.",
+        "longDescription": "Protect your phone in style with our Premium Leather Phone Case. Made from genuine leather with a soft microfiber interior, this case provides excellent protection against drops and scratches. The built-in card slots allow you to carry your essential cards, while the integrated kickstand enables hands-free viewing. Precision cutouts provide access to all ports and buttons.",
+        "sizes": ["iPhone 15", "iPhone 15 Pro", "Samsung Galaxy S23"],
+        "colors": ["Brown", "Black", "Burgundy"],
+        "inStock": true,
+        "stockQuantity": 50,
+        "reviews": [
+          {
+            "user": "Olivia Chen",
+            "rating": 4,
+            "comment": "Great quality case that protects well and looks professional.",
+            "date": "2024-01-11"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Genuine Leather", "Card Slots", "Kickstand", "Drop Protection"],
+        "brand": "CaseCraft",
+        "category": "Accessories",
+        "sku": "CAS-PHN-001"
+      }
+    ],
+    "Apparel": [
+      {
+        "id": 11,
+        "name": "Cotton Casual T-Shirt Pack",
+        "slug": "cotton-casual-t-shirt-pack",
+        "price": 24,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop&crop=left",
+          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop&crop=right"
+        ],
+        "discount": null,
+        "shortDescription": "Comfortable 3-pack of premium cotton t-shirts in versatile colors.",
+        "longDescription": "Build your wardrobe essentials with this premium Cotton Casual T-Shirt Pack. Each shirt is crafted from 100% combed cotton for exceptional softness and durability. The classic fit, ribbed neckband, and double-stitched seams ensure long-lasting comfort and shape retention. This value pack includes three versatile colors that mix and match effortlessly with any outfit.",
+        "sizes": ["XS", "S", "M", "L", "XL", "XXL"],
+        "colors": ["White/Black/Grey", "Navy/White/Heather", "Black/Charcoal/White"],
+        "inStock": true,
+        "stockQuantity": 60,
+        "reviews": [
+          {
+            "user": "Thomas Wright",
+            "rating": 5,
+            "comment": "Perfect basic tees! Great quality fabric and true to size.",
+            "date": "2024-01-13"
+          },
+          {
+            "user": "Rachel Green",
+            "rating": 5,
+            "comment": "So soft and comfortable. The 3-pack is such great value.",
+            "date": "2024-01-07"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["100% Combed Cotton", "Classic Fit", "Double-Stitched", "3-Pack"],
+        "brand": "EssentialWear",
+        "category": "Clothing",
+        "sku": "ESS-TSP-001"
+      },
+      {
+        "id": 12,
+        "name": "Slim Fit Denim Jeans",
+        "slug": "slim-fit-denim-jeans",
+        "price": 42,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1582418702059-97ebafb35d09?w=400&h=400&fit=crop"
+        ],
+        "discount": 20,
+        "shortDescription": "Comfortable slim fit jeans with stretch for all-day wear.",
+        "longDescription": "Experience perfect comfort and style with our Slim Fit Denim Jeans. Made from premium denim with just the right amount of stretch, these jeans offer a modern slim fit through the thigh and knee with a tapered leg opening. The mid-rise waist and five-pocket design provide both comfort and classic denim styling. Perfect for casual wear or dressing up for a night out.",
+        "sizes": ["28x30", "30x30", "32x30", "32x32", "34x32", "36x32"],
+        "colors": ["Dark Wash", "Medium Wash", "Black", "Light Wash"],
+        "inStock": true,
+        "stockQuantity": 35,
+        "reviews": [
+          {
+            "user": "James Wilson",
+            "rating": 4,
+            "comment": "Great fitting jeans with comfortable stretch. True to size.",
+            "date": "2024-01-12"
+          },
+          {
+            "user": "Brian Taylor",
+            "rating": 4,
+            "comment": "Good quality denim and the slim fit is perfect. Great sale price!",
+            "date": "2024-01-09"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Stretch Denim", "Slim Fit", "Mid-Rise", "Five-Pocket"],
+        "brand": "DenimWorks",
+        "category": "Clothing",
+        "sku": "DNW-JNS-001"
+      },
+      {
+        "id": 13,
+        "name": "Hooded Sweatshirt Pullover",
+        "slug": "hooded-sweatshirt-pullover",
+        "price": 38,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop&crop=left",
+          "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop&crop=right",
+          "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&h=400&fit=crop"
+        ],
+        "discount": null,
+        "shortDescription": "Cozy fleece hoodie with front pocket and adjustable drawstring.",
+        "longDescription": "Stay warm and comfortable in our premium Hooded Sweatshirt Pullover. Made from soft, brushed fleece that provides exceptional warmth without bulk, this hoodie features a roomy front pocket, adjustable drawstring hood, and ribbed cuffs and hem for a secure fit. The classic design works equally well for lounging at home or casual outings.",
+        "sizes": ["XS", "S", "M", "L", "XL", "XXL"],
+        "colors": ["Heather Grey", "Navy", "Black", "Forest Green"],
+        "inStock": true,
+        "stockQuantity": 40,
+        "reviews": [
+          {
+            "user": "Nicole Brown",
+            "rating": 5,
+            "comment": "So comfortable and warm! The perfect hoodie for cooler weather.",
+            "date": "2024-01-14"
+          },
+          {
+            "user": "Jason Davis",
+            "rating": 5,
+            "comment": "Great quality and fit. I wear mine almost every day.",
+            "date": "2024-01-08"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Brushed Fleece", "Kangaroo Pocket", "Adjustable Hood", "Ribbed Cuffs"],
+        "brand": "ComfortWear",
+        "category": "Clothing",
+        "sku": "CMF-HOD-001"
+      },
+      {
+        "id": 14,
+        "name": "Summer Beach Dress Floral",
+        "slug": "summer-beach-dress-floral",
+        "price": 32,
+        "priceMax": 45,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=400&fit=crop"
+        ],
+        "discount": 10,
+        "shortDescription": "Lightweight floral maxi dress perfect for summer and beach occasions.",
+        "longDescription": "Embrace summer style with our beautiful Floral Maxi Dress. Made from lightweight, flowy fabric that moves gracefully with you, this dress features a vibrant floral print, flattering A-line silhouette, and adjustable spaghetti straps. The elasticated waist creates definition while allowing comfort, making it perfect for beach vacations, garden parties, or any warm-weather occasion.",
+        "sizes": ["XS", "S", "M", "L", "XL"],
+        "colors": ["Multi Floral", "Blue Floral", "Pink Floral"],
+        "inStock": true,
+        "stockQuantity": 28,
+        "reviews": [
+          {
+            "user": "Megan Scott",
+            "rating": 5,
+            "comment": "Absolutely gorgeous dress! So comfortable and perfect for summer.",
+            "date": "2024-01-15"
+          },
+          {
+            "user": "Ashley King",
+            "rating": 5,
+            "comment": "The fabric is so light and flowy. I get compliments every time I wear it!",
+            "date": "2024-01-10"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Lightweight Fabric", "Maxi Length", "Adjustable Straps", "Elastic Waist"],
+        "brand": "SummerBreeze",
+        "category": "Clothing",
+        "sku": "SMB-DRS-001"
+      },
+      {
+        "id": 15,
+        "name": "Formal Blazer Business Suit",
+        "slug": "formal-blazer-business-suit",
+        "price": 68,
+        "priceMax": 95,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=400&fit=crop&crop=left",
+          "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=400&fit=crop&crop=right",
+          "https://images.unsplash.com/photo-1583496661160-fb5886a13d77?w=400&h=400&fit=crop"
+        ],
+        "discount": 5,
+        "shortDescription": "Professional single-breasted blazer for business and formal occasions.",
+        "longDescription": "Make a powerful impression with our Formal Business Blazer. Tailored from premium wool-blend fabric, this single-breasted blazer features a modern slim fit, notch lapel, and functional buttons. The interior includes a chest pocket and two additional pockets for essentials. Perfect for business meetings, interviews, or formal events, this versatile blazer pairs seamlessly with dress pants or can be dressed down with jeans.",
+        "sizes": ["36R", "38R", "40R", "42R", "44R"],
+        "colors": ["Navy", "Charcoal", "Black"],
+        "inStock": true,
+        "stockQuantity": 20,
+        "reviews": [
+          {
+            "user": "Richard Moore",
+            "rating": 4,
+            "comment": "Excellent quality for the price. Fits well and looks professional.",
+            "date": "2024-01-11"
+          },
+          {
+            "user": "Steven Clark",
+            "rating": 4,
+            "comment": "Great blazer that works for both business and casual occasions.",
+            "date": "2024-01-06"
+          }
+        ],
+        "estimatedDelivery": "4-6 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Wool Blend", "Single-Breasted", "Notch Lapel", "Slim Fit"],
+        "brand": "ProfessionalStyle",
+        "category": "Clothing",
+        "sku": "PRF-BLZ-001"
+      }
+    ]
+  }
+}
