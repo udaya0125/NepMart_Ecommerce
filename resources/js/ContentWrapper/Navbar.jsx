@@ -3,7 +3,6 @@ import {
     Heart,
     Menu,
     ShoppingCart,
-    User,
     X,
     Package,
     Shirt,
@@ -19,9 +18,11 @@ import {
     ShoppingBag,
     LogIn,
     UserPlus,
+    Home,
 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import { Link, usePage, router } from "@inertiajs/react";
+import axios from "axios";
 import ShoppingCard from "@/MainComponents/ShoppingCard";
 
 const Navbar = () => {
@@ -81,23 +82,33 @@ const Navbar = () => {
         setIsUserDropdownOpen(!isUserDropdownOpen);
     };
 
-    const handleUserAction = (action) => {
+    const handleLogout = () => {
+        axios
+            .post(route("logout"))
+            .then((response) => {
+                if (response.data.redirect) {
+                    window.location.href = response.data.redirect;
+                } else {
+                    window.location.href = "/login";
+                }
+            })
+            .catch((error) => {
+                console.error("Logout error:", error);
+                window.location.href = "/login";
+            });
+    };
+
+    const handleUserAction = (action, href) => {
         setIsUserDropdownOpen(false);
-        switch (action) {
-            case "profile":
-                router.visit(route("profile.edit"));
-                break;
-            case "settings":
-                router.visit(route("profile.edit"));
-                break;
-            case "help":
-                console.log("Navigate to help");
-                break;
-            case "logout":
-                router.post(route("logout"));
-                break;
-            default:
-                break;
+        
+        if (action === "logout") {
+            handleLogout();
+            return;
+        }
+        
+        // Navigate using the href if provided
+        if (href) {
+            router.visit(href);
         }
     };
 
@@ -156,9 +167,9 @@ const Navbar = () => {
     };
 
     const userDropdownItems = [
-        { name: "My Profile", icon: User, action: "profile" },
-        { name: "Settings", icon: Settings, action: "settings" },
-        { name: "Help & Support", icon: HelpCircle, action: "help" },
+        { name: "Dashboard", icon: Home, href: '/dashboard', action: "dashboard" },
+        { name: "Settings", icon: Settings, href: '', action: "settings" },
+        { name: "Help & Support", icon: HelpCircle, href: '/help', action: "help" },
         { name: "Logout", icon: LogOut, action: "logout", danger: true },
     ];
 
@@ -467,7 +478,8 @@ const Navbar = () => {
                                                             key={index}
                                                             onClick={() =>
                                                                 handleUserAction(
-                                                                    item.action
+                                                                    item.action,
+                                                                    item.href
                                                                 )
                                                             }
                                                             className={`flex items-center gap-3 w-full px-5 py-3.5 transition-all duration-200 group ${
@@ -662,7 +674,7 @@ const Navbar = () => {
                                             <button
                                                 key={index}
                                                 onClick={() => {
-                                                    handleUserAction(item.action);
+                                                    handleUserAction(item.action, item.href);
                                                     setIsMenuOpen(false);
                                                 }}
                                                 className={`flex items-center gap-3 w-full px-4 py-3 text-sm font-medium rounded-xl transition-all ${

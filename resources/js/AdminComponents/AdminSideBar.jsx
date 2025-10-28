@@ -33,6 +33,7 @@ const AdminSideBar = ({
         const path = url.split("/")[1] || "dashboard";
         const activeMap = {
             dashboard: "Dashboard",
+            home: "Home",
             categories: "Category",
             sub_category: "Sub Category",
             "user-management": "Users",
@@ -99,9 +100,9 @@ const AdminSideBar = ({
                     {!isCollapsed && (
                         <div className="flex items-center gap-2 flex-1 pr-10">
                             <img
-                                src="/admin/udaya2.png"
+                                src="logo.jpg"
                                 alt="Logo"
-                                className="h-12 w-[5rem]"
+                                className="h-12 w-[5rem] rounded-lg"
                             />
                         </div>
                     )}
@@ -125,7 +126,9 @@ const AdminSideBar = ({
                 <div className="p-4 h-[calc(100%-4rem)] flex flex-col overflow-y-auto">
                     <div className="flex-1 space-y-2">
                         {/* Dashboard */}
-                        <div className="relative group">
+
+
+                         <div className="relative group">
                             <Link
                                 href="/dashboard"
                                 className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
@@ -154,6 +157,42 @@ const AdminSideBar = ({
                                     <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
                                         <span className="text-sm font-medium">
                                             Dashboard
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        
+                        <div className="relative group">
+                            <Link
+                                href="/home"
+                                className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
+                                    activeItem === "Home"
+                                        ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
+                                        : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+                                } ${isCollapsed ? "justify-center" : ""}`}
+                            >
+                                <Home
+                                    size={20}
+                                    className={`flex-shrink-0 ${
+                                        activeItem === "Home"
+                                            ? "text-blue-400"
+                                            : ""
+                                    }`}
+                                />
+                                {!isCollapsed && (
+                                    <span className="font-medium flex-1 text-left">
+                                        Home
+                                    </span>
+                                )}
+                            </Link>
+
+                            {isCollapsed && (
+                                <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                    <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
+                                        <span className="text-sm font-medium">
+                                            Home
                                         </span>
                                     </div>
                                 </div>

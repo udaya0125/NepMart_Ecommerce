@@ -1,0 +1,39 @@
+{
+  "topSoldProducts": [
+    {
+      "name": "Pizza",
+      "color": "bg-purple-500",
+      "percent": 70,
+      "sales": 245,
+      "revenue": 4287
+    },
+    {
+      "name": "Burger",
+      "color": "bg-red-500",
+      "percent": 85,
+      "sales": 298,
+      "revenue": 3576
+    },
+    {
+      "name": "Sausage",
+      "color": "bg-orange-500",
+      "percent": 60,
+      "sales": 210,
+      "revenue": 2940
+    },
+    {
+      "name": "Pasta",
+      "color": "bg-green-500",
+      "percent": 55,
+      "sales": 192,
+      "revenue": 2688
+    },
+    {
+      "name": "Soup",
+      "color": "bg-blue-500",
+      "percent": 65,
+      "sales": 227,
+      "revenue": 2043
+    }
+  ]
+}

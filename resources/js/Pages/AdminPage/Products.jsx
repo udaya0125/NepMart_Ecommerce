@@ -235,7 +235,7 @@ const Products = () => {
             columns,
             data: allProducts,
             initialState: { pageIndex: 0, pageSize: 5 },
-            globalFilter: globalFilterFunction, // Use our custom global filter
+            globalFilter: globalFilterFunction,
         },
         useGlobalFilter,
         useSortBy,

@@ -27,8 +27,15 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
 
-    // Home
+
+    // Dashboard
+
     Route::get('/dashboard',function(){
+        return Inertia::render('AdminPage/Dashboard');
+    });
+
+    // Home
+    Route::get('/home',function(){
         return Inertia::render('AdminPage/Home');
     });
     Route::get('/ourhome', [HomeController::class, 'index'])->name('ourhome.index');
@@ -107,6 +114,11 @@ Route::delete('/ourreview/{id}', [TestimonialController::class, 'destroy'])->nam
 
 Route::get('/user-management',function(){
     return Inertia::render('AdminPage/UserManagement');
+ });
+
+
+ Route::get('/icons',function(){
+    return Inertia::render('AdminPage/Icons');
  });
 });
 

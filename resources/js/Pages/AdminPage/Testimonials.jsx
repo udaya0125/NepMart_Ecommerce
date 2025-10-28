@@ -2,7 +2,7 @@ import AdminWrapper from '@/AdminComponents/AdminWrapper';
 import React, { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import AddTestimonialsForm from '@/AddFormComponents/AddTestimonialsForm';
-import { useTable, useSortBy, usePagination, useGlobalFilter } from 'react-table';
+import { useTable, useSortBy, usePagination } from 'react-table';
 import {
     Plus,
     ChevronUp,
@@ -11,27 +11,8 @@ import {
     Trash2,
     ChevronLeft,
     ChevronRight,
-    Search,
     Star
 } from 'lucide-react';
-
-// Global filter component for search
-const GlobalFilter = ({ globalFilter, setGlobalFilter }) => {
-    return (
-        <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search size={18} className="text-gray-400" />
-            </div>
-            <input
-                type="text"
-                value={globalFilter || ""}
-                onChange={(e) => setGlobalFilter(e.target.value || undefined)}
-                placeholder="Search by user, title, or comment..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-full md:w-64 text-sm"
-            />
-        </div>
-    );
-};
 
 // Star rating component
 const StarRating = ({ rating }) => {
@@ -117,25 +98,6 @@ const Testimonials = () => {
                 ),
             },
         ],
-        []
-    );
-
-    // Custom filter function for global search
-    const globalFilterFunction = useMemo(() => 
-        (rows, columnIds, filterValue) => {
-            if (!filterValue) return rows;
-
-            const searchTerm = filterValue.toLowerCase();
-            return rows.filter(row => {
-                const userName = row.original.user?.toLowerCase() || "";
-                const title = row.original.title?.toLowerCase() || "";
-                const comment = row.original.comment?.toLowerCase() || "";
-                
-                return userName.includes(searchTerm) || 
-                       title.includes(searchTerm) || 
-                       comment.includes(searchTerm);
-            });
-        },
         []
     );
 
@@ -227,16 +189,13 @@ const Testimonials = () => {
         nextPage,
         previousPage,
         setPageSize,
-        state: { pageIndex, pageSize, globalFilter },
-        setGlobalFilter,
+        state: { pageIndex, pageSize },
     } = useTable(
         {
             columns,
             data: allReview,
             initialState: { pageIndex: 0, pageSize: 10 },
-            globalFilter: globalFilterFunction,
         },
-        useGlobalFilter,
         useSortBy,
         usePagination
     );
@@ -251,10 +210,6 @@ const Testimonials = () => {
                         </h1>
                     </div>
                     <div className="flex flex-wrap items-center gap-4 mt-2 md:mt-0">
-                        <GlobalFilter 
-                            globalFilter={globalFilter} 
-                            setGlobalFilter={setGlobalFilter} 
-                        />
                         <button
                             onClick={() => {
                                 setEditingReview(null);
@@ -344,10 +299,7 @@ const Testimonials = () => {
                                                 colSpan={columns.length}
                                                 className="px-6 py-8 text-center text-sm text-gray-500"
                                             >
-                                                {globalFilter 
-                                                    ? "No testimonials match your search." 
-                                                    : "No testimonials found. Create your first testimonial!"
-                                                }
+                                                No testimonials found. Create your first testimonial!
                                             </td>
                                         </tr>
                                     ) : (
@@ -406,11 +358,6 @@ const Testimonials = () => {
                                 <span className="text-xs md:text-sm text-gray-700">
                                     Page <strong>{pageIndex + 1}</strong> of{" "}
                                     <strong>{pageOptions.length}</strong>
-                                    {globalFilter && (
-                                        <span className="ml-2 text-gray-500">
-                                            (Filtered)
-                                        </span>
-                                    )}
                                 </span>
                             </div>
 
