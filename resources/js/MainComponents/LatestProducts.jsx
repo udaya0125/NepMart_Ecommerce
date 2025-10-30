@@ -3,11 +3,15 @@ import { ChevronLeft, ChevronRight, Heart, Eye, ExternalLink, ShoppingCart } fro
 import { Link } from '@inertiajs/react'
 import ProductsPopup from './ProductsPopup'
 import productsData from "../../JsonData/Products.json";
+import { useCart } from '../contexts/CartContext'; // Import the useCart hook
 
 const LatestProducts = () => {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [showDetails, setShowDetails] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(null)
+  
+  // Use the cart context
+  const { addToCart } = useCart()
 
   // Flatten all products from all categories into a single array
   const allProducts = Object.values(productsData.products).flat()
@@ -25,6 +29,25 @@ const LatestProducts = () => {
   const handleShowDetails = (product) => {
     setSelectedProduct(product)
     setShowDetails(true)
+  }
+
+  const handleAddToCart = (product, e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    
+    // Create a cart-ready product object
+    const cartProduct = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      images: product.images,
+      slug: product.slug
+    }
+    
+    addToCart(cartProduct)
+    
+    // Optional: Show feedback (you can add a toast notification here)
+    console.log(`Added ${product.name} to cart`)
   }
 
   const renderStars = (rating) => {
@@ -117,25 +140,25 @@ const LatestProducts = () => {
                         {product.originalPrice ? (
                           <>
                             <span className="line-through text-gray-400 text-sm">
-                              ${product.originalPrice}
+                             Rs.{product.originalPrice}
                             </span>
                             <span className="text-lg font-semibold text-gray-900">
-                              ${product.price}
+                              Rs.{product.price}
                             </span>
                           </>
                         ) : product.priceMax ? (
                           <>
                             <span className="text-lg font-semibold text-gray-900">
-                              ${product.price}
+                              Rs.{product.price}
                             </span>
                             <span className="text-gray-400">–</span>
                             <span className="text-lg font-semibold text-gray-900">
-                              ${product.priceMax}
+                              Rs.{product.priceMax}
                             </span>
                           </>
                         ) : (
                           <span className="text-lg font-semibold text-gray-900">
-                            ${product.price}
+                            Rs.{product.price}
                           </span>
                         )}
                       </div>
@@ -145,13 +168,14 @@ const LatestProducts = () => {
                   {/* Action Icons (Outside Link) */}
                   <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
-                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
+                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
                       aria-label="Add to wishlist"
                     >
                       <Heart className="w-4 h-4 text-gray-700" />
                     </button>
                     <button
-                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
+                      onClick={(e) => handleAddToCart(product, e)}
+                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
                       aria-label="Add to cart"
                     >
                       <ShoppingCart className="w-4 h-4 text-gray-700" />
@@ -162,13 +186,13 @@ const LatestProducts = () => {
                         e.stopPropagation()
                         handleShowDetails(product)
                       }}
-                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
+                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
                       aria-label="View details"
                     >
                       <Eye className="w-4 h-4 text-gray-700" />
                     </button>
                     <button
-                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
+                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
                       aria-label="View on external site"
                     >
                       <ExternalLink className="w-4 h-4 text-gray-700" />

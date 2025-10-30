@@ -4,6 +4,7 @@ import { ChevronDown, Truck, Lock, ArrowRight } from "lucide-react";
 import Navbar from "@/ContentWrapper/Navbar";
 import Footer from "@/ContentWrapper/Footer";
 
+
 const CheckOutPage = () => {
     const [step, setStep] = useState(1);
     const [orderItems] = useState([
@@ -27,7 +28,6 @@ const CheckOutPage = () => {
         register,
         handleSubmit,
         formState: { errors },
-        watch,
         trigger,
     } = useForm({
         mode: "onChange",
@@ -44,37 +44,71 @@ const CheckOutPage = () => {
         },
     });
 
-    const onSubmit = (data) => {
-        // Esewa payment integration
-        handleEsewaPayment(data);
+    // Function to generate HMAC SHA256 signature
+    const generateSignature = async (message, secret) => {
+        const encoder = new TextEncoder();
+        const keyData = encoder.encode(secret);
+        const messageData = encoder.encode(message);
+        
+        const cryptoKey = await crypto.subtle.importKey(
+            'raw',
+            keyData,
+            { name: 'HMAC', hash: 'SHA-256' },
+            false,
+            ['sign']
+        );
+        
+        const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+        const hashArray = Array.from(new Uint8Array(signature));
+        const hashBase64 = btoa(String.fromCharCode.apply(null, hashArray));
+        
+        return hashBase64;
     };
 
-    const handleEsewaPayment = (data) => {
+    const onSubmit = async (data) => {
+        // eSewa payment integration
+        await handleEsewaPayment(data);
+    };
+
+    const handleEsewaPayment = async (data) => {
         const subtotal = orderItems.reduce(
             (sum, item) => sum + item.price * item.quantity,
             0
         );
         const shipping = 200;
-        const tax = Math.round(subtotal * 0.1);
-        const total = subtotal + shipping + tax;
+        const taxAmount = Math.round(subtotal * 0.1);
+        const total = subtotal + shipping + taxAmount;
 
-        // Esewa payment parameters
+        // Generate unique transaction UUID
+        const transactionUuid = `TXN-${Date.now()}`;
+        
+        // eSewa secret key (for testing - in production, this should be on backend)
+        const secretKey = "8gBm/:&EnhH.1/q";
+        
+        // eSewa payment parameters (v2 API format)
         const esewaParams = {
-            amt: total,
-            psc: tax,
-            pdc: 0,
-            txAmt: shipping,
-            tAmt: total,
-            pid: `ORDER-${Date.now()}`,
-            scd: "EPAYTEST", // Replace with your Esewa merchant code
-            su: `${window.location.origin}/success`,
-            fu: `${window.location.origin}/failure`,
+            amount: subtotal.toString(),
+            tax_amount: taxAmount.toString(),
+            total_amount: total.toString(),
+            transaction_uuid: transactionUuid,
+            product_code: "EPAYTEST", 
+            product_service_charge: "0",
+            product_delivery_charge: shipping.toString(),
+            success_url: `${window.location.origin}/success`,
+            failure_url: `${window.location.origin}/failure`,
+            signed_field_names: "total_amount,transaction_uuid,product_code"
         };
 
-        // Create form and submit to Esewa
+        // Generate signature
+        const message = `total_amount=${esewaParams.total_amount},transaction_uuid=${esewaParams.transaction_uuid},product_code=${esewaParams.product_code}`;
+        const signature = await generateSignature(message, secretKey);
+        esewaParams.signature = signature;
+
+        // Create form and submit to eSewa
         const form = document.createElement("form");
         form.method = "POST";
-        form.action = "https://esewa.com.np/epay/main"; // Production: https://esewa.com.np/epay/main
+        // Testing URL - for production use: https://epay.esewa.com.np/api/epay/main/v2/form
+        form.action = "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
 
         Object.keys(esewaParams).forEach((key) => {
             const input = document.createElement("input");
@@ -119,8 +153,8 @@ const CheckOutPage = () => {
     const total = subtotal + shipping + tax;
 
     return (
-        <div>
-          <Navbar/>
+        <div className="min-h-screen bg-gray-50">
+            <Navbar/>
             {/* Hero Section */}
             <div className="relative h-64 md:h-80 overflow-hidden mb-8">
                 <img
@@ -134,7 +168,7 @@ const CheckOutPage = () => {
                         Secure Checkout
                     </h1>
                     <p className="text-xl md:text-2xl text-center max-w-2xl">
-                        Complete your purchase safely and securely with Esewa
+                        Complete your purchase safely and securely with eSewa
                     </p>
                 </div>
             </div>
@@ -459,7 +493,7 @@ const CheckOutPage = () => {
                                 </div>
                             )}
 
-                            {/* Step 2: Esewa Payment */}
+                            {/* Step 2: eSewa Payment */}
                             {step === 2 && (
                                 <div className="bg-white rounded-lg p-6">
                                     <h2 className="text-2xl font-bold text-gray-900 mb-6">
@@ -473,18 +507,16 @@ const CheckOutPage = () => {
                                         />
                                         <p className="text-sm text-blue-800">
                                             Your payment is secure and encrypted
-                                            through Esewa.
+                                            through eSewa.
                                         </p>
                                     </div>
 
                                     <div className="mb-6 p-6 bg-gradient-to-r from-purple-50 to-blue-50 border-2 border-purple-200 rounded-lg text-center">
-                                        <img
-                                            src="esewa2.png"
-                                            alt="Esewa"
-                                            className="h-16 w-full mx-auto mb-4 object-contain"
-                                        />
+                                        <div className="h-16 w-full mx-auto mb-4 flex items-center justify-center bg-white rounded">
+                                            <span className="text-2xl font-bold text-green-600">eSewa</span>
+                                        </div>
                                         <h3 className="text-lg font-bold text-gray-900 mb-2">
-                                            Pay with Esewa
+                                            Pay with eSewa
                                         </h3>
                                         <p className="text-sm text-gray-600 mb-4">
                                             Fast, secure, and trusted payment
@@ -539,7 +571,7 @@ const CheckOutPage = () => {
                                             type="submit"
                                             className="flex-1 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2"
                                         >
-                                            Pay with Esewa{" "}
+                                            Pay with eSewa{" "}
                                             <ArrowRight size={20} />
                                         </button>
                                     </div>

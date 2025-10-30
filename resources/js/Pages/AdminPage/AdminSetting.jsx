@@ -1,14 +1,16 @@
 import AdminWrapper from '@/AdminComponents/AdminWrapper'
 import React from 'react'
 
-const UserManagement = () => {
+const AdminSetting = () => {
   return (
     <AdminWrapper>
-      <div>
-        User 
+      <div className="2">
+        <h2>
+          Admin Setting
+        </h2>
       </div>
     </AdminWrapper>
   )
 }
 
-export default UserManagement
+export default AdminSetting

@@ -1,9 +1,13 @@
 import { X, ChevronLeft, ChevronRight, Heart, ShoppingCart } from "lucide-react";
 import React, { useState, useEffect } from "react";
+import { useCart } from "../contexts/CartContext"; // Import the useCart hook
 
 const ProductsPopup = ({ product, showDetails, setShowDetails }) => {
     const [quantity, setQuantity] = useState(1);
     const [currentImage, setCurrentImage] = useState(0);
+    
+    // Use the cart context
+    const { addToCart } = useCart();
     
     // Use the product's images array from JSON data
     const images = product?.images || [];
@@ -27,6 +31,37 @@ const ProductsPopup = ({ product, showDetails, setShowDetails }) => {
         if (newValue >= 1 && newValue <= 278) {
             setQuantity(newValue);
         }
+    };
+
+    const handleAddToCart = () => {
+        if (!product) return;
+        
+        // Create a cart-ready product object
+        const cartProduct = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            images: product.images,
+            slug: product.slug
+        };
+        
+        // Add the product to cart with the selected quantity
+        for (let i = 0; i < quantity; i++) {
+            addToCart(cartProduct);
+        }
+        
+        // Optional: Show success message or feedback
+        console.log(`Added ${quantity} ${product.name} to cart`);
+        
+        // Optional: Close the popup after adding to cart
+        // setShowDetails(false);
+    };
+
+    const handleBuyNow = () => {
+        handleAddToCart(); // Add to cart first
+        // Then redirect to checkout page
+        // You can use Inertia router here if needed
+        window.location.href = '/check-out';
     };
 
     const renderStars = (rating) => {
@@ -61,7 +96,7 @@ const ProductsPopup = ({ product, showDetails, setShowDetails }) => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4 p-8">
                     {/* Left Side - Image Gallery */}
                     <div className="relative">
-                        <div className="relative  bg-gray-100 rounded-lg overflow-hidden">
+                        <div className="relative bg-gray-100 rounded-lg overflow-hidden">
                             {images.length > 0 ? (
                                 <img
                                     src={images[currentImage]}
@@ -104,7 +139,10 @@ const ProductsPopup = ({ product, showDetails, setShowDetails }) => {
                                 <button className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors">
                                     <Heart className="w-4 h-4 text-gray-700" />
                                 </button>
-                                <button className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors">
+                                <button 
+                                    onClick={handleAddToCart}
+                                    className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
+                                >
                                     <ShoppingCart className="w-4 h-4 text-gray-700" />
                                 </button>
                             </div>
@@ -160,18 +198,18 @@ const ProductsPopup = ({ product, showDetails, setShowDetails }) => {
                         {/* Rating */}
                         <div className="flex items-center gap-2 mb-4">
                             {renderStars(product.rating)}
-                            <span className="text-sm text-gray-600">({product.reviews.length} review)</span>
+                            <span className="text-sm text-gray-600">({product.reviews ? product.reviews.length : 0} review)</span>
                         </div>
 
                         {/* Price */}
                         <div className="flex items-center gap-3 mb-6">
                             {product.priceMax && (
                                 <span className="text-gray-400 line-through text-lg">
-                                    ${product.priceMax}
+                                    Rs.{product.priceMax}
                                 </span>
                             )}
                             <span className="text-3xl font-bold text-gray-900">
-                                ${product.price}
+                                Rs.{product.price}
                             </span>
                             {product.discount && (
                                 <span className="bg-red-100 text-red-800 text-sm font-medium px-2 py-1 rounded">
@@ -182,7 +220,7 @@ const ProductsPopup = ({ product, showDetails, setShowDetails }) => {
 
                         {/* Description */}
                         <p className="text-gray-600 mb-6 leading-relaxed">
-                           {product.shortDescription}
+                           {product.shortDescription || product.description || "No description available."}
                         </p>
 
                         {/* Stock Status */}
@@ -224,14 +262,20 @@ const ProductsPopup = ({ product, showDetails, setShowDetails }) => {
                                     </button>
                                 </div>
                             </div>
-                            <button className="flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
+                            <button 
+                                onClick={handleAddToCart}
+                                className="flex-1 bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+                            >
                                 <ShoppingCart className="w-4 h-4" />
                                 ADD TO CART
                             </button>
                         </div>
 
                         {/* Buy Now Button */}
-                        <button className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 transition-colors mb-6">
+                        <button 
+                            onClick={handleBuyNow}
+                            className="w-full bg-red-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-red-700 transition-colors mb-6"
+                        >
                             BUY NOW
                         </button>
 

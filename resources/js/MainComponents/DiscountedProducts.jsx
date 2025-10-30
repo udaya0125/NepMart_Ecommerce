@@ -9,10 +9,14 @@ import {
 } from "lucide-react";
 import productsData from "../../JsonData/Products.json";
 import ProductsPopup from "./ProductsPopup";
+import { useCart } from '../contexts/CartContext'; // Import the useCart hook
 
 const DiscountedProducts = () => {
     const [showDetails, setShowDetails] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    
+    // Use the cart context
+    const { addToCart } = useCart();
 
     // Flatten all products and filter only those with discounts
     const discountedProducts = Object.values(productsData.products)
@@ -29,6 +33,25 @@ const DiscountedProducts = () => {
             left: direction === "left" ? -scrollAmount : scrollAmount,
             behavior: "smooth",
         });
+    };
+
+    const handleAddToCart = (product, e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // Create a cart-ready product object
+        const cartProduct = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            images: product.images,
+            slug: product.slug
+        };
+        
+        addToCart(cartProduct);
+        
+        // Optional: Show feedback (you can add a toast notification here)
+        console.log(`Added ${product.name} to cart`);
     };
 
     const renderStars = (rating) => {
@@ -129,13 +152,13 @@ const DiscountedProducts = () => {
                                             {/* Price */}
                                             <div className="flex items-center gap-2">
                                                 <span className="line-through text-gray-400 text-sm">
-                                                    $
+                                                    Rs.
                                                     {product.originalPrice ||
                                                         product.priceMax ||
                                                         product.price}
                                                 </span>
                                                 <span className="text-lg font-semibold text-red-600">
-                                                    ${product.price}
+                                                    Rs.{product.price}
                                                 </span>
                                             </div>
                                         </div>
@@ -144,13 +167,14 @@ const DiscountedProducts = () => {
                                     {/* Action Icons */}
                                     <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button
-                                            className="bg-white p-2 rounded-full shadow-md hover:bg-red-50"
+                                            className="bg-white p-2 rounded-full shadow-md hover:bg-red-50 transition-colors"
                                             aria-label="Add to wishlist"
                                         >
                                             <Heart className="w-4 h-4 text-gray-700" />
                                         </button>
                                         <button
-                                            className="bg-white p-2 rounded-full shadow-md hover:bg-red-50"
+                                            onClick={(e) => handleAddToCart(product, e)}
+                                            className="bg-white p-2 rounded-full shadow-md hover:bg-red-50 transition-colors"
                                             aria-label="Add to cart"
                                         >
                                             <ShoppingCart className="w-4 h-4 text-gray-700" />
@@ -161,13 +185,13 @@ const DiscountedProducts = () => {
                                                 e.stopPropagation();
                                                 handleShowDetails(product);
                                             }}
-                                            className="bg-white p-2 rounded-full shadow-md hover:bg-red-50"
+                                            className="bg-white p-2 rounded-full shadow-md hover:bg-red-50 transition-colors"
                                             aria-label="View details"
                                         >
                                             <Eye className="w-4 h-4 text-gray-700" />
                                         </button>
                                         <button
-                                            className="bg-white p-2 rounded-full shadow-md hover:bg-red-50"
+                                            className="bg-white p-2 rounded-full shadow-md hover:bg-red-50 transition-colors"
                                             aria-label="View on external site"
                                         >
                                             <ExternalLink className="w-4 h-4 text-gray-700" />
@@ -194,6 +218,15 @@ const DiscountedProducts = () => {
                     )}
                 </div>
 
+                {/* Products Popup */}
+                {showDetails && selectedProduct && (
+                    <ProductsPopup
+                        product={selectedProduct}
+                        showDetails={showDetails}
+                        setShowDetails={setShowDetails}
+                    />
+                )}
+
                 <style jsx>{`
                     .hide-scrollbar::-webkit-scrollbar {
                         display: none;
@@ -206,11 +239,6 @@ const DiscountedProducts = () => {
                     }
                 `}</style>
             </div>
-            <ProductsPopup
-            product={selectedProduct}
-            showDetails={showDetails}
-            setShowDetails={setShowDetails}
-          />
         </div>
     );
 };

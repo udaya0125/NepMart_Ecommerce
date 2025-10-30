@@ -13,10 +13,12 @@ import {
     BarChart2,
     Check,
     DollarSign,
+    ShoppingCart,
 } from "lucide-react";
 import productsData from "../../../JsonData/Products.json";
 import Navbar from "@/ContentWrapper/Navbar";
 import Footer from "@/ContentWrapper/Footer";
+import { useCart } from '../../Contexts/CartContext'; 
 
 const ProductsPage = () => {
     const [quantity, setQuantity] = useState(1);
@@ -26,6 +28,9 @@ const ProductsPage = () => {
     const [selectedColor, setSelectedColor] = useState("");
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    // Use the cart context
+    const { addToCart } = useCart();
 
     useEffect(() => {
         const loadProduct = () => {
@@ -56,6 +61,33 @@ const ProductsPage = () => {
 
         loadProduct();
     }, []);
+
+    const handleAddToCart = () => {
+        if (!product || !product.inStock) return;
+        
+        // Create a cart-ready product object
+        const cartProduct = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            images: product.images,
+            slug: product.slug
+        };
+        
+        // Add the product to cart with the selected quantity
+        for (let i = 0; i < quantity; i++) {
+            addToCart(cartProduct);
+        }
+        
+        // Optional: Show feedback (you can add a toast notification here)
+        console.log(`Added ${quantity} ${product.name} to cart`);
+    };
+
+    const handleBuyNow = () => {
+        handleAddToCart(); // Add to cart first
+        // Then redirect to checkout page
+        window.location.href = '/check-out';
+    };
 
     // Early return if product not found
     if (loading) {
@@ -218,7 +250,7 @@ const ProductsPage = () => {
                                             </span>
                                         )}
                                         <span className="text-2xl sm:text-3xl font-bold text-gray-900">
-                                            ${product.price || 0}
+                                            Rs.{product.price || 0}
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
@@ -330,14 +362,17 @@ const ProductsPage = () => {
                                         </button>
                                     </div>
                                     <button
-                                        className="flex-1 bg-gray-900 text-white font-semibold py-3.5 rounded-xl hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                                        onClick={handleAddToCart}
+                                        className="flex-1 bg-gray-900 text-white font-semibold py-3.5 rounded-xl hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2"
                                         disabled={!product.inStock}
                                     >
+                                        <ShoppingCart className="w-4 h-4" />
                                         ADD TO CART
                                     </button>
                                 </div>
 
                                 <button
+                                    onClick={handleBuyNow}
                                     className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-3.5 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
                                     disabled={!product.inStock}
                                 >

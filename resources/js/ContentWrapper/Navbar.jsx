@@ -24,6 +24,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link, usePage, router } from "@inertiajs/react";
 import axios from "axios";
 import ShoppingCard from "@/MainComponents/ShoppingCard";
+import { useCart } from "../Contexts/CartContext";
 
 const Navbar = () => {
     const [isCartOpen, setIsCartOpen] = useState(false);
@@ -33,10 +34,12 @@ const Navbar = () => {
     const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
 
     const userDropdownRef = useRef(null);
+    const { cart } = useCart();
 
     // Get auth data from Inertia page props
     const { auth } = usePage().props;
     const isLoggedIn = !!auth.user;
+    const userRole = auth.user?.role; // 'super_admin', 'admin', or 'customer'
 
     useEffect(() => {
         const handleScroll = () => {
@@ -131,6 +134,33 @@ const Navbar = () => {
             .slice(0, 2);
     };
 
+    // Get dashboard route based on user role
+    const getDashboardRoute = () => {
+        switch (userRole) {
+            case 'super_admin':
+                return '/dashboard';
+            case 'admin':
+                return '/admin-dashboard';
+            case 'customer':
+                return null; 
+            default:
+                return '/dashboard';
+        }
+    };
+
+    // Get settings route based on user role
+    const getSettingsRoute = () => {
+        switch (userRole) {
+            case 'super_admin':
+            case 'admin':
+                return '/admin-setting';
+            case 'customer':
+                return '/customer-setting';
+            default:
+                return '/settings';
+        }
+    };
+
     const dropdownData = {
         shop: [
             {
@@ -166,12 +196,51 @@ const Navbar = () => {
         ],
     };
 
-    const userDropdownItems = [
-        { name: "Dashboard", icon: Home, href: '/dashboard', action: "dashboard" },
-        { name: "Settings", icon: Settings, href: '', action: "settings" },
-        { name: "Help & Support", icon: HelpCircle, href: '/help', action: "help" },
-        { name: "Logout", icon: LogOut, action: "logout", danger: true },
-    ];
+    // User dropdown items based on role
+    const getUserDropdownItems = () => {
+        const dashboardRoute = getDashboardRoute();
+        const settingsRoute = getSettingsRoute();
+        
+        const items = [];
+
+        // Only add dashboard for super_admin and admin
+        if (dashboardRoute) {
+            items.push({ 
+                name: "Dashboard", 
+                icon: Home, 
+                href: dashboardRoute, 
+                action: "dashboard" 
+            });
+        }
+
+        // Add settings for all roles
+        items.push({ 
+            name: "Settings", 
+            icon: Settings, 
+            href: settingsRoute, 
+            action: "settings" 
+        });
+
+        // Add help & support for all roles
+        items.push({ 
+            name: "Help & Support", 
+            icon: HelpCircle, 
+            href: '/help', 
+            action: "help" 
+        });
+
+        // Add logout for all roles
+        items.push({ 
+            name: "Logout", 
+            icon: LogOut, 
+            action: "logout", 
+            danger: true 
+        });
+
+        return items;
+    };
+
+    const userDropdownItems = getUserDropdownItems();
 
     return (
         <>
@@ -410,9 +479,11 @@ const Navbar = () => {
                                 }`}
                             >
                                 <ShoppingCart className="h-5 w-5 group-hover:text-red-500 transition-colors" />
-                                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center ring-2 ring-white">
-                                    3
-                                </span>
+                                {cart.totalItems > 0 && (
+                                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center ring-2 ring-white">
+                                        {cart.totalItems > 99 ? '99+' : cart.totalItems}
+                                    </span>
+                                )}
                             </button>
 
                             {/* Auth Section - Show Sign In/Sign Up OR User Dropdown */}
@@ -463,6 +534,9 @@ const Navbar = () => {
                                                     </p>
                                                     <p className="text-sm text-gray-500">
                                                         {auth.user?.email || ""}
+                                                    </p>
+                                                    <p className="text-xs text-gray-400 capitalize">
+                                                        {userRole?.replace('_', ' ') || 'User'}
                                                     </p>
                                                 </div>
                                             </div>
@@ -582,6 +656,9 @@ const Navbar = () => {
                                     </p>
                                     <p className="text-xs text-gray-500">
                                         {auth.user?.email || ""}
+                                    </p>
+                                    <p className="text-xs text-gray-400 capitalize">
+                                        {userRole?.replace('_', ' ') || 'User'}
                                     </p>
                                 </div>
                             </div>
@@ -703,7 +780,7 @@ const Navbar = () => {
                             className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-red-500 text-white font-medium rounded-xl hover:bg-red-600 transition-colors shadow-lg shadow-red-500/30"
                         >
                             <ShoppingBag className="h-5 w-5" />
-                            View Cart (3)
+                            View Cart ({cart.totalItems})
                         </button>
                         <button className="flex items-center justify-center gap-2 w-full px-4 py-3 border-2 border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors">
                             <Heart className="h-5 w-5" />

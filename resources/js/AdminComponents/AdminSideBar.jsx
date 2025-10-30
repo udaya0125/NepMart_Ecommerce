@@ -15,6 +15,8 @@ import {
     ChevronDown,
     ChevronRight,
     Layers,
+    ShoppingCart,
+    Settings,
 } from "lucide-react";
 
 const AdminSideBar = ({
@@ -24,10 +26,13 @@ const AdminSideBar = ({
     user,
     toggleSidebar,
 }) => {
-    const { url } = usePage();
+    const { url, props } = usePage();
     const [activeItem, setActiveItem] = useState("");
     const [isContentOpen, setIsContentOpen] = useState(false);
     const [isContentHovered, setIsContentHovered] = useState(false);
+
+    // Get authenticated user from props
+    const authUser = props.auth?.user || user;
 
     useEffect(() => {
         const path = url.split("/")[1] || "dashboard";
@@ -45,6 +50,7 @@ const AdminSideBar = ({
             blogs: "Blog",
             testimonials: "Testimonials",
             "activity-log": "Activity Logs",
+            "admin-setting":"Setting"
         };
 
         setActiveItem(activeMap[path] || "Dashboard");
@@ -75,6 +81,11 @@ const AdminSideBar = ({
         activeItem === "Posts" ||
         activeItem === "Pages" ||
         activeItem === "Media";
+
+    // Check The Role of the User
+    const isSuperAdmin = authUser?.role === 'super admin';
+    const isAdmin = authUser?.role === 'admin';
+    const isCustomer = authUser?.role === 'customer';
 
     return (
         <div>
@@ -125,45 +136,47 @@ const AdminSideBar = ({
 
                 <div className="p-4 h-[calc(100%-4rem)] flex flex-col overflow-y-auto">
                     <div className="flex-1 space-y-2">
-                        {/* Dashboard */}
-
-
-                         <div className="relative group">
-                            <Link
-                                href="/dashboard"
-                                className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
-                                    activeItem === "Dashboard"
-                                        ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
-                                        : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
-                                } ${isCollapsed ? "justify-center" : ""}`}
-                            >
-                                <Home
-                                    size={20}
-                                    className={`flex-shrink-0 ${
-                                        activeItem === "Dashboard"
-                                            ? "text-blue-400"
-                                            : ""
-                                    }`}
-                                />
-                                {!isCollapsed && (
-                                    <span className="font-medium flex-1 text-left">
-                                        Dashboard
-                                    </span>
-                                )}
-                            </Link>
-
-                            {isCollapsed && (
-                                <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
-                                    <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
-                                        <span className="text-sm font-medium">
-                                            Dashboard
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
                         
+                        {/* Super Admin Only Routes */}
+                        {isSuperAdmin && (
+                            <>
+                                {/* Dashboard - Now only for super admin */}
+                                <div className="relative group">
+                                    <Link
+                                        href="/dashboard"
+                                        className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
+                                            activeItem === "Dashboard"
+                                                ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
+                                                : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+                                        } ${isCollapsed ? "justify-center" : ""}`}
+                                    >
+                                        <Home
+                                            size={20}
+                                            className={`flex-shrink-0 ${
+                                                activeItem === "Dashboard"
+                                                    ? "text-blue-400"
+                                                    : ""
+                                            }`}
+                                        />
+                                        {!isCollapsed && (
+                                            <span className="font-medium flex-1 text-left">
+                                                Dashboard
+                                            </span>
+                                        )}
+                                    </Link>
+
+                                    {isCollapsed && (
+                                        <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                            <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
+                                                <span className="text-sm font-medium">
+                                                    Dashboard
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                 {/* Home */}
                         <div className="relative group">
                             <Link
                                 href="/home"
@@ -198,6 +211,157 @@ const AdminSideBar = ({
                                 </div>
                             )}
                         </div>
+
+                                {/* Users */}
+                                <div className="relative group">
+                                    <Link
+                                        href="/user-management"
+                                        className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
+                                            activeItem === "Users"
+                                                ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
+                                                : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+                                        } ${isCollapsed ? "justify-center" : ""}`}
+                                    >
+                                        <Users
+                                            size={20}
+                                            className={`flex-shrink-0 ${
+                                                activeItem === "Users"
+                                                    ? "text-blue-400"
+                                                    : ""
+                                            }`}
+                                        />
+                                        {!isCollapsed && (
+                                            <span className="font-medium flex-1 text-left">
+                                                Users
+                                            </span>
+                                        )}
+                                    </Link>
+
+                                    {isCollapsed && (
+                                        <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                            <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
+                                                <span className="text-sm font-medium">
+                                                    Users
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Testimonials */}
+                                <div className="relative group">
+                                    <Link
+                                        href="/testimonials"
+                                        className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
+                                            activeItem === "Testimonials"
+                                                ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
+                                                : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+                                        } ${isCollapsed ? "justify-center" : ""}`}
+                                    >
+                                        <MessageSquareQuote
+                                            size={20}
+                                            className={`flex-shrink-0 ${
+                                                activeItem === "Testimonials"
+                                                    ? "text-blue-400"
+                                                    : ""
+                                            }`}
+                                        />
+                                        {!isCollapsed && (
+                                            <span className="font-medium flex-1 text-left">
+                                                Testimonials
+                                            </span>
+                                        )}
+                                    </Link>
+
+                                    {isCollapsed && (
+                                        <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                            <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
+                                                <span className="text-sm font-medium">
+                                                    Testimonials
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Activity Logs */}
+                                <div className="relative group">
+                                    <Link
+                                        href="/activity-log"
+                                        className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
+                                            activeItem === "Activity Logs"
+                                                ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
+                                                : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+                                        } ${isCollapsed ? "justify-center" : ""}`}
+                                    >
+                                        <Activity
+                                            size={20}
+                                            className={`flex-shrink-0 ${
+                                                activeItem === "Activity Logs"
+                                                    ? "text-blue-400"
+                                                    : ""
+                                            }`}
+                                        />
+                                        {!isCollapsed && (
+                                            <span className="font-medium flex-1 text-left">
+                                                Activity Logs
+                                            </span>
+                                        )}
+                                    </Link>
+
+                                    {isCollapsed && (
+                                        <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                            <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
+                                                <span className="text-sm font-medium">
+                                                    Activity Logs
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        )}
+
+                        {isAdmin && (
+                            <>
+                            {/* Admin Dashboard */}
+
+                             <div className="relative group">
+                                    <Link
+                                        href="/admin-dashboard"
+                                        className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
+                                            activeItem === "Dashboard"
+                                                ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
+                                                : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+                                        } ${isCollapsed ? "justify-center" : ""}`}
+                                    >
+                                        <Home
+                                            size={20}
+                                            className={`flex-shrink-0 ${
+                                                activeItem === "Dashboard"
+                                                    ? "text-blue-400"
+                                                    : ""
+                                            }`}
+                                        />
+                                        {!isCollapsed && (
+                                            <span className="font-medium flex-1 text-left">
+                                                Dashboard
+                                            </span>
+                                        )}
+                                    </Link>
+
+                                    {isCollapsed && (
+                                        <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                            <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
+                                                <span className="text-sm font-medium">
+                                                    Dashboard
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </>
+                        )}
 
                         {/* Category */}
                         <div className="relative group">
@@ -343,27 +507,27 @@ const AdminSideBar = ({
                             )}
                         </div>
 
-                        {/* Users */}
+                         {/* Setting */}
                         <div className="relative group">
                             <Link
-                                href="/user-management"
+                                href="/admin-setting"
                                 className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
-                                    activeItem === "Users"
+                                    activeItem === "Setting"
                                         ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
                                         : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
                                 } ${isCollapsed ? "justify-center" : ""}`}
                             >
-                                <Users
+                                <Settings
                                     size={20}
                                     className={`flex-shrink-0 ${
-                                        activeItem === "Users"
+                                        activeItem === "Setting"
                                             ? "text-blue-400"
                                             : ""
                                     }`}
                                 />
                                 {!isCollapsed && (
                                     <span className="font-medium flex-1 text-left">
-                                        Users
+                                        Setting
                                     </span>
                                 )}
                             </Link>
@@ -372,248 +536,7 @@ const AdminSideBar = ({
                                 <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                                     <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
                                         <span className="text-sm font-medium">
-                                            Users
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Content Dropdown */}
-                        {/* <div
-                            className="relative"
-                            onMouseEnter={handleContentMouseEnter}
-                            onMouseLeave={handleContentMouseLeave}
-                        >
-                            <button
-                                onClick={toggleContentDropdown}
-                                className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
-                                    isContentActive
-                                        ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
-                                        : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
-                                } ${isCollapsed ? "justify-center" : ""}`}
-                            >
-                                <FileText
-                                    size={20}
-                                    className={`flex-shrink-0 ${
-                                        isContentActive ? "text-blue-400" : ""
-                                    }`}
-                                />
-                                {!isCollapsed && (
-                                    <>
-                                        <span className="font-medium flex-1 text-left">
-                                            Content
-                                        </span>
-                                        <div className="flex items-center space-x-2">
-                                            <span className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs px-2 py-1 rounded-full">
-                                                12
-                                            </span>
-                                            {isContentOpen ? (
-                                                <ChevronDown size={16} />
-                                            ) : (
-                                                <ChevronRight size={16} />
-                                            )}
-                                        </div>
-                                    </>
-                                )}
-                            </button>
-
-                          
-                            {!isCollapsed && (
-                                <div
-                                    className={`overflow-hidden transition-all duration-300 ${
-                                        isContentOpen ? "max-h-40" : "max-h-0"
-                                    }`}
-                                >
-                                    <div className="ml-8 space-y-1 py-2">
-                                        <Link
-                                            href="/content-posts"
-                                            className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-200 hover:scale-[1.02] ${
-                                                activeItem === "Posts"
-                                                    ? "bg-blue-100 text-blue-600 font-medium"
-                                                    : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
-                                            }`}
-                                        >
-                                            <span className="w-2 h-2 rounded-full bg-current opacity-60"></span>
-                                            <span>Posts</span>
-                                            <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full ml-auto">
-                                                8
-                                            </span>
-                                        </Link>
-
-                                        <Link
-                                            href="/content-pages"
-                                            className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-200 hover:scale-[1.02] ${
-                                                activeItem === "Pages"
-                                                    ? "bg-blue-100 text-blue-600 font-medium"
-                                                    : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
-                                            }`}
-                                        >
-                                            <span className="w-2 h-2 rounded-full bg-current opacity-60"></span>
-                                            <span>Pages</span>
-                                            <span className="bg-yellow-500 text-white text-xs px-1.5 py-0.5 rounded-full ml-auto">
-                                                3
-                                            </span>
-                                        </Link>
-
-                                        <Link
-                                            href="/content-media"
-                                            className={`flex items-center space-x-3 p-2 rounded-lg transition-all duration-200 hover:scale-[1.02] ${
-                                                activeItem === "Media"
-                                                    ? "bg-blue-100 text-blue-600 font-medium"
-                                                    : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
-                                            }`}
-                                        >
-                                            <span className="w-2 h-2 rounded-full bg-current opacity-60"></span>
-                                            <span>Media</span>
-                                            <span className="bg-green-500 text-white text-xs px-1.5 py-0.5 rounded-full ml-auto">
-                                                1
-                                            </span>
-                                        </Link>
-                                    </div>
-                                </div>
-                            )}
-
-                          
-                            {isCollapsed && isContentHovered && (
-                                <div className="fixed left-full top-28 ml-1">
-                                    <div className="bg-white rounded-lg shadow-xl border border-gray-200 min-w-48 py-2">
-                                        <div className="px-4 py-2 border-b border-gray-100">
-                                            <span className="text-sm font-semibold text-gray-700">
-                                                Content
-                                            </span>
-                                            <span className="ml-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-                                                12
-                                            </span>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <Link
-                                                href="/content-posts"
-                                                className={`flex items-center justify-between px-4 py-2 text-sm transition-colors ${
-                                                    activeItem === "Posts"
-                                                        ? "bg-blue-50 text-blue-600 font-medium"
-                                                        : "hover:bg-gray-50 text-gray-700"
-                                                }`}
-                                            >
-                                                <span>Posts</span>
-                                                <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-                                                    8
-                                                </span>
-                                            </Link>
-
-                                            <Link
-                                                href="/content-pages"
-                                                className={`flex items-center justify-between px-4 py-2 text-sm transition-colors ${
-                                                    activeItem === "Pages"
-                                                        ? "bg-blue-50 text-blue-600 font-medium"
-                                                        : "hover:bg-gray-50 text-gray-700"
-                                                }`}
-                                            >
-                                                <span>Pages</span>
-                                                <span className="bg-yellow-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-                                                    3
-                                                </span>
-                                            </Link>
-
-                                            <Link
-                                                href="/content-media"
-                                                className={`flex items-center justify-between px-4 py-2 text-sm transition-colors ${
-                                                    activeItem === "Media"
-                                                        ? "bg-blue-50 text-blue-600 font-medium"
-                                                        : "hover:bg-gray-50 text-gray-700"
-                                                }`}
-                                            >
-                                                <span>Media</span>
-                                                <span className="bg-green-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-                                                    1
-                                                </span>
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                           
-                            {isCollapsed && !isContentHovered && (
-                                <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-40">
-                                    <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
-                                        <span className="text-sm font-medium">
-                                            Content
-                                        </span>
-                                        <span className="ml-2 bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-full">
-                                            12
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
-                        </div> */}
-
-                        {/* Testimonials */}
-                        <div className="relative group">
-                            <Link
-                                href="/testimonials"
-                                className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
-                                    activeItem === "Testimonials"
-                                        ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
-                                        : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
-                                } ${isCollapsed ? "justify-center" : ""}`}
-                            >
-                                <MessageSquareQuote
-                                    size={20}
-                                    className={`flex-shrink-0 ${
-                                        activeItem === "Testimonials"
-                                            ? "text-blue-400"
-                                            : ""
-                                    }`}
-                                />
-                                {!isCollapsed && (
-                                    <span className="font-medium flex-1 text-left">
-                                        Testimonials
-                                    </span>
-                                )}
-                            </Link>
-
-                            {isCollapsed && (
-                                <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
-                                    <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
-                                        <span className="text-sm font-medium">
-                                            Testimonials
-                                        </span>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Activity Logs */}
-                        <div className="relative group">
-                            <Link
-                                href="/activity-log"
-                                className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
-                                    activeItem === "Activity Logs"
-                                        ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
-                                        : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
-                                } ${isCollapsed ? "justify-center" : ""}`}
-                            >
-                                <Activity
-                                    size={20}
-                                    className={`flex-shrink-0 ${
-                                        activeItem === "Activity Logs"
-                                            ? "text-blue-400"
-                                            : ""
-                                    }`}
-                                />
-                                {!isCollapsed && (
-                                    <span className="font-medium flex-1 text-left">
-                                        Activity Logs
-                                    </span>
-                                )}
-                            </Link>
-
-                            {isCollapsed && (
-                                <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
-                                    <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
-                                        <span className="text-sm font-medium">
-                                            Activity Logs
+                                            Setting
                                         </span>
                                     </div>
                                 </div>

@@ -11,16 +11,30 @@ import productsData from "../../../JsonData/Products.json";
 import ProductsPopup from "@/MainComponents/ProductsPopup";
 import Navbar from "@/ContentWrapper/Navbar";
 import { Link } from "@inertiajs/react";
+import { useCart } from '../../contexts/CartContext';
 
 const Categories = () => {
     const [showFilters, setShowFilters] = useState(true);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [showDetails, setShowDetails] = useState(false);
+    
+    // Calculate initial price range from actual products
+    const initialPriceRange = useMemo(() => {
+        const allProducts = Object.values(productsData.products).flat();
+        if (allProducts.length === 0) return [500, 10000];
+        
+        const prices = allProducts.map(p => parseFloat(p.price));
+        return [
+            Math.floor(Math.min(...prices)),
+            Math.ceil(Math.max(...prices))
+        ];
+    }, []);
+
     const [filters, setFilters] = useState({
         new: false,
         sale: false,
         outerwear: [],
-        priceRange: [20, 380],
+        priceRange: initialPriceRange,
         sizes: [],
     });
 
@@ -35,6 +49,8 @@ const Categories = () => {
 
     const sizes = [92, 102, 104, 106, 108, 110, 112, 116];
 
+    const { addToCart } = useCart();
+
     // Flatten all products from all categories
     const allProducts = useMemo(() => {
         return Object.values(productsData.products).flat();
@@ -43,6 +59,17 @@ const Categories = () => {
     // Get unique categories
     const categories = useMemo(() => {
         return [...new Set(allProducts.map((p) => p.category))];
+    }, [allProducts]);
+
+    // Calculate realistic price range from actual products
+    const productPriceRange = useMemo(() => {
+        if (allProducts.length === 0) return { min: 500, max: 10000 };
+        
+        const prices = allProducts.map(p => parseFloat(p.price));
+        return {
+            min: Math.floor(Math.min(...prices)),
+            max: Math.ceil(Math.max(...prices))
+        };
     }, [allProducts]);
 
     // Filter products
@@ -117,11 +144,19 @@ const Categories = () => {
         }));
     };
 
-    const onPriceChange = (e) => {
+    const onMaxPriceChange = (e) => {
         const val = Number(e.target.value);
         setFilters((f) => ({
             ...f,
             priceRange: [f.priceRange[0], Math.max(val, f.priceRange[0])],
+        }));
+    };
+
+    // Dual range slider handler
+    const onPriceRangeChange = (values) => {
+        setFilters((f) => ({
+            ...f,
+            priceRange: values,
         }));
     };
 
@@ -140,7 +175,7 @@ const Categories = () => {
             new: false,
             sale: false,
             outerwear: [],
-            priceRange: [20, 380],
+            priceRange: [productPriceRange.min, productPriceRange.max],
             sizes: [],
         });
         setCurrentPage(1);
@@ -153,6 +188,22 @@ const Categories = () => {
     const handleShowDetails = (product) => {
         setSelectedProduct(product);
         setShowDetails(true);
+    };
+
+    const handleAddToCart = (product, e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const cartProduct = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            images: product.images,
+            slug: product.slug
+        };
+        
+        addToCart(cartProduct);
+        console.log(`Added ${product.name} to cart`);
     };
 
     // Pagination
@@ -212,13 +263,64 @@ const Categories = () => {
         return buttons;
     };
 
+    // Custom range slider component to fix the dual slider issue
+    const RangeSlider = ({ min, max, values, onChange }) => {
+        const [minVal, maxVal] = values;
+        
+        const handleMinChange = (e) => {
+            const value = Math.min(Number(e.target.value), maxVal);
+            onChange([value, maxVal]);
+        };
+
+        const handleMaxChange = (e) => {
+            const value = Math.max(Number(e.target.value), minVal);
+            onChange([minVal, value]);
+        };
+
+        const minPercent = ((minVal - min) / (max - min)) * 100;
+        const maxPercent = ((maxVal - min) / (max - min)) * 100;
+
+        return (
+            <div className="relative py-4">
+                <input
+                    type="range"
+                    min={min}
+                    max={max}
+                    value={minVal}
+                    onChange={handleMinChange}
+                    className="absolute w-full h-2 bg-transparent appearance-none cursor-pointer z-10"
+                />
+                <input
+                    type="range"
+                    min={min}
+                    max={max}
+                    value={maxVal}
+                    onChange={handleMaxChange}
+                    className="absolute w-full h-2 bg-transparent appearance-none cursor-pointer z-10"
+                />
+                
+                {/* Track */}
+                <div className="absolute w-full h-2 bg-gray-200 rounded-lg"></div>
+                
+                {/* Active range */}
+                <div 
+                    className="absolute h-2 bg-green-500 rounded-lg"
+                    style={{
+                        left: `${minPercent}%`,
+                        width: `${maxPercent - minPercent}%`
+                    }}
+                />
+            </div>
+        );
+    };
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
             <Navbar />
             <div className="relative h-[550px] overflow-hidden">
                 <img
-                    src="https://images.pexels.com/photos/1525612/pexels-photo-1525612.jpeg"
+                    src="https://images.pexels.com/photos-1525612/pexels-photo-1525612.jpeg"
                     alt="Products hero image"
                     className="w-full h-full object-cover"
                 />
@@ -237,7 +339,7 @@ const Categories = () => {
             <div className="max-w-7xl mx-auto px-4 py-6">
                 <div className="flex gap-6">
                     {/* Sidebar Filters */}
-                    <div className="w-72 flex-shrink-0">
+                    <div className={`${showFilters ? 'w-72' : 'w-0'} flex-shrink-0 transition-all duration-300 overflow-hidden`}>
                         {showFilters && (
                             <div className="bg-white rounded-lg shadow-sm">
                                 {/* Filter Header */}
@@ -259,7 +361,7 @@ const Categories = () => {
                                                 type="checkbox"
                                                 checked={filters.new}
                                                 onChange={toggleFilterNew}
-                                                className="w-4 h-4"
+                                                className="w-4 h-4 text-green-500"
                                             />
                                             <span className="text-sm">New Arrivals</span>
                                         </label>
@@ -268,7 +370,7 @@ const Categories = () => {
                                                 type="checkbox"
                                                 checked={filters.sale}
                                                 onChange={toggleFilterSale}
-                                                className="w-4 h-4"
+                                                className="w-4 h-4 text-green-500"
                                             />
                                             <span className="text-sm">On Sale</span>
                                         </label>
@@ -298,10 +400,10 @@ const Categories = () => {
                                                     <input
                                                         type="checkbox"
                                                         checked={filters.outerwear.includes(category)}
-                                                        className="w-4 h-4"
+                                                        className="w-4 h-4 text-green-500"
                                                         onChange={() => toggleOuterwearItem(category)}
                                                     />
-                                                    <span className="text-sm">{category}</span>
+                                                    <span className="text-sm capitalize">{category}</span>
                                                 </label>
                                             ))}
                                         </div>
@@ -315,7 +417,7 @@ const Categories = () => {
                                         onClick={() => toggleSection("price")}
                                     >
                                         <h3 className="text-sm font-semibold text-gray-400 uppercase">
-                                            Price ($)
+                                            Price (Rs.)
                                         </h3>
                                         <button className="text-xl font-bold select-none">
                                             {expandedSections.price ? "−" : "+"}
@@ -326,32 +428,33 @@ const Categories = () => {
                                             <div className="flex justify-between mb-2">
                                                 <input
                                                     type="number"
-                                                    min="20"
-                                                    max="380"
+                                                    min={productPriceRange.min}
+                                                    max={productPriceRange.max}
                                                     value={filters.priceRange[0]}
                                                     onChange={onMinPriceChange}
                                                     className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
                                                 />
                                                 <input
                                                     type="number"
-                                                    min="20"
-                                                    max="380"
+                                                    min={productPriceRange.min}
+                                                    max={productPriceRange.max}
                                                     value={filters.priceRange[1]}
-                                                    onChange={onPriceChange}
+                                                    onChange={onMaxPriceChange}
                                                     className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
                                                 />
                                             </div>
-                                            <input
-                                                type="range"
-                                                min="20"
-                                                max="380"
-                                                value={filters.priceRange[1]}
-                                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-green-500"
-                                                onChange={onPriceChange}
+                                            
+                                            {/* Fixed Dual Range Slider */}
+                                            <RangeSlider
+                                                min={productPriceRange.min}
+                                                max={productPriceRange.max}
+                                                values={filters.priceRange}
+                                                onChange={onPriceRangeChange}
                                             />
+                                            
                                             <div className="flex justify-between mt-2 text-sm">
-                                                <span>${filters.priceRange[0]}</span>
-                                                <span>${filters.priceRange[1]}</span>
+                                                <span>Rs.{filters.priceRange[0].toLocaleString()}</span>
+                                                <span>Rs.{filters.priceRange[1].toLocaleString()}</span>
                                             </div>
                                         </div>
                                     )}
@@ -376,7 +479,7 @@ const Categories = () => {
                                                 <button
                                                     key={size}
                                                     onClick={() => toggleSize(size)}
-                                                    className={`py-2 px-3 border rounded text-sm font-medium ${
+                                                    className={`py-2 px-3 border rounded text-sm font-medium transition-colors ${
                                                         filters.sizes.includes(size)
                                                             ? "bg-green-500 text-white border-green-500"
                                                             : "border-gray-300 hover:border-gray-400"
@@ -414,7 +517,7 @@ const Categories = () => {
                             </div>
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
-                                className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm"
+                                className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 text-sm transition-colors"
                             >
                                 {showFilters ? "Hide Filters" : "Show Filters"}
                             </button>
@@ -426,7 +529,7 @@ const Categories = () => {
                                 currentProducts.map((product) => (
                                     <div
                                         key={product.id}
-                                        className="bg-white rounded-lg overflow-hidden group relative border border-gray-200 hover:shadow-lg transition-shadow"
+                                        className="bg-white rounded-lg overflow-hidden group relative border border-gray-200 hover:shadow-lg transition-all duration-300"
                                     >
                                         {/* Product Link */}
                                         <Link href={`/products/${product.slug}`} className="block">
@@ -457,26 +560,27 @@ const Categories = () => {
                                                 <div className="flex items-center gap-2">
                                                     {product.oldPrice && (
                                                         <span className="text-sm text-gray-500 line-through">
-                                                            ${product.oldPrice}
+                                                            Rs.{product.oldPrice.toLocaleString()}
                                                         </span>
                                                     )}
                                                     <span className="text-lg font-semibold text-gray-900">
-                                                        ${product.price}
+                                                        Rs.{parseFloat(product.price).toLocaleString()}
                                                     </span>
                                                 </div>
                                             </div>
                                         </Link>
 
                                         {/* Action Icons */}
-                                        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             <button
-                                                className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
+                                                className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
                                                 aria-label="Add to wishlist"
                                             >
                                                 <Heart className="w-4 h-4 text-gray-700" />
                                             </button>
                                             <button
-                                                className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
+                                                onClick={(e) => handleAddToCart(product, e)}
+                                                className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
                                                 aria-label="Add to cart"
                                             >
                                                 <ShoppingCart className="w-4 h-4 text-gray-700" />
@@ -487,13 +591,13 @@ const Categories = () => {
                                                     e.stopPropagation();
                                                     handleShowDetails(product);
                                                 }}
-                                                className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
+                                                className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
                                                 aria-label="View details"
                                             >
                                                 <Eye className="w-4 h-4 text-gray-700" />
                                             </button>
                                             <button
-                                                className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100"
+                                                className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
                                                 aria-label="View on external site"
                                             >
                                                 <ExternalLink className="w-4 h-4 text-gray-700" />
@@ -504,12 +608,18 @@ const Categories = () => {
                             ) : (
                                 <div className="text-center text-gray-500 col-span-full py-8">
                                     No products found matching your filters.
+                                    <button 
+                                        onClick={resetFilters}
+                                        className="ml-2 text-green-500 hover:text-green-600 underline"
+                                    >
+                                        Reset filters
+                                    </button>
                                 </div>
                             )}
                         </div>
 
                         {/* Pagination */}
-                        {filteredProducts.length > 0 && (
+                        {filteredProducts.length > productsPerPage && (
                             <div className="flex justify-center items-center gap-4 mb-8">
                                 <button
                                     onClick={prevPage}
@@ -517,7 +627,7 @@ const Categories = () => {
                                     className={`p-2 rounded-md transition-colors ${
                                         currentPage === 1
                                             ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                                            : "bg-blue-600 text-white hover:bg-blue-700"
+                                            : "bg-green-500 text-white hover:bg-green-600"
                                     }`}
                                 >
                                     <ChevronLeft className="w-5 h-5" />
@@ -531,7 +641,7 @@ const Categories = () => {
                                     className={`p-2 rounded-md transition-colors ${
                                         currentPage === totalPages
                                             ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                                            : "bg-blue-600 text-white hover:bg-blue-700"
+                                            : "bg-green-500 text-white hover:bg-green-600"
                                     }`}
                                 >
                                     <ChevronRight className="w-5 h-5" />

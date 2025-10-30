@@ -5,7 +5,7 @@
         "id": 1,
         "name": "Longines Watchmaking Tradition 25.5 mm Watch",
         "slug": "longines-watchmaking-tradition-25-5-mm-watch",
-        "price": 22,
+        "price": 2926,
         "rating": 5,
         "images": [
           "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400&h=400&fit=crop",
@@ -46,7 +46,7 @@
         "id": 2,
         "name": "Cindy & Wendy Large Soft Cashmere Silky Shawl",
         "slug": "cindy-wendy-large-soft-cashmere-silky-shawl",
-        "price": 16,
+        "price": 2128,
         "rating": 5,
         "images": [
           "https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?w=400&h=400&fit=crop",
@@ -81,7 +81,7 @@
         "id": 3,
         "name": "Moshi Latest Venturo Premium Laptop Backpack",
         "slug": "moshi-latest-venturo-premium-laptop-backpack",
-        "price": 22,
+        "price": 2926,
         "rating": 5,
         "images": [
           "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
@@ -122,8 +122,8 @@
         "id": 4,
         "name": "Denim Jean Top Jacket Sleeve Crop Women",
         "slug": "denim-jean-top-jacket-sleeve-crop-women",
-        "price": 16,
-        "priceMax": 28,
+        "price": 2128,
+        "priceMax": 3724,
         "rating": 4,
         "images": [
           "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=400&fit=crop",
@@ -164,8 +164,8 @@
         "id": 5,
         "name": "Just Style Men Black Artificial Leather Belt",
         "slug": "just-style-men-black-artificial-leather-belt",
-        "price": 21,
-        "priceMax": 28,
+        "price": 2793,
+        "priceMax": 3724,
         "rating": 4,
         "images": [
           "https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=400&h=400&fit=crop",
@@ -202,7 +202,7 @@
         "id": 6,
         "name": "Wireless Bluetooth Headphones",
         "slug": "wireless-bluetooth-headphones",
-        "price": 45,
+        "price": 5985,
         "rating": 5,
         "images": [
           "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
@@ -243,7 +243,7 @@
         "id": 7,
         "name": "Designer Sunglasses UV Protection",
         "slug": "designer-sunglasses-uv-protection",
-        "price": 35,
+        "price": 4655,
         "rating": 4,
         "images": [
           "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400&h=400&fit=crop",
@@ -278,7 +278,7 @@
         "id": 8,
         "name": "Leather Wallet Card Holder",
         "slug": "leather-wallet-card-holder",
-        "price": 28,
+        "price": 3724,
         "rating": 5,
         "images": [
           "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&h=400&fit=crop",
@@ -319,8 +319,8 @@
         "id": 9,
         "name": "Smart Watch Fitness Tracker",
         "slug": "smart-watch-fitness-tracker",
-        "price": 89,
-        "priceMax": 120,
+        "price": 11837,
+        "priceMax": 15960,
         "rating": 5,
         "images": [
           "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop",
@@ -361,8 +361,8 @@
         "id": 10,
         "name": "Premium Phone Case Leather",
         "slug": "premium-phone-case-leather",
-        "price": 18,
-        "priceMax": 25,
+        "price": 2394,
+        "priceMax": 3325,
         "rating": 4,
         "images": [
           "https://images.unsplash.com/photo-1601784551446-20c9e07cdbdb?w=400&h=400&fit=crop",
@@ -399,7 +399,7 @@
         "id": 11,
         "name": "Cotton Casual T-Shirt Pack",
         "slug": "cotton-casual-t-shirt-pack",
-        "price": 24,
+        "price": 3192,
         "rating": 5,
         "images": [
           "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop",
@@ -440,7 +440,7 @@
         "id": 12,
         "name": "Slim Fit Denim Jeans",
         "slug": "slim-fit-denim-jeans",
-        "price": 42,
+        "price": 5586,
         "rating": 4,
         "images": [
           "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop",
@@ -481,7 +481,7 @@
         "id": 13,
         "name": "Hooded Sweatshirt Pullover",
         "slug": "hooded-sweatshirt-pullover",
-        "price": 38,
+        "price": 5054,
         "rating": 5,
         "images": [
           "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop",
@@ -522,8 +522,8 @@
         "id": 14,
         "name": "Summer Beach Dress Floral",
         "slug": "summer-beach-dress-floral",
-        "price": 32,
-        "priceMax": 45,
+        "price": 4256,
+        "priceMax": 5985,
         "rating": 5,
         "images": [
           "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=400&fit=crop",
@@ -564,8 +564,8 @@
         "id": 15,
         "name": "Formal Blazer Business Suit",
         "slug": "formal-blazer-business-suit",
-        "price": 68,
-        "priceMax": 95,
+        "price": 9044,
+        "priceMax": 12635,
         "rating": 4,
         "images": [
           "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=400&fit=crop",

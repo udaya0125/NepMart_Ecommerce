@@ -100,15 +100,7 @@ const Hero = () => {
                                         {slide.description}
                                     </p>
 
-                                    {/* <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                                        <button className="bg-red-500 hover:bg-red-600 text-white px-10 py-4 text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-2xl flex items-center gap-2 rounded-full">
-                                            {slide.buttonText}
-                                            <ArrowRight size={20} className="ml-1" />
-                                        </button>
-                                        <button className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white border-2 border-white px-10 py-4 text-lg font-semibold transition-all duration-300 rounded-full">
-                                            Learn More
-                                        </button>
-                                    </div> */}
+
 
                                     <div className="flex justify-center items-center gap-8 md:gap-16 mt-12 pt-8 border-t border-white/20">
                                         <div>
