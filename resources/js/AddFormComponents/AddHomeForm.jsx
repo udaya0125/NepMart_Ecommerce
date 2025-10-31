@@ -11,8 +11,8 @@ const AddHomeForm = ({
     editingHome = null,
     setEditingHome = null,
 }) => {
-    const [previewImages, setPreviewImages] = useState([]);
-    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [previewImage, setPreviewImage] = useState(null); // Changed to single image
+    const [selectedFile, setSelectedFile] = useState(null); // Changed to single file
     const [submitting, setSubmitting] = useState(false);
     const [serverError, setServerError] = useState("");
 
@@ -24,7 +24,13 @@ const AddHomeForm = ({
         clearErrors,
         handleSubmit: rhfHandleSubmit,
         setValue,
+        watch,
     } = useForm();
+
+    // Watch form values for real-time updates
+    const watchTitle = watch("title");
+    const watchSubTitle = watch("sub_title");
+    const watchDescription = watch("description");
 
     // Reset form when component mounts or showForm changes
     useEffect(() => {
@@ -33,25 +39,31 @@ const AddHomeForm = ({
         }
     }, [showForm]);
 
-    // Handle editing mode
+    // Handle editing mode - populate form with existing data
     useEffect(() => {
-        if (editingHome) {
-            // If editing, you might want to handle it differently
-            // For now, we'll just log it
-            console.log("Editing home:", editingHome);
+        if (editingHome && showForm) {
+            setValue("title", editingHome.title || "");
+            setValue("sub_title", editingHome.sub_title || "");
+            setValue("description", editingHome.description || "");
         }
-    }, [editingHome]);
+    }, [editingHome, showForm, setValue]);
 
     const resetForm = () => {
-        // Revoke preview URLs to prevent memory leaks
-        previewImages.forEach((url) => URL.revokeObjectURL(url));
-        setPreviewImages([]);
-        setSelectedFiles([]);
+        // Revoke preview URL to prevent memory leaks
+        if (previewImage) {
+            URL.revokeObjectURL(previewImage);
+        }
+        setPreviewImage(null);
+        setSelectedFile(null);
         setServerError("");
-        reset();
+        reset({
+            title: "",
+            sub_title: "",
+            description: ""
+        });
     };
 
-    // Handle Create - Updated for multiple images
+    // Handle Create - Single image upload
     const handleCreate = async (formData) => {
         try {
             const response = await axios.post(route("ourhome.store"), formData, {
@@ -61,16 +73,16 @@ const AddHomeForm = ({
             });
             return response.data;
         } catch (error) {
-            console.log("Error creating images", error);
+            console.log("Error creating image", error);
             if (error.response?.data?.errors) {
                 const errorMessages = Object.values(error.response.data.errors).flat();
                 throw new Error(errorMessages.join(', '));
             }
-            throw new Error(error.response?.data?.message || "Failed to upload images");
+            throw new Error(error.response?.data?.message || "Failed to upload image");
         }
     };
 
-    // Handle Update - For editing single image
+    // Handle Update - Single image update
     const handleUpdate = async (id, formData) => {
         try {
             const response = await axios.post(route("ourhome.update", { id }), formData, {
@@ -89,26 +101,26 @@ const AddHomeForm = ({
         }
     };
 
-    // Handle Form Submit - FIXED: Use images[] for array format to match Laravel controller
+    // Handle Form Submit - Single image
     const onSubmit = async (data) => {
-        if (selectedFiles.length === 0) {
-            setError("images", {
+        if (!selectedFile && !editingHome) {
+            setError("image", {
                 type: "manual",
-                message: "Please select at least one image",
+                message: "Please select an image",
             });
             return;
         }
 
         const formData = new FormData();
 
-        if (editingHome) {
-            // Editing mode - single image
-            formData.append("image", selectedFiles[0]); // Use 'image' for single file update
-        } else {
-            // Create mode - multiple images
-            selectedFiles.forEach((file) => {
-                formData.append("images[]", file); // Use 'images[]' for multiple files
-            });
+        // Always append text fields
+        formData.append("title", data.title || "");
+        formData.append("sub_title", data.sub_title || "");
+        formData.append("description", data.description || "");
+
+        // Append image if selected (for both create and update)
+        if (selectedFile) {
+            formData.append("image", selectedFile);
         }
 
         try {
@@ -130,86 +142,79 @@ const AddHomeForm = ({
             setShowForm(false);
         } catch (error) {
             console.log("Error saving data", error);
-            setServerError(error.message || `Failed to ${editingHome ? 'update' : 'upload'} image(s). Please try again.`);
+            setServerError(error.message || `Failed to ${editingHome ? 'update' : 'upload'} image. Please try again.`);
         } finally {
             setSubmitting(false);
         }
     };
 
-    // Handle Image Selection
+    // Handle Image Selection - Single image only
     const handleImageChange = (e) => {
         const files = e.target.files;
-        clearErrors("images");
+        clearErrors("image");
         setServerError("");
 
         if (!files || files.length === 0) {
-            setError("images", {
+            setError("image", {
                 type: "manual",
-                message: "Please select at least one image",
+                message: "Please select an image",
             });
-            setValue("images", null);
+            setValue("image", null);
             return;
         }
 
-        const validFiles = [];
-        const invalidFiles = [];
+        const file = files[0]; // Take only the first file
 
-        Array.from(files).forEach((file) => {
-            if (!file.type.startsWith("image/")) {
-                invalidFiles.push(file.name);
-            } else if (file.size > 2 * 1024 * 1024) {
-                invalidFiles.push(`${file.name} (too large)`);
-            } else {
-                validFiles.push(file);
-            }
-        });
-
-        if (invalidFiles.length > 0) {
-            setError("images", {
+        // Validate file type
+        if (!file.type.startsWith("image/")) {
+            setError("image", {
                 type: "manual",
-                message: `Some files were invalid: ${invalidFiles.join(", ")}`,
+                message: "Please select a valid image file",
             });
+            setValue("image", null);
+            return;
         }
 
-        if (validFiles.length > 0) {
-            // Revoke previous preview URLs
-            previewImages.forEach((url) => URL.revokeObjectURL(url));
-            
-            const previewUrls = validFiles.map((file) => URL.createObjectURL(file));
-            setPreviewImages(previewUrls);
-            setSelectedFiles(validFiles);
-
-            setValue("images", validFiles, {
-                shouldValidate: true,
-                shouldDirty: true,
+        // Validate file size
+        if (file.size > 2 * 1024 * 1024) {
+            setError("image", {
+                type: "manual",
+                message: "Image must be smaller than 2MB",
             });
-        } else {
-            setValue("images", null);
-            setSelectedFiles([]);
-            setPreviewImages([]);
+            setValue("image", null);
+            return;
         }
+
+        // Revoke previous preview URL
+        if (previewImage) {
+            URL.revokeObjectURL(previewImage);
+        }
+        
+        const previewUrl = URL.createObjectURL(file);
+        setPreviewImage(previewUrl);
+        setSelectedFile(file);
+
+        setValue("image", file, {
+            shouldValidate: true,
+            shouldDirty: true,
+        });
     };
 
-    // Remove single image
-    const removeImage = (index) => {
+    // Remove image
+    const removeImage = () => {
         // Revoke the URL for the removed image
-        URL.revokeObjectURL(previewImages[index]);
-        
-        const newPreviewImages = previewImages.filter((_, i) => i !== index);
-        const newSelectedFiles = selectedFiles.filter((_, i) => i !== index);
-        
-        setPreviewImages(newPreviewImages);
-        setSelectedFiles(newSelectedFiles);
-        
-        if (newSelectedFiles.length === 0) {
-            setValue("images", null);
-            setError("images", {
-                type: "manual",
-                message: "Please select at least one image",
-            });
-        } else {
-            setValue("images", newSelectedFiles);
+        if (previewImage) {
+            URL.revokeObjectURL(previewImage);
         }
+        
+        setPreviewImage(null);
+        setSelectedFile(null);
+        
+        setValue("image", null);
+        setError("image", {
+            type: "manual",
+            message: "Please select an image",
+        });
     };
 
     // Handle Modal Close
@@ -236,12 +241,12 @@ const AddHomeForm = ({
             onClick={handleClose}
         >
             <div
-                className="mx-auto relative bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] overflow-y-auto"
+                className="mx-auto relative bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
                 onClick={(e) => e.stopPropagation()}
             >
                 <div className="sticky top-0 bg-white z-10 flex items-center justify-between p-4 border-b">
                     <h2 className="text-xl font-semibold text-gray-800">
-                        {editingHome ? "Edit Home Image" : "Add Home Images"}
+                        {editingHome ? "Edit Home Image" : "Add Home Image"}
                     </h2>
                     <button
                         onClick={handleClose}
@@ -261,24 +266,87 @@ const AddHomeForm = ({
                         </div>
                     )}
 
+                    {/* Text Fields Section */}
+                    <div className="space-y-4">
+                        <h3 className="text-lg font-medium text-gray-800">Content Information</h3>
+                        
+                        <div>
+                            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                                Title
+                            </label>
+                            <input
+                                type="text"
+                                id="title"
+                                {...register("title", {
+                                    maxLength: {
+                                        value: 255,
+                                        message: "Title must be less than 255 characters"
+                                    }
+                                })}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                placeholder="Enter title (optional)"
+                                disabled={submitting}
+                            />
+                            {errors.title && (
+                                <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label htmlFor="sub_title" className="block text-sm font-medium text-gray-700 mb-1">
+                                Sub Title
+                            </label>
+                            <input
+                                type="text"
+                                id="sub_title"
+                                {...register("sub_title", {
+                                    maxLength: {
+                                        value: 255,
+                                        message: "Sub title must be less than 255 characters"
+                                    }
+                                })}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                placeholder="Enter sub title (optional)"
+                                disabled={submitting}
+                            />
+                            {errors.sub_title && (
+                                <p className="text-red-500 text-sm mt-1">{errors.sub_title.message}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                                Description
+                            </label>
+                            <textarea
+                                id="description"
+                                rows={3}
+                                {...register("description")}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                                placeholder="Enter description (optional)"
+                                disabled={submitting}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Image Upload Section */}
                     <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-indigo-400 transition-colors">
                         <input
                             type="file"
-                            id="home-images"
-                            multiple={!editingHome} // Only allow multiple if not editing
+                            id="home-image"
                             accept="image/*"
                             className="hidden"
-                            {...register("images", {
+                            {...register("image", {
                                 validate: {
-                                    atLeastOne: (files) => 
-                                        files && files.length > 0 || "Please select at least one image"
+                                    required: (file) => 
+                                        (editingHome || file) || "Please select an image"
                                 }
                             })}
                             onChange={handleImageChange}
                             disabled={submitting}
                         />
                         <label 
-                            htmlFor="home-images" 
+                            htmlFor="home-image" 
                             className={`cursor-pointer ${submitting ? 'opacity-50 pointer-events-none' : ''}`}
                         >
                             <Upload className="mx-auto h-12 w-12 text-gray-400 mb-3" />
@@ -289,66 +357,70 @@ const AddHomeForm = ({
                                 or drag and drop
                             </p>
                             <p className="text-xs text-gray-500">
-                                PNG, JPG, GIF, WebP up to 2MB 
-                                {!editingHome && " (Multiple images allowed)"}
-                                {editingHome && " (Select one image to replace the current one)"}
+                                PNG, JPG, GIF, WebP up to 2MB (Single image only)
                             </p>
                         </label>
-                        {errors.images && (
+                        {errors.image && (
                             <p className="text-red-500 text-sm mt-3">
-                                {errors.images.message}
+                                {errors.image.message}
                             </p>
                         )}
                     </div>
 
-                    {previewImages.length > 0 && (
+                    {/* Preview Section */}
+                    {previewImage && (
                         <div>
                             <h3 className="text-md font-medium text-gray-700 mb-3">
-                                Preview ({previewImages.length} image{previewImages.length !== 1 ? 's' : ''})
-                                {editingHome && previewImages.length > 1 && (
-                                    <span className="text-orange-600 text-sm ml-2">
-                                        Only the first image will be used for update
-                                    </span>
-                                )}
+                                Preview
                             </h3>
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                                {previewImages.map((src, index) => (
-                                    <div key={index} className="relative group">
-                                        <img
-                                            src={src}
-                                            alt={`Preview ${index + 1}`}
-                                            className="w-full h-24 object-cover rounded-md"
-                                        />
-                                        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-opacity flex items-center justify-center rounded-md">
-                                            <button
-                                                type="button"
-                                                onClick={() => removeImage(index)}
-                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                disabled={submitting}
-                                            >
-                                                <X className="h-3 w-3" />
-                                            </button>
-                                            <Image className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        </div>
+                            <div className="flex justify-center">
+                                <div className="relative group">
+                                    <img
+                                        src={previewImage}
+                                        alt="Preview"
+                                        className="w-full max-w-xs h-32 object-cover rounded-md"
+                                    />
+                                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-opacity flex items-center justify-center rounded-md">
+                                        <button
+                                            type="button"
+                                            onClick={removeImage}
+                                            className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                                            disabled={submitting}
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </button>
+                                        <Image className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                                     </div>
-                                ))}
+                                </div>
                             </div>
                         </div>
                     )}
 
                     {/* Show current image when editing */}
-                    {editingHome && !previewImages.length && (
+                    {editingHome && !previewImage && (
                         <div>
                             <h3 className="text-md font-medium text-gray-700 mb-3">Current Image</h3>
-                            <div className="relative">
-                                <img
-                                    src={`${import.meta.env.VITE_IMAGE_PATH}/${editingHome.image_path}`}
-                                    alt="Current home image"
-                                    className="w-full max-w-xs h-32 object-cover rounded-md"
-                                    onError={(e) => {
-                                        e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
-                                    }}
-                                />
+                            <div className="flex justify-center">
+                                <div className="relative">
+                                    <img
+                                        src={`${import.meta.env.VITE_IMAGE_PATH}/${editingHome.image_path}`}
+                                        alt="Current home image"
+                                        className="w-full max-w-xs h-32 object-cover rounded-md"
+                                        onError={(e) => {
+                                            e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                            {/* Show current text content when editing */}
+                            <div className="mt-4 p-4 bg-gray-50 rounded-md">
+                                <h4 className="font-medium text-gray-700 mb-2">Current Content:</h4>
+                                {editingHome.title && <p><strong>Title:</strong> {editingHome.title}</p>}
+                                {editingHome.sub_title && <p><strong>Sub Title:</strong> {editingHome.sub_title}</p>}
+                                {editingHome.description && <p><strong>Description:</strong> {editingHome.description}</p>}
+                                {!editingHome.title && !editingHome.sub_title && !editingHome.description && (
+                                    <p className="text-gray-500 italic">No content added</p>
+                                )}
                             </div>
                         </div>
                     )}
@@ -364,7 +436,7 @@ const AddHomeForm = ({
                         </button>
                         <button
                             type="submit"
-                            disabled={submitting || selectedFiles.length === 0}
+                            disabled={submitting || (!editingHome && !selectedFile)}
                             className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 rounded-md transition-colors disabled:cursor-not-allowed flex items-center"
                         >
                             {submitting ? (
@@ -376,9 +448,7 @@ const AddHomeForm = ({
                                     {editingHome ? 'Updating...' : 'Uploading...'}
                                 </>
                             ) : (
-                                editingHome 
-                                    ? `Update Image` 
-                                    : `Upload ${selectedFiles.length} Image${selectedFiles.length !== 1 ? 's' : ''}`
+                                editingHome ? 'Update Image' : 'Upload Image'
                             )}
                         </button>
                     </div>

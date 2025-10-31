@@ -617,9 +617,9 @@ const AddProductForm = ({ showForm, onCancel, allCategory, onSuccess }) => {
                             </label>
                             <input
                                 type="file"
-                                {...register("images", {
-                                    required: "At least one image is required",
-                                })}
+                                // {...register("images", {
+                                //     required: "At least one image is required",
+                                // })}
                                 className="w-full px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                                 accept="image/*"
                                 multiple

@@ -1,7 +1,7 @@
 import React from "react";
 import { X, ShoppingCart as CartIcon, Plus, Minus, Trash2 } from "lucide-react";
 import { Link } from "@inertiajs/react";
-import { useCart } from "../contexts/CartContext"; // Import the useCart hook
+import { useCart } from "../contexts/CartContext"; 
 
 const ShoppingCard = ({ isOpen, onClose }) => {
     const { cart, removeFromCart, updateQuantity, getCartTotalPrice } = useCart();
@@ -67,7 +67,7 @@ const ShoppingCard = ({ isOpen, onClose }) => {
                                         className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
                                     >
                                         <img
-                                            src={item.images?.[0] || '/placeholder-image.jpg'}
+                                            src={item.images?.[0]}
                                             alt={item.name}
                                             className="w-16 h-16 object-cover rounded"
                                         />

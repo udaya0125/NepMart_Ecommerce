@@ -8,6 +8,6 @@ class Home extends Model
 {
     //
     protected $fillable =[
-        'image_path'
+        'image_path','title','sub_title','description'
     ];
 }

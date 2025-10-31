@@ -9,7 +9,8 @@ import {
 } from "lucide-react";
 import productsData from "../../JsonData/Products.json";
 import ProductsPopup from "./ProductsPopup";
-import { useCart } from '../contexts/CartContext'; // Import the useCart hook
+import { useCart } from '../contexts/CartContext';
+import { useWishlist } from '../contexts/WishlistContext'; // Import the useWishlist hook
 
 const DiscountedProducts = () => {
     const [showDetails, setShowDetails] = useState(false);
@@ -17,6 +18,9 @@ const DiscountedProducts = () => {
     
     // Use the cart context
     const { addToCart } = useCart();
+    
+    // Use the wishlist context
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
     // Flatten all products and filter only those with discounts
     const discountedProducts = Object.values(productsData.products)
@@ -52,6 +56,29 @@ const DiscountedProducts = () => {
         
         // Optional: Show feedback (you can add a toast notification here)
         console.log(`Added ${product.name} to cart`);
+    };
+
+    const handleWishlistToggle = (product, e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const wishlistProduct = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            images: product.images,
+            slug: product.slug,
+            rating: product.rating,
+            inStock: true // You can modify this based on your product data
+        };
+
+        if (isInWishlist(product.id)) {
+            removeFromWishlist(product.id);
+            console.log(`Removed ${product.name} from wishlist`);
+        } else {
+            addToWishlist(wishlistProduct);
+            console.log(`Added ${product.name} to wishlist`);
+        }
     };
 
     const renderStars = (rating) => {
@@ -167,10 +194,18 @@ const DiscountedProducts = () => {
                                     {/* Action Icons */}
                                     <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button
-                                            className="bg-white p-2 rounded-full shadow-md hover:bg-red-50 transition-colors"
-                                            aria-label="Add to wishlist"
+                                            onClick={(e) => handleWishlistToggle(product, e)}
+                                            className={`p-2 rounded-full shadow-md hover:bg-red-50 transition-colors ${
+                                                isInWishlist(product.id) 
+                                                    ? "bg-pink-50 text-pink-500" 
+                                                    : "bg-white text-gray-700"
+                                            }`}
+                                            aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
                                         >
-                                            <Heart className="w-4 h-4 text-gray-700" />
+                                            <Heart 
+                                                className="w-4 h-4" 
+                                                fill={isInWishlist(product.id) ? "currentColor" : "none"}
+                                            />
                                         </button>
                                         <button
                                             onClick={(e) => handleAddToCart(product, e)}

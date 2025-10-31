@@ -19,6 +19,7 @@ import productsData from "../../../JsonData/Products.json";
 import Navbar from "@/ContentWrapper/Navbar";
 import Footer from "@/ContentWrapper/Footer";
 import { useCart } from '../../Contexts/CartContext'; 
+import { useWishlist } from '../../Contexts/WishlistContext'; // Import the useWishlist hook
 
 const ProductsPage = () => {
     const [quantity, setQuantity] = useState(1);
@@ -31,6 +32,9 @@ const ProductsPage = () => {
 
     // Use the cart context
     const { addToCart } = useCart();
+    
+    // Use the wishlist context
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
     useEffect(() => {
         const loadProduct = () => {
@@ -81,6 +85,28 @@ const ProductsPage = () => {
         
         // Optional: Show feedback (you can add a toast notification here)
         console.log(`Added ${quantity} ${product.name} to cart`);
+    };
+
+    const handleWishlistToggle = () => {
+        if (!product) return;
+        
+        const wishlistProduct = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            images: product.images,
+            slug: product.slug,
+            rating: product.rating,
+            inStock: product.inStock
+        };
+
+        if (isInWishlist(product.id)) {
+            removeFromWishlist(product.id);
+            console.log(`Removed ${product.name} from wishlist`);
+        } else {
+            addToWishlist(wishlistProduct);
+            console.log(`Added ${product.name} to wishlist`);
+        }
     };
 
     const handleBuyNow = () => {
@@ -384,15 +410,28 @@ const ProductsPage = () => {
                             <div className="flex flex-wrap gap-4 pt-2">
                                 {[
                                     { icon: BarChart2, label: "COMPARE" },
-                                    { icon: Heart, label: "WISHLIST" },
+                                    { 
+                                        icon: Heart, 
+                                        label: "WISHLIST",
+                                        isWishlist: true,
+                                        isActive: isInWishlist(product.id)
+                                    },
                                     { icon: MessageCircle, label: "ASK US" },
                                     { icon: Share2, label: "SHARE" },
-                                ].map(({ icon: Icon, label }) => (
+                                ].map(({ icon: Icon, label, isWishlist, isActive }) => (
                                     <button
                                         key={label}
-                                        className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors duration-200"
+                                        onClick={isWishlist ? handleWishlistToggle : undefined}
+                                        className={`flex items-center gap-2 text-sm transition-colors duration-200 ${
+                                            isWishlist && isActive
+                                                ? "text-pink-600 hover:text-pink-700"
+                                                : "text-gray-600 hover:text-gray-900"
+                                        }`}
                                     >
-                                        <Icon size={18} />
+                                        <Icon 
+                                            size={18} 
+                                            fill={isWishlist && isActive ? "currentColor" : "none"}
+                                        />
                                         {label}
                                     </button>
                                 ))}

@@ -1,6 +1,7 @@
 import { X, ChevronLeft, ChevronRight, Heart, ShoppingCart } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import { useCart } from "../contexts/CartContext"; // Import the useCart hook
+import { useCart } from "../contexts/CartContext";
+import { useWishlist } from "../contexts/WishlistContext"; // Import the useWishlist hook
 
 const ProductsPopup = ({ product, showDetails, setShowDetails }) => {
     const [quantity, setQuantity] = useState(1);
@@ -8,6 +9,9 @@ const ProductsPopup = ({ product, showDetails, setShowDetails }) => {
     
     // Use the cart context
     const { addToCart } = useCart();
+    
+    // Use the wishlist context
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
     
     // Use the product's images array from JSON data
     const images = product?.images || [];
@@ -55,6 +59,28 @@ const ProductsPopup = ({ product, showDetails, setShowDetails }) => {
         
         // Optional: Close the popup after adding to cart
         // setShowDetails(false);
+    };
+
+    const handleWishlistToggle = () => {
+        if (!product) return;
+        
+        const wishlistProduct = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            images: product.images,
+            slug: product.slug,
+            rating: product.rating,
+            inStock: true
+        };
+
+        if (isInWishlist(product.id)) {
+            removeFromWishlist(product.id);
+            console.log(`Removed ${product.name} from wishlist`);
+        } else {
+            addToWishlist(wishlistProduct);
+            console.log(`Added ${product.name} to wishlist`);
+        }
     };
 
     const handleBuyNow = () => {
@@ -136,8 +162,19 @@ const ProductsPopup = ({ product, showDetails, setShowDetails }) => {
 
                             {/* Action Icons */}
                             <div className="absolute top-3 right-3 flex flex-col gap-2">
-                                <button className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors">
-                                    <Heart className="w-4 h-4 text-gray-700" />
+                                <button 
+                                    onClick={handleWishlistToggle}
+                                    className={`p-2 rounded-full shadow-md transition-colors ${
+                                        isInWishlist(product.id) 
+                                            ? "bg-pink-50 text-pink-500 hover:bg-pink-100" 
+                                            : "bg-white text-gray-700 hover:bg-gray-100"
+                                    }`}
+                                    aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
+                                >
+                                    <Heart 
+                                        className="w-4 h-4" 
+                                        fill={isInWishlist(product.id) ? "currentColor" : "none"}
+                                    />
                                 </button>
                                 <button 
                                     onClick={handleAddToCart}

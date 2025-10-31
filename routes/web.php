@@ -12,6 +12,8 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ActivityLogsController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\WishlistController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -55,6 +57,18 @@ Route::middleware('auth')->group(function () {
  Route::get('/icons',function(){
     return Inertia::render('AdminPage/Icons');
  });
+
+
+    Route::get('/ourcart', [CartController::class, 'index'])->name('ourcart.index');
+    Route::post('/ourcart', [CartController::class, 'store'])->name('ourcart.store');
+    Route::put('/ourcart/{id}', [CartController::class, 'update'])->name('ourcart.update');
+    Route::delete('/ourcart/{id}', [CartController::class, 'destroy'])->name('ourcart.destroy');
+
+
+    Route::get('/ourwishlist', [WishlistController::class, 'index'])->name('ourwishlist.index');
+    Route::post('/ourwishlist', [WishlistController::class, 'store'])->name('ourwishlist.store');
+    Route::put('/ourwishlist/{id}', [WishlistController::class, 'update'])->name('ourwishlist.update');
+    Route::delete('/ourwishlist/{id}', [WishlistController::class, 'destroy'])->name('ourwishlist.destroy');
 
 });
 
@@ -194,6 +208,7 @@ Route::middleware(['auth', 'role:customer'])->group(function() {
 });
 
 
+    
 
 
  // FOR THE MAIN PAGES
@@ -222,6 +237,11 @@ Route::get('/privacy-policy',function(){
     return Inertia::render('MainPages/PrivacyPolicy');
 });
 
+
+Route::get('/wishlist',function(){
+    return Inertia::render('MainPages/WishlistPage');
+});
+
 Route::get('/blog',function(){
     return Inertia::render('MainPages/BlogPage');
 });
@@ -239,5 +259,17 @@ Route::get('/cart',function(){
 Route::get('/check-out',function(){
     return Inertia::render('ShoppingPages/CheckOutPage');
 });
+
+//
+
+Route::get('/logged',function(){
+    return Inertia::render('MainPages/Login');
+});
+
+
+Route::get('/sign-up',function(){
+    return Inertia::render('MainPages/SignUp');
+});
+
 
 require __DIR__.'/auth.php';

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Home;
-use App\Models\ActivityLog; // 👈 Import ActivityLog
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth; // Optional: for authenticated user
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
@@ -23,34 +23,31 @@ class HomeController extends Controller
         \Log::info('Request files:', array_keys($request->allFiles()));
 
         $request->validate([
-            'images.*' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'image' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048', // Changed from images.* to image
+            'title' => 'nullable|string|max:255',
+            'sub_title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
         ]);
 
-        $createdHomes = [];
+        $path = $request->file('image')->store('uploads/home', 'public');
 
-        if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $image) {
-                $path = $image->store('uploads/home', 'public');
+        $home = Home::create([
+            'image_path' => $path,
+            'title' => $request->title ?? '',
+            'sub_title' => $request->sub_title ?? '',
+            'description' => $request->description ?? '',
+        ]);
 
-                $home = Home::create([
-                    'image_path' => $path,
-                ]);
-
-                $createdHomes[] = $home;
-            }
-        }
-
-        // 🔔 Log: Home images uploaded
-        $count = count($createdHomes);
+        // 🔔 Log: Home image uploaded
         ActivityLog::create([
             'name' => Auth::check() ? Auth::user()->name : 'Admin',
             'ip_address' => $request->ip(),
-            'title' => "Uploaded {$count} home image(s)",
+            'title' => "Uploaded home image #{$home->id}",
         ]);
 
         return response()->json([
-            'message' => 'Images uploaded successfully!',
-            'data' => $createdHomes,
+            'message' => 'Image uploaded successfully!',
+            'data' => $home,
         ], 201);
     }
 
@@ -59,28 +56,40 @@ class HomeController extends Controller
         $home = Home::findOrFail($id);
 
         $request->validate([
-            'image' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
+            'title' => 'nullable|string|max:255',
+            'sub_title' => 'nullable|string|max:255',
+            'description' => 'nullable|string',
         ]);
 
-        if ($home->image_path && Storage::disk('public')->exists($home->image_path)) {
-            Storage::disk('public')->delete($home->image_path);
+        $updateData = [
+            'title' => $request->title ?? '',
+            'sub_title' => $request->sub_title ?? '',
+            'description' => $request->description ?? '',
+        ];
+
+        // Handle image update if provided
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($home->image_path && Storage::disk('public')->exists($home->image_path)) {
+                Storage::disk('public')->delete($home->image_path);
+            }
+
+            $newImagePath = $request->file('image')->store('uploads/home', 'public');
+            $updateData['image_path'] = $newImagePath;
         }
 
-        $newImagePath = $request->file('image')->store('uploads/home', 'public');
+        $home->update($updateData);
 
-        $home->update([
-            'image_path' => $newImagePath,
-        ]);
-
-        // 🔔 Log: Home image updated
+        // 🔔 Log: Home record updated
         ActivityLog::create([
             'name' => Auth::check() ? Auth::user()->name : 'Admin',
             'ip_address' => $request->ip(),
-            'title' => "Updated home image #{$home->id}",
+            'title' => "Updated home record #{$home->id}",
         ]);
 
         return response()->json([
-            'message' => 'Image updated successfully!',
+            'message' => 'Home record updated successfully!',
             'data' => $home,
         ], 200);
     }
@@ -96,13 +105,13 @@ class HomeController extends Controller
         $homeId = $home->id;
         $home->delete();
 
-        // 🔔 Log: Home image deleted
+        // 🔔 Log: Home record deleted
         ActivityLog::create([
             'name' => Auth::check() ? Auth::user()->name : 'Admin',
             'ip_address' => $request->ip(),
-            'title' => "Deleted home image #{$homeId}",
+            'title' => "Deleted home record #{$homeId}",
         ]);
 
-        return response()->json(['message' => 'Image deleted successfully!']);
+        return response()->json(['message' => 'Home record deleted successfully!']);
     }
 }

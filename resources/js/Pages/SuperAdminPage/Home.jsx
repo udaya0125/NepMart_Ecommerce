@@ -177,38 +177,66 @@ const Home = () => {
                 {/* Image Grid */}
                 {!loading && !error && (
                     <>
-                        <div className="grid grid-cols-1 gap-5 mt-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                             {currentItems.map((image, index) => (
                                 <div
                                     key={image.id || index}
-                                    className="relative group bg-white rounded-xl shadow overflow-hidden transition-all duration-300 hover:shadow-lg"
+                                    className="relative group bg-white rounded-xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl border border-gray-100"
                                 >
-                                    <img
-                                        src={getImageUrl(image)}
-                                        alt={`Home image ${offset + index + 1}`}
-                                        className="w-full h-48 sm:h-56 md:h-64 object-cover transition-transform duration-300 group-hover:scale-105"
-                                        loading="lazy"
-                                        onError={(e) => {
-                                            e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
-                                        }}
-                                    />
+                                    <div className="relative overflow-hidden">
+                                        <img
+                                            src={getImageUrl(image)}
+                                            alt={`Home image ${offset + index + 1}`}
+                                            className="w-full h-48 sm:h-56 md:h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                                            loading="lazy"
+                                            onError={(e) => {
+                                                e.target.src = 'https://via.placeholder.com/400x300?text=Image+Not+Found';
+                                            }}
+                                        />
 
-                                    {/* Action Buttons */}
-                                    <div className="absolute top-3 right-3 flex gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300">
-                                        <button
-                                            onClick={() => handleEdit(image)}
-                                            className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition shadow-md"
-                                            aria-label="Edit image"
-                                        >
-                                            <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(image.id)}
-                                            className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition shadow-md"
-                                            aria-label="Delete image"
-                                        >
-                                            <Trash className="w-4 h-4 sm:w-5 sm:h-5" />
-                                        </button>
+                                        {/* Action Buttons */}
+                                        <div className="absolute top-3 right-3 flex gap-2 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300">
+                                            <button
+                                                onClick={() => handleEdit(image)}
+                                                className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition shadow-md"
+                                                aria-label="Edit image"
+                                            >
+                                                <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(image.id)}
+                                                className="p-2 rounded-full bg-red-500 text-white hover:bg-red-600 transition shadow-md"
+                                                aria-label="Delete image"
+                                            >
+                                                <Trash className="w-4 h-4 sm:w-5 sm:h-5" />
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {/* Text Content */}
+                                    <div className="p-4">
+                                        {image.title && (
+                                            <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-2">
+                                                {image.title}
+                                            </h3>
+                                        )}
+                                        {image.sub_title && (
+                                            <p className="text-sm text-gray-600 mb-2 line-clamp-2">
+                                                {image.sub_title}
+                                            </p>
+                                        )}
+                                        {image.description && (
+                                            <p className="text-sm text-gray-500 line-clamp-3">
+                                                {image.description}
+                                            </p>
+                                        )}
+                                        
+                                        {/* Show placeholder if no text content */}
+                                        {!image.title && !image.sub_title && !image.description && (
+                                            <p className="text-sm text-gray-400 italic">
+                                                No text content added
+                                            </p>
+                                        )}
                                     </div>
                                 </div>
                             ))}

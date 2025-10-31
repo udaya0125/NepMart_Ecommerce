@@ -12,6 +12,7 @@ import ProductsPopup from "@/MainComponents/ProductsPopup";
 import Navbar from "@/ContentWrapper/Navbar";
 import { Link } from "@inertiajs/react";
 import { useCart } from '../../contexts/CartContext';
+import { useWishlist } from '../../contexts/WishlistContext'; // Import the useWishlist hook
 
 const Categories = () => {
     const [showFilters, setShowFilters] = useState(true);
@@ -50,6 +51,7 @@ const Categories = () => {
     const sizes = [92, 102, 104, 106, 108, 110, 112, 116];
 
     const { addToCart } = useCart();
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist(); // Use wishlist context
 
     // Flatten all products from all categories
     const allProducts = useMemo(() => {
@@ -204,6 +206,29 @@ const Categories = () => {
         
         addToCart(cartProduct);
         console.log(`Added ${product.name} to cart`);
+    };
+
+    const handleWishlistToggle = (product, e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const wishlistProduct = {
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            images: product.images,
+            slug: product.slug,
+            rating: product.rating,
+            inStock: true
+        };
+
+        if (isInWishlist(product.id)) {
+            removeFromWishlist(product.id);
+            console.log(`Removed ${product.name} from wishlist`);
+        } else {
+            addToWishlist(wishlistProduct);
+            console.log(`Added ${product.name} to wishlist`);
+        }
     };
 
     // Pagination
@@ -573,10 +598,18 @@ const Categories = () => {
                                         {/* Action Icons */}
                                         <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                                             <button
-                                                className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
-                                                aria-label="Add to wishlist"
+                                                onClick={(e) => handleWishlistToggle(product, e)}
+                                                className={`p-2 rounded-full shadow-md transition-colors ${
+                                                    isInWishlist(product.id) 
+                                                        ? "bg-pink-50 text-pink-500 hover:bg-pink-100" 
+                                                        : "bg-white text-gray-700 hover:bg-gray-100"
+                                                }`}
+                                                aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
                                             >
-                                                <Heart className="w-4 h-4 text-gray-700" />
+                                                <Heart 
+                                                    className="w-4 h-4" 
+                                                    fill={isInWishlist(product.id) ? "currentColor" : "none"}
+                                                />
                                             </button>
                                             <button
                                                 onClick={(e) => handleAddToCart(product, e)}

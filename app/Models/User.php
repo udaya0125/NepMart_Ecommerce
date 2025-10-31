@@ -77,4 +77,12 @@ class User extends Authenticatable
         return $this->role === 'customer';
     }
 
+     /**
+     * Relationship with ProductsCart model
+     */
+    public function cartItems()
+    {
+        return $this->hasMany(ProductsCart::class);
+    }
+
 }
