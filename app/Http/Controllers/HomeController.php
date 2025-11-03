@@ -7,6 +7,7 @@ use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
@@ -18,12 +19,12 @@ class HomeController extends Controller
 
     public function store(Request $request)
     {
-        \Log::info('Store method called');
-        \Log::info('Request data:', $request->all());
-        \Log::info('Request files:', array_keys($request->allFiles()));
+        Log::info('Store method called');
+        Log::info('Request data:', $request->all());
+        Log::info('Request files:', array_keys($request->allFiles()));
 
         $request->validate([
-            'image' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048', // Changed from images.* to image
+            'image' => 'required|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
             'title' => 'nullable|string|max:255',
             'sub_title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
@@ -53,6 +54,10 @@ class HomeController extends Controller
 
     public function update(Request $request, $id)
     {
+        Log::info('Update method called for ID: ' . $id);
+        Log::info('Request data:', $request->all());
+        Log::info('Request has file:', ['has_file' => $request->hasFile('image')]);
+
         $home = Home::findOrFail($id);
 
         $request->validate([
@@ -63,9 +68,9 @@ class HomeController extends Controller
         ]);
 
         $updateData = [
-            'title' => $request->title ?? '',
-            'sub_title' => $request->sub_title ?? '',
-            'description' => $request->description ?? '',
+            'title' => $request->title ?? $home->title,
+            'sub_title' => $request->sub_title ?? $home->sub_title,
+            'description' => $request->description ?? $home->description,
         ];
 
         // Handle image update if provided

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('product_id')
                   ->constrained('products')
                   ->onDelete('cascade'); // Deletes images if product is deleted
-            $table->string('image_path'); // Path or URL to the image
+            $table->string('image_path')->nullable(); // Path or URL to the image
             $table->string('alt_text')->nullable(); // Optional alt text for SEO
             $table->boolean('is_primary')->default(false); // Mark main display image
             $table->timestamps();

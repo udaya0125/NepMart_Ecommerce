@@ -9,41 +9,41 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useTable, useSortBy, usePagination } from "react-table";
 import axios from "axios";
 
-const ProductCart = () => {
-    const [cartItems, setCartItems] = useState([]);
+const UserProducts = () => {
+    const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchCartItems = async () => {
+        const fetchProducts = async () => {
             try {
                 setLoading(true);
-                // Replace with your actual API endpoint for cart items
-                const response = await axios.get(route("cart.items"));
+                // Replace with your actual API endpoint for products
+                const response = await axios.get(route("user.products.index"));
 
                 // Access the data property of the response
                 const responseData = response.data;
 
                 // Check if the response has the expected structure
                 if (responseData.success && Array.isArray(responseData.data)) {
-                    setCartItems(responseData.data);
+                    setProducts(responseData.data);
                 } else {
                     console.error(
                         "Unexpected response structure:",
                         responseData
                     );
-                    setCartItems([]);
+                    setProducts([]);
                     setError("Unexpected data format received from server.");
                 }
             } catch (error) {
-                console.error("Error fetching cart items:", error);
-                setError("Failed to fetch cart items. Please try again later.");
-                setCartItems([]);
+                console.error("Error fetching products:", error);
+                setError("Failed to fetch products. Please try again later.");
+                setProducts([]);
             } finally {
                 setLoading(false);
             }
         };
-        fetchCartItems();
+        fetchProducts();
     }, []);
 
     const columns = useMemo(
@@ -56,24 +56,11 @@ const ProductCart = () => {
             },
             {
                 Header: "Product Name",
-                accessor: "product_name",
+                accessor: "name",
             },
             {
-                Header: "Image",
-                accessor: "image",
-                Cell: ({ value }) => {
-                    return value ? (
-                        <img 
-                            src={value} 
-                            alt="Product" 
-                            className="w-12 h-12 object-cover rounded"
-                        />
-                    ) : (
-                        <div className="w-12 h-12 bg-gray-200 rounded flex items-center justify-center">
-                            <span className="text-xs text-gray-500">No Image</span>
-                        </div>
-                    );
-                },
+                Header: "Category",
+                accessor: "category",
             },
             {
                 Header: "Price",
@@ -83,88 +70,38 @@ const ProductCart = () => {
                 },
             },
             {
-                Header: "Quantity",
-                accessor: "quantity",
-                Cell: ({ value, row }) => {
-                    return (
-                        <div className="flex items-center space-x-2">
-                            <button 
-                                className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300"
-                                onClick={() => updateQuantity(row.original.id, value - 1)}
-                            >
-                                -
-                            </button>
-                            <span className="px-2">{value}</span>
-                            <button 
-                                className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300"
-                                onClick={() => updateQuantity(row.original.id, value + 1)}
-                            >
-                                +
-                            </button>
-                        </div>
-                    );
-                },
+                Header: "Stock",
+                accessor: "stock_quantity",
             },
             {
-                Header: "Total",
-                accessor: "total_price",
-                Cell: ({ row }) => {
-                    const total = parseFloat(row.original.price) * parseInt(row.original.quantity);
-                    return `$${total.toFixed(2)}`;
-                },
-            },
-            {
-                Header: "Actions",
-                accessor: "id",
+                Header: "Status",
+                accessor: "status",
                 Cell: ({ value }) => {
                     return (
-                        <button 
-                            onClick={() => removeFromCart(value)}
-                            className="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                        <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                value === 'active' 
+                                    ? 'bg-green-100 text-green-800'
+                                    : value === 'inactive'
+                                    ? 'bg-red-100 text-red-800'
+                                    : 'bg-gray-100 text-gray-800'
+                            }`}
                         >
-                            Remove
-                        </button>
+                            {value?.charAt(0).toUpperCase() + value?.slice(1)}
+                        </span>
                     );
+                },
+            },
+            {
+                Header: "Date Added",
+                accessor: "created_at",
+                Cell: ({ value }) => {
+                    return new Date(value).toLocaleString();
                 },
             },
         ],
         []
     );
-
-    // Mock functions for cart operations
-    const updateQuantity = async (productId, newQuantity) => {
-        try {
-            if (newQuantity < 1) return;
-            
-            // Replace with your actual API endpoint
-            const response = await axios.put(route("cart.update", { id: productId }), {
-                quantity: newQuantity
-            });
-            
-            // Update local state
-            setCartItems(prev => prev.map(item => 
-                item.id === productId 
-                    ? { ...item, quantity: newQuantity }
-                    : item
-            ));
-        } catch (error) {
-            console.error("Error updating quantity:", error);
-            setError("Failed to update quantity. Please try again.");
-        }
-    };
-
-    const removeFromCart = async (productId) => {
-        try {
-            // Replace with your actual API endpoint
-            await axios.delete(route("cart.remove", { id: productId }));
-            
-            // Update local state
-            setCartItems(prev => prev.filter(item => item.id !== productId));
-        } catch (error) {
-            console.error("Error removing item:", error);
-            setError("Failed to remove item. Please try again.");
-        }
-    };
 
     const {
         getTableProps,
@@ -184,17 +121,12 @@ const ProductCart = () => {
     } = useTable(
         {
             columns,
-            data: cartItems,
+            data: products,
             initialState: { pageIndex: 0, pageSize: 5 },
         },
         useSortBy,
         usePagination
     );
-
-    // Calculate cart total
-    const cartTotal = cartItems.reduce((total, item) => {
-        return total + (parseFloat(item.price) * parseInt(item.quantity));
-    }, 0);
 
     return (
         <CustomerWrapper>
@@ -202,18 +134,13 @@ const ProductCart = () => {
                 <div className="flex flex-wrap items-center justify-between mb-6 md:mb-8">
                     <div className="flex items-center">
                         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-                            Shopping Cart
+                            My Products
                         </h1>
                     </div>
-                    {cartItems.length > 0 && (
-                        <div className="text-lg font-semibold text-gray-800">
-                            Total: ${cartTotal.toFixed(2)}
-                        </div>
-                    )}
                 </div>
 
                 {loading ? (
-                    <div className="text-center py-8">Loading cart items...</div>
+                    <div className="text-center py-8">Loading products...</div>
                 ) : error ? (
                     <div className="text-center py-8 text-red-500">{error}</div>
                 ) : (
@@ -297,22 +224,13 @@ const ProductCart = () => {
                                                 colSpan={columns.length}
                                                 className="px-6 py-4 text-center text-gray-500"
                                             >
-                                                Your cart is empty.
+                                                No products found.
                                             </td>
                                         </tr>
                                     )}
                                 </tbody>
                             </table>
                         </div>
-
-                        {cartItems.length > 0 && (
-                            <div className="mt-6 flex justify-end">
-                                <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium">
-                                    Proceed to Checkout
-                                </button>
-                            </div>
-                        )}
-
                         <div className="flex items-center justify-between flex-col md:flex-row mt-4">
                             <div className="flex items-center">
                                 <span className="text-sm text-gray-700 mr-2">
@@ -393,4 +311,4 @@ const ProductCart = () => {
     );
 }
 
-export default ProductCart;
+export default UserProducts;

@@ -281,7 +281,7 @@ const AdminNavBar = ({ onMenuToggle }) => {
                             >
                                 <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg overflow-hidden ">
                                     <img
-                                        src={user.image || "user/user3.png"}
+                                        src={`storage/${user.image}` || "user/user3.png"}
                                         alt="User"
                                         className="w-full h-full object-cover rounded-full"
                                     />
@@ -305,7 +305,7 @@ const AdminNavBar = ({ onMenuToggle }) => {
                                             <div className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
                                                 <img
                                                     src={
-                                                        user.image ||
+                                                        `storage/${user.image}` ||
                                                         "user/user3.png"
                                                     }
                                                     alt="User"

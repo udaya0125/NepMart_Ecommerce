@@ -11,8 +11,8 @@ const AddHomeForm = ({
     editingHome = null,
     setEditingHome = null,
 }) => {
-    const [previewImage, setPreviewImage] = useState(null); // Changed to single image
-    const [selectedFile, setSelectedFile] = useState(null); // Changed to single file
+    const [previewImage, setPreviewImage] = useState(null); 
+    const [selectedFile, setSelectedFile] = useState(null); 
     const [submitting, setSubmitting] = useState(false);
     const [serverError, setServerError] = useState("");
 
@@ -27,11 +27,6 @@ const AddHomeForm = ({
         watch,
     } = useForm();
 
-    // Watch form values for real-time updates
-    const watchTitle = watch("title");
-    const watchSubTitle = watch("sub_title");
-    const watchDescription = watch("description");
-
     // Reset form when component mounts or showForm changes
     useEffect(() => {
         if (!showForm) {
@@ -45,6 +40,8 @@ const AddHomeForm = ({
             setValue("title", editingHome.title || "");
             setValue("sub_title", editingHome.sub_title || "");
             setValue("description", editingHome.description || "");
+            setSelectedFile(null);
+            setPreviewImage(null);
         }
     }, [editingHome, showForm, setValue]);
 
@@ -83,8 +80,21 @@ const AddHomeForm = ({
     };
 
     // Handle Update - Single image update
-    const handleUpdate = async (id, formData) => {
+    const handleUpdate = async (id, data) => {
         try {
+            const formData = new FormData();
+            
+            // Append all fields
+            formData.append("title", data.title || "");
+            formData.append("sub_title", data.sub_title || "");
+            formData.append("description", data.description || "");
+            
+            // Append image if selected
+            if (data.image) {
+                formData.append("image", data.image);
+            }
+            
+            // Use POST method with _method=PUT for Laravel
             const response = await axios.post(route("ourhome.update", { id }), formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
@@ -111,26 +121,20 @@ const AddHomeForm = ({
             return;
         }
 
-        const formData = new FormData();
-
-        // Always append text fields
-        formData.append("title", data.title || "");
-        formData.append("sub_title", data.sub_title || "");
-        formData.append("description", data.description || "");
-
-        // Append image if selected (for both create and update)
-        if (selectedFile) {
-            formData.append("image", selectedFile);
-        }
-
         try {
             setSubmitting(true);
             setServerError("");
             
             let result;
             if (editingHome) {
-                result = await handleUpdate(editingHome.id, formData);
+                result = await handleUpdate(editingHome.id, data);
             } else {
+                const formData = new FormData();
+                formData.append("title", data.title || "");
+                formData.append("sub_title", data.sub_title || "");
+                formData.append("description", data.description || "");
+                formData.append("image", data.image);
+                
                 result = await handleCreate(formData);
             }
             
@@ -267,9 +271,7 @@ const AddHomeForm = ({
                     )}
 
                     {/* Text Fields Section */}
-                    <div className="space-y-4">
-                        <h3 className="text-lg font-medium text-gray-800">Content Information</h3>
-                        
+                    <div className="space-y-4">                     
                         <div>
                             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
                                 Title
@@ -336,12 +338,6 @@ const AddHomeForm = ({
                             id="home-image"
                             accept="image/*"
                             className="hidden"
-                            {...register("image", {
-                                validate: {
-                                    required: (file) => 
-                                        (editingHome || file) || "Please select an image"
-                                }
-                            })}
                             onChange={handleImageChange}
                             disabled={submitting}
                         />
@@ -410,17 +406,10 @@ const AddHomeForm = ({
                                             e.target.src = 'https://via.placeholder.com/300x200?text=Image+Not+Found';
                                         }}
                                     />
+                                    <p className="text-xs text-gray-500 mt-2 text-center">
+                                        Current image - select a new one to replace
+                                    </p>
                                 </div>
-                            </div>
-                            {/* Show current text content when editing */}
-                            <div className="mt-4 p-4 bg-gray-50 rounded-md">
-                                <h4 className="font-medium text-gray-700 mb-2">Current Content:</h4>
-                                {editingHome.title && <p><strong>Title:</strong> {editingHome.title}</p>}
-                                {editingHome.sub_title && <p><strong>Sub Title:</strong> {editingHome.sub_title}</p>}
-                                {editingHome.description && <p><strong>Description:</strong> {editingHome.description}</p>}
-                                {!editingHome.title && !editingHome.sub_title && !editingHome.description && (
-                                    <p className="text-gray-500 italic">No content added</p>
-                                )}
                             </div>
                         </div>
                     )}

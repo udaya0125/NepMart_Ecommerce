@@ -3,6 +3,7 @@ import { Heart, Share2, Trash2, Star, ShoppingCart } from "lucide-react";
 import Navbar from "@/ContentWrapper/Navbar";
 import { useWishlist } from "../../contexts/WishlistContext";
 import { useCart } from "../../contexts/CartContext";
+import { Link } from "@inertiajs/react";
 
 const WishlistPage = () => {
     const { 
@@ -32,7 +33,6 @@ const WishlistPage = () => {
         };
         
         addToCart(cartProduct);
-        alert(`Added "${item.name}" to cart!`);
     };
 
     const handleRemoveItem = (itemId) => {
@@ -137,9 +137,11 @@ const WishlistPage = () => {
                             <p className="text-gray-600 mb-6">
                                 Start adding items you love to keep track of them!
                             </p>
-                            <button className="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
+                            <Link
+                            href={'/'}
+                            className="px-6 py-3 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
                                 Start Shopping
-                            </button>
+                            </Link>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
@@ -150,7 +152,7 @@ const WishlistPage = () => {
                                 >
                                     <div className="relative">
                                         <img
-                                            src={item.images?.[0] || item.image || '/placeholder-image.jpg'}
+                                            src={item.images?.[0] || item.image}
                                             alt={item.name}
                                             className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300"
                                         />

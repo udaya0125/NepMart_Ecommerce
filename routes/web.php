@@ -89,7 +89,7 @@ Route::middleware(['auth', 'role:super admin'])->group(function() {
     });
     Route::get('/ourhome', [HomeController::class, 'index'])->name('ourhome.index');
     Route::post('/ourhome', [HomeController::class, 'store'])->name('ourhome.store');
-    Route::put('/ourhome/{id}', [HomeController::class, 'update'])->name('ourhome.update'); 
+    Route::post('/ourhome/{id}', [HomeController::class, 'update'])->name('ourhome.update'); 
     Route::delete('/ourhome/{id}', [HomeController::class, 'destroy'])->name('ourhome.destroy');
 
     Route::get('/activity-log', function(){
@@ -201,14 +201,17 @@ Route::middleware(['auth', 'role:customer'])->group(function() {
         return Inertia::render('CustomerPage/CustomerSetting');
     });
 
+    Route::put('/ouruser/{id}', [UserController::class, 'update'])->name('ouruser.update');
+
+    Route::get('/customer-products',function(){
+        return Inertia::render('CustomerPage/UserProducts');
+    });
+
     Route::get('/user-home',function(){
         return Inertia::render('UserPage/Home');
     });
 
 });
-
-
-    
 
 
  // FOR THE MAIN PAGES
