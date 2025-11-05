@@ -23,7 +23,6 @@ class CartController extends Controller
             ->map(function ($item) {
                 return [
                     'id' => $item->id,
-                    'product_id' => $item->product_id,
                     'product_name' => $item->product_name,
                     'quantity' => $item->quantity,
                     'size' => $item->size,

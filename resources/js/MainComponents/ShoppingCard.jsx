@@ -120,7 +120,7 @@ const ShoppingCard = ({ isOpen, onClose }) => {
                                 </span>
                             </div>
                             <Link
-                                href="/check-out"
+                                href="/cart"
                                 className="w-full block text-center bg-red-500 text-white py-3 rounded-lg font-semibold hover:bg-red-600 transition-colors mb-2"
                                 onClick={onClose}
                             >

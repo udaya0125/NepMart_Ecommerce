@@ -515,7 +515,11 @@ const Navbar = () => {
                                         }`}
                                     >
                                         <img
-                                            src={`storage/${auth.user.image}` || "user/user3.png"}
+                                            src={
+                                                auth.user?.image
+                                                    ? `/storage/${auth.user.image}`
+                                                    : "user/user01.png"
+                                            }
                                             alt={`${
                                                 auth.user?.name || "User"
                                             } profile`}
@@ -543,7 +547,11 @@ const Navbar = () => {
                                         <div className="px-5 py-4 bg-gradient-to-br from-red-50 to-pink-50 border-b border-gray-100">
                                             <div className="flex items-center gap-3">
                                                 <img
-                                                    src={`storage/${auth.user.image}` || "user/user3.png"}
+                                                    src={
+                                                        auth.user?.image
+                                                            ? `/storage/${auth.user.image}`
+                                                            : "user/user01.png"
+                                                    }
                                                     alt={`${
                                                         auth.user?.name ||
                                                         "User"
@@ -674,8 +682,12 @@ const Navbar = () => {
                         {isLoggedIn ? (
                             <div className="flex items-center gap-3">
                                 <img
-                                    src={`storage/${auth.user.image}` || "user/user3.png"}
-                                    alt={`${auth.user?.name || "User"} profile`}
+                                    src={
+                                        auth.user?.image
+                                            ? `/storage/${auth.user.image}`
+                                            : "user/user01.png"
+                                    }
+                                    alt={auth.user?.name || "User"}
                                     className="w-10 h-10 rounded-full object-cover border-2 border-white"
                                 />
 

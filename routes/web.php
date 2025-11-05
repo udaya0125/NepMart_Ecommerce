@@ -14,6 +14,7 @@ use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\OrderItemController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -70,6 +71,17 @@ Route::middleware('auth')->group(function () {
     Route::put('/ourwishlist/{id}', [WishlistController::class, 'update'])->name('ourwishlist.update');
     Route::delete('/ourwishlist/{id}', [WishlistController::class, 'destroy'])->name('ourwishlist.destroy');
 
+
+
+
+    Route::get('/ourorder', [OrderItemController::class, 'index'])->name('ourorder.index');
+    Route::post('/ourorder', [OrderItemController::class, 'store'])->name('ourorder.store');
+    Route::put('/ourorder/{id}', [OrderItemController::class, 'update'])->name('ourorder.update');
+    Route::delete('/ourorder/{id}', [OrderItemController::class, 'destroy'])->name('ourorder.destroy');
+
+
+    // user for Update
+    Route::put('/ouruser/{id}', [UserController::class, 'update'])->name('ouruser.update');
 });
 
 
@@ -201,14 +213,14 @@ Route::middleware(['auth', 'role:customer'])->group(function() {
         return Inertia::render('CustomerPage/CustomerSetting');
     });
 
-    Route::put('/ouruser/{id}', [UserController::class, 'update'])->name('ouruser.update');
+    
 
     Route::get('/customer-products',function(){
         return Inertia::render('CustomerPage/UserProducts');
     });
 
-    Route::get('/user-home',function(){
-        return Inertia::render('UserPage/Home');
+    Route::get('/customer-home',function(){
+        return Inertia::render('CustomerPage/CustomerHome');
     });
 
 });
@@ -255,12 +267,16 @@ Route::get('/blog-details/{slug}',function(){
 
 
 Route::get('/cart',function(){
-    return Inertia::render('ShoppingPages/CardPage');
+    return Inertia::render('ShoppingPages/CartPage');
 });
 
 
 Route::get('/check-out',function(){
     return Inertia::render('ShoppingPages/CheckOutPage');
+});
+
+Route::get('/payment/success',function(){
+    return Inertia::render('ShoppingPages/PaymentSucess'); // Or whatever your actual component name is
 });
 
 //

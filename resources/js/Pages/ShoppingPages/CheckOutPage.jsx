@@ -81,7 +81,7 @@ const CheckOutPage = () => {
 
         try {
             const subtotal = cart.items.reduce(
-                (sum, item) => sum + item.price * item.quantity,
+                (sum, item) => sum + (Number(item.price) || 0) * item.quantity,
                 0
             );
             const shipping = 200;
@@ -192,7 +192,7 @@ const CheckOutPage = () => {
 
     // Calculate order totals
     const subtotal = cart.items.reduce(
-        (sum, item) => sum + item.price * item.quantity,
+        (sum, item) => sum + (Number(item.price) || 0) * item.quantity,
         0
     );
     const shipping = 200;
@@ -741,7 +741,7 @@ const CheckOutPage = () => {
                                                     Qty: {item.quantity}
                                                 </p>
                                                 <p className="text-sm font-bold text-orange-500">
-                                                    Rs. {item.price.toFixed(2)}
+                                                    Rs. {Number(item.price).toFixed(2)}
                                                 </p>
                                             </div>
                                         </div>

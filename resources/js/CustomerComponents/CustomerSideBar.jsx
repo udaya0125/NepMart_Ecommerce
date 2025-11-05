@@ -10,7 +10,7 @@ const CustomerSideBar = ({ isMobileOpen, onMobileToggle }) => {
         const path = url.split("/")[1] || "dashboard";
         const activeMap = {
             dashboard: "Dashboard",
-            "user-home": "Home",
+            "customer-home": "Home",
             "customer-products": "Products",
             "product-cart": "Cart",
             "customer-setting": "Settings",

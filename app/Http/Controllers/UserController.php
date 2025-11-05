@@ -29,14 +29,19 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'      => 'required|string|max:255',
-            'email'     => 'required|email|unique:users,email',
-            'password'  => 'required|min:6',
-            'role'      => 'nullable|string|max:50',
-            'image'     => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'name'             => 'required|string|max:255',
+            'email'            => 'required|email|unique:users,email',
+            'password'         => 'required|min:6',
+            'role'             => 'nullable|string|max:50',
+            'image'            => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'street_address'   => 'nullable|string|max:255',
+            'city'             => 'nullable|string|max:100',
+            'zip_code'         => 'nullable|string|max:20',
+            'state_province'   => 'nullable|string|max:100',
+            'phone_no'         => 'nullable|string|max:20',
         ]);
 
-        // Handle image upload if available
+        // Handle image upload
         $imagePath = null;
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $imagePath = $request->file('image')->store('users', 'public');
@@ -44,11 +49,16 @@ class UserController extends Controller
 
         // Create user
         $user = User::create([
-            'name'      => $request->name,
-            'email'     => $request->email,
-            'password'  => Hash::make($request->password),
-            'role'      => $request->role ?? 'user',
-            'image'     => $imagePath
+            'name'            => $request->name,
+            'email'           => $request->email,
+            'password'        => Hash::make($request->password),
+            'role'            => $request->role ?? 'user',
+            'image'           => $imagePath,
+            'street_address'  => $request->street_address,
+            'city'            => $request->city,
+            'zip_code'        => $request->zip_code,
+            'state_province'  => $request->state_province,
+            'phone_no'        => $request->phone_no,
         ]);
 
         return response()->json([
@@ -65,47 +75,51 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        // Define validation rules
         $validationRules = [
-            'name'      => 'sometimes|required|string|max:255',
-            'email'     => 'sometimes|required|email|unique:users,email,' . $user->id,
-            'password'  => 'nullable|min:6',
-            'role'      => 'nullable|string|max:50',
+            'name'            => 'sometimes|required|string|max:255',
+            'email'           => 'sometimes|required|email|unique:users,email,' . $user->id,
+            'password'        => 'nullable|min:6',
+            'role'            => 'nullable|string|max:50',
+            'street_address'  => 'nullable|string|max:255',
+            'city'            => 'nullable|string|max:100',
+            'zip_code'        => 'nullable|string|max:20',
+            'state_province'  => 'nullable|string|max:100',
+            'phone_no'        => 'nullable|string|max:20',
         ];
 
-        // Only validate image if it's present in the request and not null/empty
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
             $validationRules['image'] = 'image|mimes:jpg,jpeg,png|max:2048';
         }
 
         $request->validate($validationRules);
 
-        // Handle image update only if a new image is provided
+        // Handle image update
         if ($request->hasFile('image') && $request->file('image')->isValid()) {
-            // Delete old image if exists
             if ($user->image && Storage::disk('public')->exists($user->image)) {
                 Storage::disk('public')->delete($user->image);
             }
             $imagePath = $request->file('image')->store('users', 'public');
         } else {
-            // Keep the existing image if no new image is provided
             $imagePath = $user->image;
         }
 
-        // Prepare update data
+        // Update fields
         $updateData = [
-            'name'      => $request->name ?? $user->name,
-            'email'     => $request->email ?? $user->email,
-            'role'      => $request->role ?? $user->role,
-            'image'     => $imagePath
+            'name'            => $request->name ?? $user->name,
+            'email'           => $request->email ?? $user->email,
+            'role'            => $request->role ?? $user->role,
+            'image'           => $imagePath,
+            'street_address'  => $request->street_address ?? $user->street_address,
+            'city'            => $request->city ?? $user->city,
+            'zip_code'        => $request->zip_code ?? $user->zip_code,
+            'state_province'  => $request->state_province ?? $user->state_province,
+            'phone_no'        => $request->phone_no ?? $user->phone_no,
         ];
 
-        // Only update password if provided
-        if ($request->password) {
+        if ($request->filled('password')) {
             $updateData['password'] = Hash::make($request->password);
         }
 
-        // Update user details
         $user->update($updateData);
 
         return response()->json([

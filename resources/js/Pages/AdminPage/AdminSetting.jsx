@@ -9,6 +9,10 @@ import {
     EyeOff,
     ChevronDown,
     ChevronUp,
+    MapPin,
+    Phone,
+    Trash2,
+    AlertTriangle,
 } from "lucide-react";
 import { usePage } from "@inertiajs/react";
 import { useForm } from "react-hook-form";
@@ -23,6 +27,10 @@ const AdminSetting = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [imagePreview, setImagePreview] = useState(null);
     const [isPasswordSectionOpen, setIsPasswordSectionOpen] = useState(false);
+    const [isAddressSectionOpen, setIsAddressSectionOpen] = useState(false);
+    const [isDeleteSectionOpen, setIsDeleteSectionOpen] = useState(false);
+    const [deleteConfirmText, setDeleteConfirmText] = useState("");
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const {
         register,
@@ -41,6 +49,11 @@ const AdminSetting = () => {
             new_password: "",
             new_password_confirmation: "",
             image: null,
+            street_address: currentUser.street_address || "",
+            city: currentUser.city || "",
+            zip_code: currentUser.zip_code || "",
+            state_province: currentUser.state_province || "",
+            phone_no: currentUser.phone_no || "",
         },
     });
 
@@ -174,6 +187,11 @@ const AdminSetting = () => {
             new_password: "",
             new_password_confirmation: "",
             image: null,
+            street_address: currentUser.street_address || "",
+            city: currentUser.city || "",
+            zip_code: currentUser.zip_code || "",
+            state_province: currentUser.state_province || "",
+            phone_no: currentUser.phone_no || "",
         });
         setImagePreview(null);
         clearErrors();
@@ -186,6 +204,52 @@ const AdminSetting = () => {
     const toggleConfirmPasswordVisibility = () => {
         setShowConfirmPassword(!showConfirmPassword);
     };
+
+    // Handle Delete Account
+    const handleDeleteAccount = async () => {
+        // Prevent deleting yourself (additional safety check)
+        if (currentUser.id === currentUser.id) {
+            alert("You cannot delete your own account from this page.");
+            return;
+        }
+
+        if (!confirm("Are you sure you want to delete your account? This action cannot be undone!")) {
+            return;
+        }
+
+        // Additional confirmation with email
+        const confirmed = window.prompt(
+            `Please type "${currentUser.email}" to confirm account deletion:`
+        );
+
+        if (confirmed !== currentUser.email) {
+            alert("Email confirmation failed. Account deletion cancelled.");
+            return;
+        }
+
+        setIsDeleting(true);
+
+        try {
+            await axios.delete(route("ouruser.destroy", { id: currentUser.id }));
+            alert("Account deleted successfully!");
+            // Redirect to login or home page after deletion
+            window.location.href = "/";
+        } catch (error) {
+            console.error("Delete error:", error);
+            setIsDeleting(false);
+            if (error.response?.status === 403) {
+                alert("You don't have permission to delete this account.");
+            } else {
+                alert("Error deleting account");
+            }
+        }
+    };
+
+    const handleDeleteConfirmTextChange = (e) => {
+        setDeleteConfirmText(e.target.value);
+    };
+
+    const isDeleteConfirmed = deleteConfirmText === "delete my account";
 
     return (
         <div>
@@ -227,7 +291,7 @@ const AdminSetting = () => {
                                                             src={
                                                                 currentUser.image
                                                                     ? `storage/${currentUser.image}`
-                                                                    : "user/user3.png"
+                                                                    : "user/user01.png"
                                                             }
                                                             alt={
                                                                 currentUser.name
@@ -268,6 +332,7 @@ const AdminSetting = () => {
                                 </div>
 
                                 <div className="p-8 space-y-8">
+                                    {/* Personal Information Section */}
                                     <div>
                                         <div className="flex items-center gap-2 mb-6">
                                             <User
@@ -352,6 +417,39 @@ const AdminSetting = () => {
 
                                             <div>
                                                 <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    Phone Number
+                                                </label>
+                                                <div className="relative">
+                                                    <Phone
+                                                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                                                        size={20}
+                                                    />
+                                                    <input
+                                                        type="tel"
+                                                        {...register("phone_no", {
+                                                            pattern: {
+                                                                value: /^[+]?[\d\s\-()]+$/,
+                                                                message:
+                                                                    "Please enter a valid phone number",
+                                                            },
+                                                        })}
+                                                        className={`w-full pl-11 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                            errors.phone_no
+                                                                ? "border-red-500"
+                                                                : "border-gray-300"
+                                                        }`}
+                                                        placeholder="Enter your phone number"
+                                                    />
+                                                </div>
+                                                {errors.phone_no && (
+                                                    <p className="text-red-500 text-sm mt-1">
+                                                        {errors.phone_no.message}
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
                                                     Role{" "}
                                                     <span className="text-red-500">
                                                         *
@@ -375,6 +473,140 @@ const AdminSetting = () => {
 
                                     <div className="border-t border-gray-200"></div>
 
+                                    {/* Address Section */}
+                                    <div>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setIsAddressSectionOpen(
+                                                    !isAddressSectionOpen
+                                                )
+                                            }
+                                            className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-all"
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <MapPin
+                                                    className="text-blue-600"
+                                                    size={24}
+                                                />
+                                                <h2 className="text-xl font-semibold text-gray-900">
+                                                    Address Information
+                                                </h2>
+                                            </div>
+                                            {isAddressSectionOpen ? (
+                                                <ChevronUp
+                                                    className="text-gray-600"
+                                                    size={24}
+                                                />
+                                            ) : (
+                                                <ChevronDown
+                                                    className="text-gray-600"
+                                                    size={24}
+                                                />
+                                            )}
+                                        </button>
+
+                                        {isAddressSectionOpen && (
+                                            <div className="mt-6">
+                                                <div className="space-y-5">
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                            Street Address
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            {...register("street_address")}
+                                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                                errors.street_address
+                                                                    ? "border-red-500"
+                                                                    : "border-gray-300"
+                                                            }`}
+                                                            placeholder="Enter your street address"
+                                                        />
+                                                        {errors.street_address && (
+                                                            <p className="text-red-500 text-sm mt-1">
+                                                                {errors.street_address.message}
+                                                            </p>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                                        <div>
+                                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                                City
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                {...register("city")}
+                                                                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                                    errors.city
+                                                                        ? "border-red-500"
+                                                                        : "border-gray-300"
+                                                                }`}
+                                                                placeholder="Enter your city"
+                                                            />
+                                                            {errors.city && (
+                                                                <p className="text-red-500 text-sm mt-1">
+                                                                    {errors.city.message}
+                                                                </p>
+                                                            )}
+                                                        </div>
+
+                                                        <div>
+                                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                                State/Province
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                {...register("state_province")}
+                                                                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                                    errors.state_province
+                                                                        ? "border-red-500"
+                                                                        : "border-gray-300"
+                                                                }`}
+                                                                placeholder="Enter your state/province"
+                                                            />
+                                                            {errors.state_province && (
+                                                                <p className="text-red-500 text-sm mt-1">
+                                                                    {errors.state_province.message}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                            ZIP/Postal Code
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            {...register("zip_code", {
+                                                                pattern: {
+                                                                    value: /^[A-Z0-9\s-]+$/,
+                                                                    message: "Please enter a valid postal code",
+                                                                },
+                                                            })}
+                                                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all ${
+                                                                errors.zip_code
+                                                                    ? "border-red-500"
+                                                                    : "border-gray-300"
+                                                            }`}
+                                                            placeholder="Enter your ZIP/postal code"
+                                                        />
+                                                        {errors.zip_code && (
+                                                            <p className="text-red-500 text-sm mt-1">
+                                                                {errors.zip_code.message}
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="border-t border-gray-200"></div>
+
+                                    {/* Password Section */}
                                     <div>
                                         <button
                                             type="button"
@@ -577,6 +809,87 @@ const AdminSetting = () => {
                                                                 }
                                                             </p>
                                                         )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="border-t border-gray-200"></div>
+
+                                    {/* Delete Account Section */}
+                                    <div>
+                                        <button
+                                            type="button"
+                                            onClick={() =>
+                                                setIsDeleteSectionOpen(
+                                                    !isDeleteSectionOpen
+                                                )
+                                            }
+                                            className="w-full flex items-center justify-between p-4 bg-red-50 hover:bg-red-100 rounded-lg transition-all"
+                                        >
+                                            <div className="flex items-center gap-2">
+                                                <Trash2
+                                                    className="text-red-600"
+                                                    size={24}
+                                                />
+                                                <h2 className="text-xl font-semibold text-red-900">
+                                                    Delete Account
+                                                </h2>
+                                            </div>
+                                            {isDeleteSectionOpen ? (
+                                                <ChevronUp
+                                                    className="text-red-600"
+                                                    size={24}
+                                                />
+                                            ) : (
+                                                <ChevronDown
+                                                    className="text-red-600"
+                                                    size={24}
+                                                />
+                                            )}
+                                        </button>
+
+                                        {isDeleteSectionOpen && (
+                                            <div className="mt-6">
+                                                <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+                                                    <div className="flex items-start gap-3 mb-4">
+                                                        <AlertTriangle className="text-red-600 mt-0.5" size={20} />
+                                                        <div>
+                                                            <h3 className="text-lg font-semibold text-red-900 mb-2">
+                                                                Danger Zone
+                                                            </h3>
+                                                            <p className="text-red-700 text-sm">
+                                                                Once you delete your account, there is no going back. 
+                                                                This action is permanent and will remove all your data 
+                                                                from our system. Please be certain.
+                                                            </p>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-4">
+                                                        <div>
+                                                            <label className="block text-sm font-medium text-red-700 mb-2">
+                                                                Type "delete my account" to confirm
+                                                            </label>
+                                                            <input
+                                                                type="text"
+                                                                value={deleteConfirmText}
+                                                                onChange={handleDeleteConfirmTextChange}
+                                                                className="w-full px-4 py-3 border border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all"
+                                                                placeholder="delete my account"
+                                                            />
+                                                        </div>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={handleDeleteAccount}
+                                                            disabled={!isDeleteConfirmed || isDeleting}
+                                                            className="w-full px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                                                        >
+                                                            <Trash2 size={20} />
+                                                            {isDeleting ? "Deleting Account..." : "Permanently Delete Account"}
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>

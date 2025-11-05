@@ -53,12 +53,6 @@ const AddProductForm = ({ showForm, onCancel, allCategory, onSuccess }) => {
               "link",
           ];
 
-    // Stock options
-    const stockOptions = [
-        { value: "true", label: "In Stock" },
-        { value: "false", label: "Out of Stock" },
-    ];
-
     // Shipping options
     const shippingOptions = [
         { value: "false", label: "No" },
@@ -88,7 +82,6 @@ const AddProductForm = ({ showForm, onCancel, allCategory, onSuccess }) => {
             long_description: "",
             sizes: "",
             colors: "",
-            in_stock: null,
             stock_quantity: "",
             estimated_delivery: "",
             free_shipping: null,
@@ -173,12 +166,12 @@ const AddProductForm = ({ showForm, onCancel, allCategory, onSuccess }) => {
                     if (data[key]) {
                         formData.append("sub_category_id", data[key].value);
                     }
-                } else if (key === "in_stock" || key === "free_shipping") {
+                } else if (key === "free_shipping") {
                     if (data[key]) {
                         formData.append(key, data[key].value === "true" ? "1" : "0");
                     } else {
-                        // Set default values if not selected
-                        formData.append(key, key === "in_stock" ? "1" : "0");
+                        // Set default value if not selected
+                        formData.append(key, "0");
                     }
                 } else if (key !== "images") {
                     const value = data[key];
@@ -410,14 +403,22 @@ const AddProductForm = ({ showForm, onCancel, allCategory, onSuccess }) => {
                         {/* Stock Quantity */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Stock Quantity
+                                Stock Quantity *
                             </label>
                             <input
                                 type="number"
                                 min="0"
-                                {...register("stock_quantity")}
+                                {...register("stock_quantity", {
+                                    required: "Stock quantity is required",
+                                    min: { value: 0, message: "Stock quantity cannot be negative" }
+                                })}
                                 className="w-full px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                             />
+                            {errors.stock_quantity && (
+                                <p className="text-red-500 text-xs mt-1">
+                                    {errors.stock_quantity.message}
+                                </p>
+                            )}
                         </div>
 
                         {/* Estimated Delivery */}
@@ -430,48 +431,6 @@ const AddProductForm = ({ showForm, onCancel, allCategory, onSuccess }) => {
                                 {...register("estimated_delivery")}
                                 className="w-full px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
                                 placeholder="e.g., 3-5 business days"
-                            />
-                        </div>
-
-                        {/* In Stock */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                In Stock
-                            </label>
-                            <Controller
-                                name="in_stock"
-                                control={control}
-                                render={({ field }) => (
-                                    <Select
-                                        {...field}
-                                        options={stockOptions}
-                                        className="react-select-container text-sm"
-                                        classNamePrefix="react-select"
-                                        isClearable
-                                        placeholder="Select stock status..."
-                                        menuPortalTarget={document.body}
-                                        styles={
-                                            isMobile
-                                                ? {
-                                                      menuPortal: (base) => ({
-                                                          ...base,
-                                                          zIndex: 9999,
-                                                      }),
-                                                      control: (base) => ({
-                                                          ...base,
-                                                          fontSize: "14px",
-                                                          minHeight: "36px",
-                                                      }),
-                                                  }
-                                                : {
-                                                      menuPortal: (base) => ({
-                                                          ...base,
-                                                          zIndex: 9999,
-                                                      }),
-                                                  }
-                                        }
-                                    />
-                                )}
                             />
                         </div>
 
@@ -617,9 +576,9 @@ const AddProductForm = ({ showForm, onCancel, allCategory, onSuccess }) => {
                             </label>
                             <input
                                 type="file"
-                                // {...register("images", {
-                                //     required: "At least one image is required",
-                                // })}
+                                {...register("images", {
+                                    required: "At least one image is required",
+                                })}
                                 className="w-full px-3 sm:px-4 py-1.5 sm:py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-xs sm:text-sm"
                                 accept="image/*"
                                 multiple

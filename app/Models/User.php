@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
@@ -22,7 +20,12 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'image'
+        'image',
+        'street_address',
+        'city',
+        'zip_code',
+        'state_province',
+        'phone_no',
     ];
 
     /**
@@ -48,41 +51,30 @@ class User extends Authenticatable
         ];
     }
 
+    // Relationships
     public function reviews()
     {
         return $this->hasMany(Review::class);
     }
 
-    /**
-     * Check if user is super admin
-     */
-    public function isSuperAdmin(): bool
-    {
-        return $this->role === 'super admin';
-    }
-
-    /**
-     * Check if user is admin
-     */
-    public function isAdmin(): bool
-    {
-        return $this->role === 'admin' || $this->isSuperAdmin();
-    }
-
-    /**
-     * Check if user is customer
-     */
-    public function isCustomer(): bool
-    {
-        return $this->role === 'customer';
-    }
-
-     /**
-     * Relationship with ProductsCart model
-     */
     public function cartItems()
     {
         return $this->hasMany(ProductsCart::class);
     }
 
+    // Role checks
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === 'super admin';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin' || $this->isSuperAdmin();
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->role === 'customer';
+    }
 }

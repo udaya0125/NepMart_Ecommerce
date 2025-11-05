@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('sub_category_id');
             $table->decimal('price', 8, 2);
             $table->unsignedTinyInteger('discount')->nullable();
-            $table->string('in_stock');
             $table->string('stock_quantity');
             $table->string('estimated_delivery')->nullable();
             $table->string('free_shipping');
@@ -31,7 +30,6 @@ return new class extends Migration
             $table->string('colors')->nullable();
             $table->longText('features')->nullable();
             $table->string('slug')->unique();
-
             $table->timestamps();
         });
     }

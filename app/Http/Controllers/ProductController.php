@@ -37,8 +37,7 @@ class ProductController extends Controller
             'sub_category_id' => 'nullable|string|max:255',
             'price' => 'required|numeric|min:0',
             'discount' => 'nullable|numeric|min:0|max:100',
-            'in_stock' => 'required|string|max:255', 
-            'stock_quantity' => 'nullable|string|max:255',
+            'stock_quantity' => 'required|integer|min:0',
             'estimated_delivery' => 'nullable|string|max:255',
             'free_shipping' => 'nullable|string|max:255',
             'returns' => 'nullable|string|max:255',
@@ -59,7 +58,7 @@ class ProductController extends Controller
 
         $product = Product::create($request->only([
             'name', 'sku', 'brand', 'category_id', 'sub_category_id', 'price', 'discount',
-            'in_stock', 'stock_quantity', 'estimated_delivery', 'free_shipping', 'returns',
+            'stock_quantity', 'estimated_delivery', 'free_shipping', 'returns',
             'short_description', 'long_description', 'sizes', 'colors', 'features'
         ]));
 
@@ -100,8 +99,7 @@ class ProductController extends Controller
             'sub_category_id' => 'nullable|string|max:255',
             'price' => 'nullable|numeric|min:0',
             'discount' => 'nullable|numeric|min:0|max:100',
-            'in_stock' => 'nullable|string|max:255',
-            'stock_quantity' => 'nullable|string|max:255',
+            'stock_quantity' => 'required|integer|min:0',
             'estimated_delivery' => 'nullable|string|max:255',
             'free_shipping' => 'nullable|string|max:255',
             'returns' => 'nullable|string|max:255',
@@ -124,7 +122,7 @@ class ProductController extends Controller
 
         $product->update($request->only([
             'name', 'sku', 'brand', 'category_id', 'sub_category_id', 'price', 'discount',
-            'in_stock', 'stock_quantity', 'estimated_delivery', 'free_shipping', 'returns',
+            'stock_quantity', 'estimated_delivery', 'free_shipping', 'returns',
             'short_description', 'long_description', 'sizes', 'colors', 'features'
         ]));
 

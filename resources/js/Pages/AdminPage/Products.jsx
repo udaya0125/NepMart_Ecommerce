@@ -90,7 +90,7 @@ const Products = () => {
             {
                 Header: "Stock Quantity",
                 accessor: "stock_quantity",
-                Cell: ({ value }) => value || "-",
+                Cell: ({ value }) => value || "0",
             },
             {
                 Header: "Category",

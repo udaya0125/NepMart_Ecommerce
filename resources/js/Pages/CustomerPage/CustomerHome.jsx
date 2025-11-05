@@ -1,48 +1,48 @@
-import CustomerWrapper from '@/CustomerComponents/CustomerWrapper'
-import React, { useState, useEffect } from 'react'
-import { Facebook, Twitter, Instagram } from 'lucide-react'
-import { Link } from '@inertiajs/react'
+import React, { useState, useEffect } from 'react';
+import { Facebook, Twitter, Instagram } from 'lucide-react';
+import { Link } from '@inertiajs/react';
+import CustomerWrapper from '@/CustomerComponents/CustomerWrapper';
 
-const CustomerDashboard = () => {
+const CustomerHome = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 105,
     hours: 2,
     minutes: 23,
     seconds: 50
-  })
+  });
 
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft(prev => {
-        const { days, hours, minutes, seconds } = prev
+        const { days, hours, minutes, seconds } = prev;
         
         // If already reached zero, don't decrement further
         if (days === 0 && hours === 0 && minutes === 0 && seconds === 0) {
-          return prev
+          return prev;
         }
         
-        let newSeconds = seconds - 1
-        let newMinutes = minutes
-        let newHours = hours
-        let newDays = days
+        let newSeconds = seconds - 1;
+        let newMinutes = minutes;
+        let newHours = hours;
+        let newDays = days;
         
         if (newSeconds < 0) {
-          newSeconds = 59
-          newMinutes = minutes - 1
+          newSeconds = 59;
+          newMinutes = minutes - 1;
         }
         
         if (newMinutes < 0) {
-          newMinutes = 59
-          newHours = hours - 1
+          newMinutes = 59;
+          newHours = hours - 1;
         }
         
         if (newHours < 0) {
-          newHours = 23
-          newDays = days - 1
+          newHours = 23;
+          newDays = days - 1;
         }
         
         if (newDays < 0) {
-          return { days: 0, hours: 0, minutes: 0, seconds: 0 }
+          return { days: 0, hours: 0, minutes: 0, seconds: 0 };
         }
         
         return { 
@@ -50,17 +50,17 @@ const CustomerDashboard = () => {
           hours: newHours, 
           minutes: newMinutes, 
           seconds: newSeconds 
-        }
-      })
-    }, 1000)
+        };
+      });
+    }, 1000);
 
-    return () => clearInterval(timer)
-  }, [])
+    return () => clearInterval(timer);
+  }, []);
 
   // Format numbers with leading zeros
   const formatNumber = (num, length = 2) => {
-    return String(num).padStart(length, '0')
-  }
+    return String(num).padStart(length, '0');
+  };
 
   return (
     <CustomerWrapper>
@@ -169,7 +169,7 @@ const CustomerDashboard = () => {
         </div>
       </div>
     </CustomerWrapper>
-  )
-}
+  );
+};
 
-export default CustomerDashboard
+export default CustomerHome;

@@ -27,6 +27,8 @@ createInertiaApp({
                 </WishlistProvider>
             </CartProvider>
         );
+
+        
     },
     progress: {
         color: '#4B5563',

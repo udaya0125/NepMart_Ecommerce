@@ -76,7 +76,7 @@ const AdminNavBar = ({ onMenuToggle }) => {
         setIsUserMenuOpen(false);
     };
 
-     const handleLogout = () => {
+    const handleLogout = () => {
         axios
             .post(route("logout"))
             .then((response) => {
@@ -94,9 +94,7 @@ const AdminNavBar = ({ onMenuToggle }) => {
 
     const markAsRead = (id) => {
         setMessageList((prev) =>
-            prev.map((msg) =>
-                msg.id === id ? { ...msg, unread: false } : msg
-            )
+            prev.map((msg) => (msg.id === id ? { ...msg, unread: false } : msg))
         );
     };
 
@@ -281,7 +279,11 @@ const AdminNavBar = ({ onMenuToggle }) => {
                             >
                                 <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg overflow-hidden ">
                                     <img
-                                        src={`storage/${user.image}` || "user/user3.png"}
+                                        src={
+                                            user?.image
+                                                ? `/storage/${user.image}`
+                                                : "user/user01.png"
+                                        }
                                         alt="User"
                                         className="w-full h-full object-cover rounded-full"
                                     />
@@ -305,8 +307,9 @@ const AdminNavBar = ({ onMenuToggle }) => {
                                             <div className="w-12 h-12 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
                                                 <img
                                                     src={
-                                                        `storage/${user.image}` ||
-                                                        "user/user3.png"
+                                                        user?.image
+                                                            ? `/storage/${user.image}`
+                                                            : "user/user01.png"
                                                     }
                                                     alt="User"
                                                     className="w-full h-full object-cover"

@@ -12,7 +12,7 @@ class OrderItem extends Model
         'user_name',
         'product_name',
         'short_description',
-        'long_description',
+        'payment',
         'features',
         'sku',
         'brand',

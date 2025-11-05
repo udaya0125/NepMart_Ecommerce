@@ -15,7 +15,6 @@ class Product extends Model
         'long_description',
         'sizes',
         'colors',
-        'in_stock',
         'stock_quantity',
         'estimated_delivery',
         'free_shipping',
@@ -28,7 +27,7 @@ class Product extends Model
         'sub_category_id'
     ];
 
-    protected $appends = ['discounted_price', 'discount_label'];
+    protected $appends = ['discounted_price', 'discount_label', 'in_stock'];
 
     /**
      * Automatically generate a unique slug before creating a product.
@@ -70,6 +69,14 @@ class Product extends Model
     public function getDiscountLabelAttribute()
     {
         return $this->discount ? $this->discount . '% off' : null;
+    }
+
+    /**
+     * Accessor: In Stock status based on stock quantity.
+     */
+    public function getInStockAttribute()
+    {
+        return $this->stock_quantity > 0;
     }
 
     /**

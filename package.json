@@ -24,6 +24,7 @@
     },
     "dependencies": {
         "chart.js": "^4.5.1",
+        "crypto-js": "^4.2.0",
         "lucide-react": "^0.548.0",
         "react-hook-form": "^7.65.0",
         "react-paginate": "^8.3.0",
