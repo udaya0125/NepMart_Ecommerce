@@ -12,13 +12,21 @@ class WishlistController extends Controller
      */
     public function index()
     {
-        $wishlists = Wishlist::all();
+        try {
+            $wishlistItems = Wishlist::all();
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Wishlist items fetched successfully.',
-            'data' => $wishlists
-        ], 200);
+            return response()->json([
+                'success' => true,
+                'message' => 'Wishlist items retrieved successfully.',
+                'data' => $wishlistItems
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error fetching wishlist items.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -28,75 +36,91 @@ class WishlistController extends Controller
     {
         $validated = $request->validate([
             'user_name' => 'required|string|max:255',
+            'product_id' => 'required|integer',
             'product_name' => 'required|string|max:255',
-            'short_description' => 'nullable|string',
-            'long_description' => 'nullable|string',
-            'features' => 'nullable|string',
-            'sku' => 'nullable|string|max:100',
-            'brand' => 'nullable|string|max:255',
+            'product_sku' => 'nullable|string|max:255',
+            'product_brand' => 'nullable|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'discounted_price' => 'nullable|numeric|min:0',
         ]);
 
-        $wishlist = Wishlist::create($validated);
+        try {
+            $wishlist = Wishlist::create($validated);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Wishlist item added successfully.',
-            'data' => $wishlist
-        ], 201);
+            return response()->json([
+                'success' => true,
+                'message' => 'Product added to wishlist successfully.',
+                'data' => $wishlist
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to add product to wishlist.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Update the specified wishlist item in storage.
+     * Update the specified wishlist item.
      */
     public function update(Request $request, $id)
     {
-        $wishlist = Wishlist::find($id);
-
-        if (!$wishlist) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Wishlist item not found.'
-            ], 404);
-        }
-
         $validated = $request->validate([
-            'user_name' => 'sometimes|string|max:255',
-            'product_name' => 'sometimes|string|max:255',
-            'short_description' => 'nullable|string',
-            'long_description' => 'nullable|string',
-            'features' => 'nullable|string',
-            'sku' => 'nullable|string|max:100',
-            'brand' => 'nullable|string|max:255',
+            'product_name' => 'nullable|string|max:255',
+            'product_sku' => 'nullable|string|max:255',
+            'product_brand' => 'nullable|string|max:255',
+            'price' => 'nullable|numeric|min:0',
+            'discounted_price' => 'nullable|numeric|min:0',
         ]);
 
-        $wishlist->update($validated);
+        try {
+            $wishlist = Wishlist::findOrFail($id);
+            $wishlist->update($validated);
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Wishlist item updated successfully.',
-            'data' => $wishlist
-        ], 200);
+            return response()->json([
+                'success' => true,
+                'message' => 'Wishlist item updated successfully.',
+                'data' => $wishlist
+            ], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Wishlist item not found.'
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update wishlist item.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Remove the specified wishlist item from storage.
+     * Remove the specified wishlist item.
      */
     public function destroy($id)
     {
-        $wishlist = Wishlist::find($id);
+        try {
+            $wishlist = Wishlist::findOrFail($id);
+            $wishlist->delete();
 
-        if (!$wishlist) {
             return response()->json([
-                'status' => false,
+                'success' => true,
+                'message' => 'Wishlist item deleted successfully.'
+            ], 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'success' => false,
                 'message' => 'Wishlist item not found.'
             ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete wishlist item.',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $wishlist->delete();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Wishlist item deleted successfully.'
-        ], 200);
     }
 }

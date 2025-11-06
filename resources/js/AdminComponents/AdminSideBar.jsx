@@ -50,7 +50,8 @@ const AdminSideBar = ({
             blogs: "Blog",
             testimonials: "Testimonials",
             "activity-log": "Activity Logs",
-            "admin-setting":"Setting"
+            'order-products': "Order Products",
+            "admin-setting": "Setting",
         };
 
         setActiveItem(activeMap[path] || "Dashboard");
@@ -83,9 +84,9 @@ const AdminSideBar = ({
         activeItem === "Media";
 
     // Check The Role of the User
-    const isSuperAdmin = authUser?.role === 'super admin';
-    const isAdmin = authUser?.role === 'admin';
-    const isCustomer = authUser?.role === 'customer';
+    const isSuperAdmin = authUser?.role === "super admin";
+    const isAdmin = authUser?.role === "admin";
+    const isCustomer = authUser?.role === "customer";
 
     return (
         <div>
@@ -136,7 +137,6 @@ const AdminSideBar = ({
 
                 <div className="p-4 h-[calc(100%-4rem)] flex flex-col overflow-y-auto">
                     <div className="flex-1 space-y-2">
-                        
                         {/* Super Admin Only Routes */}
                         {isSuperAdmin && (
                             <>
@@ -148,7 +148,9 @@ const AdminSideBar = ({
                                             activeItem === "Dashboard"
                                                 ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
                                                 : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
-                                        } ${isCollapsed ? "justify-center" : ""}`}
+                                        } ${
+                                            isCollapsed ? "justify-center" : ""
+                                        }`}
                                     >
                                         <Home
                                             size={20}
@@ -176,41 +178,43 @@ const AdminSideBar = ({
                                     )}
                                 </div>
 
-                                 {/* Home */}
-                        <div className="relative group">
-                            <Link
-                                href="/home"
-                                className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
-                                    activeItem === "Home"
-                                        ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
-                                        : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
-                                } ${isCollapsed ? "justify-center" : ""}`}
-                            >
-                                <Home
-                                    size={20}
-                                    className={`flex-shrink-0 ${
-                                        activeItem === "Home"
-                                            ? "text-blue-400"
-                                            : ""
-                                    }`}
-                                />
-                                {!isCollapsed && (
-                                    <span className="font-medium flex-1 text-left">
-                                        Home
-                                    </span>
-                                )}
-                            </Link>
+                                {/* Home */}
+                                <div className="relative group">
+                                    <Link
+                                        href="/home"
+                                        className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
+                                            activeItem === "Home"
+                                                ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
+                                                : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+                                        } ${
+                                            isCollapsed ? "justify-center" : ""
+                                        }`}
+                                    >
+                                        <Home
+                                            size={20}
+                                            className={`flex-shrink-0 ${
+                                                activeItem === "Home"
+                                                    ? "text-blue-400"
+                                                    : ""
+                                            }`}
+                                        />
+                                        {!isCollapsed && (
+                                            <span className="font-medium flex-1 text-left">
+                                                Home
+                                            </span>
+                                        )}
+                                    </Link>
 
-                            {isCollapsed && (
-                                <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
-                                    <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
-                                        <span className="text-sm font-medium">
-                                            Home
-                                        </span>
-                                    </div>
+                                    {isCollapsed && (
+                                        <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                            <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
+                                                <span className="text-sm font-medium">
+                                                    Home
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
 
                                 {/* Users */}
                                 <div className="relative group">
@@ -220,7 +224,9 @@ const AdminSideBar = ({
                                             activeItem === "Users"
                                                 ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
                                                 : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
-                                        } ${isCollapsed ? "justify-center" : ""}`}
+                                        } ${
+                                            isCollapsed ? "justify-center" : ""
+                                        }`}
                                     >
                                         <Users
                                             size={20}
@@ -256,7 +262,9 @@ const AdminSideBar = ({
                                             activeItem === "Testimonials"
                                                 ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
                                                 : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
-                                        } ${isCollapsed ? "justify-center" : ""}`}
+                                        } ${
+                                            isCollapsed ? "justify-center" : ""
+                                        }`}
                                     >
                                         <MessageSquareQuote
                                             size={20}
@@ -284,6 +292,44 @@ const AdminSideBar = ({
                                     )}
                                 </div>
 
+                                {/* Order Products */}
+                                <div className="relative group">
+                                    <Link
+                                        href="/order-products"
+                                        className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
+                                            activeItem === "Order Products"
+                                                ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
+                                                : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+                                        } ${
+                                            isCollapsed ? "justify-center" : ""
+                                        }`}
+                                    >
+                                        <Home
+                                            size={20}
+                                            className={`flex-shrink-0 ${
+                                                activeItem === "Order Products"
+                                                    ? "text-blue-400"
+                                                    : ""
+                                            }`}
+                                        />
+                                        {!isCollapsed && (
+                                            <span className="font-medium flex-1 text-left">
+                                                Order Products
+                                            </span>
+                                        )}
+                                    </Link>
+
+                                    {isCollapsed && (
+                                        <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                            <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
+                                                <span className="text-sm font-medium">
+                                                    Order Products
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
                                 {/* Activity Logs */}
                                 <div className="relative group">
                                     <Link
@@ -292,7 +338,9 @@ const AdminSideBar = ({
                                             activeItem === "Activity Logs"
                                                 ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
                                                 : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
-                                        } ${isCollapsed ? "justify-center" : ""}`}
+                                        } ${
+                                            isCollapsed ? "justify-center" : ""
+                                        }`}
                                     >
                                         <Activity
                                             size={20}
@@ -324,16 +372,18 @@ const AdminSideBar = ({
 
                         {isAdmin && (
                             <>
-                            {/* Admin Dashboard */}
+                                {/* Admin Dashboard */}
 
-                             <div className="relative group">
+                                <div className="relative group">
                                     <Link
                                         href="/admin-dashboard"
                                         className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
                                             activeItem === "Dashboard"
                                                 ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
                                                 : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
-                                        } ${isCollapsed ? "justify-center" : ""}`}
+                                        } ${
+                                            isCollapsed ? "justify-center" : ""
+                                        }`}
                                     >
                                         <Home
                                             size={20}
@@ -507,7 +557,7 @@ const AdminSideBar = ({
                             )}
                         </div>
 
-                         {/* Setting */}
+                        {/* Setting */}
                         <div className="relative group">
                             <Link
                                 href="/admin-setting"
@@ -542,7 +592,7 @@ const AdminSideBar = ({
                                 </div>
                             )}
                         </div>
-                    </div>                  
+                    </div>
                 </div>
             </div>
         </div>

@@ -4,16 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ProductsCart extends Model
+class CartItem extends Model
 {
     protected $fillable = [
         'user_name',
+        'product_id', // Added product_id
         'product_name',
-        'short_description',
-        'long_description',
-        'features',
-        'sku',
-        'brand',
+        'product_sku',
+        'product_brand',
         'price',
         'discounted_price',
         'quantity',
@@ -21,13 +19,7 @@ class ProductsCart extends Model
         'color',
     ];
 
-    /**
-     * Relationship with User model
-     */
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    protected $appends = ['total_price']; // Append accessor to JSON
 
     /**
      * Relationship with Product model

@@ -149,40 +149,46 @@
 // };
 
 
-
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
 import axios from 'axios';
+import { usePage } from '@inertiajs/react';
 
 const CartContext = createContext();
 
 const cartReducer = (state, action) => {
     switch (action.type) {
         case 'ADD_TO_CART':
-            const existingItem = state.items.find(item => item.id === action.payload.id);
+            const existingItem = state.items.find(item => 
+                item.id === action.payload.id && 
+                item.size === action.payload.size && 
+                item.color === action.payload.color
+            );
             
             if (existingItem) {
                 return {
                     ...state,
                     items: state.items.map(item =>
-                        item.id === action.payload.id
-                            ? { ...item, quantity: item.quantity + 1 }
+                        item.id === action.payload.id && 
+                        item.size === action.payload.size && 
+                        item.color === action.payload.color
+                            ? { ...item, quantity: item.quantity + action.payload.quantity }
                             : item
                     ),
-                    totalItems: state.totalItems + 1
+                    totalItems: state.totalItems + action.payload.quantity
                 };
             }
             
             return {
                 ...state,
-                items: [...state.items, { ...action.payload, quantity: 1 }],
-                totalItems: state.totalItems + 1
+                items: [...state.items, { ...action.payload }],
+                totalItems: state.totalItems + action.payload.quantity
             };
             
         case 'REMOVE_FROM_CART':
-            const itemToRemove = state.items.find(item => item.id === action.payload);
+            const itemToRemove = state.items.find(item => item.cartItemId === action.payload);
             return {
                 ...state,
-                items: state.items.filter(item => item.id !== action.payload),
+                items: state.items.filter(item => item.cartItemId !== action.payload),
                 totalItems: Math.max(0, state.totalItems - (itemToRemove?.quantity || 0))
             };
             
@@ -190,12 +196,12 @@ const cartReducer = (state, action) => {
             return {
                 ...state,
                 items: state.items.map(item =>
-                    item.id === action.payload.id
+                    item.cartItemId === action.payload.cartItemId
                         ? { ...item, quantity: action.payload.quantity }
                         : item
                 ),
                 totalItems: state.items.reduce((total, item) => {
-                    if (item.id === action.payload.id) {
+                    if (item.cartItemId === action.payload.cartItemId) {
                         return total - item.quantity + action.payload.quantity;
                     }
                     return total + item.quantity;
@@ -208,16 +214,16 @@ const cartReducer = (state, action) => {
                 totalItems: 0
             };
             
-        case 'LOAD_CART':
+        case 'SYNC_CART_SUCCESS':
             return {
                 items: action.payload.items || [],
                 totalItems: action.payload.totalItems || 0
             };
             
-        case 'SYNC_CART':
+        case 'SET_LOADING':
             return {
-                items: action.payload.items || [],
-                totalItems: action.payload.totalItems || 0
+                ...state,
+                isLoading: action.payload
             };
             
         default:
@@ -226,55 +232,101 @@ const cartReducer = (state, action) => {
 };
 
 const getCartTotal = (items) => {
-    return items.reduce((total, item) => total + (item.price * item.quantity), 0);
+    return items.reduce((total, item) => total + ((item.discounted_price || item.price) * item.quantity), 0);
 };
 
-export const CartProvider = ({ children }) => {
+export const CartProvider = ({ children, user = null }) => {
     const [cart, dispatch] = useReducer(cartReducer, {
         items: [],
-        totalItems: 0
+        totalItems: 0,
+        isLoading: false
     });
+
+    const isMounted = useRef(true);
+
+    // Get auth user
+    let auth = { user: null };
+    try {
+        const page = usePage();
+        auth = page.props.auth || { user: null };
+    } catch (error) {
+        auth = { user };
+    }
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            isMounted.current = false;
+        };
+    }, []);
 
     // Load cart from backend on mount
     const loadCartFromBackend = async () => {
+        if (!isMounted.current) return;
+        
+        dispatch({ type: 'SET_LOADING', payload: true });
+        
         try {
             const response = await axios.get(route('ourcart.index'));
             if (response.data.success) {
                 const cartItems = response.data.data.map(item => ({
-                    id: item.id,
+                    cartItemId: item.id, // Use cart item ID for operations
+                    id: item.product_id, // Product ID
+                    product_id: item.product_id,
                     name: item.product_name,
-                    price: item.discounted_price || item.price,
-                    quantity: item.quantity,
+                    price: parseFloat(item.price),
+                    discounted_price: item.discounted_price ? parseFloat(item.discounted_price) : null,
+                    quantity: parseInt(item.quantity),
                     size: item.size,
                     color: item.color,
-                    image: item.product?.images?.[0] || null
+                    image: item.product?.images?.[0] || null,
+                    product_name: item.product_name,
+                    product_sku: item.product_sku,
+                    product_brand: item.product_brand,
+                    user_name: item.user_name,
+                    total_price: parseFloat(item.total_price)
                 }));
                 
-                dispatch({
-                    type: 'SYNC_CART',
-                    payload: {
-                        items: cartItems,
-                        totalItems: cartItems.reduce((total, item) => total + item.quantity, 0)
-                    }
-                });
+                if (isMounted.current) {
+                    dispatch({
+                        type: 'SYNC_CART_SUCCESS',
+                        payload: {
+                            items: cartItems,
+                            totalItems: cartItems.reduce((total, item) => total + item.quantity, 0)
+                        }
+                    });
+                }
             }
         } catch (error) {
             console.error('Error loading cart from backend:', error);
+        } finally {
+            if (isMounted.current) {
+                dispatch({ type: 'SET_LOADING', payload: false });
+            }
         }
     };
 
     // Sync cart to backend
     const syncCartToBackend = async (product, quantity = 1) => {
         try {
-            const response = await axios.post(route('ourcart.store'), {
+            const cartItemData = {
+                user_name: auth.user?.name || 'Guest',
                 product_id: product.id,
+                product_name: product.name || product.product_name,
+                product_sku: product.sku || product.product_sku,
+                product_brand: product.brand || product.product_brand,
+                price: product.price,
+                discounted_price: product.discounted_price || product.price,
                 quantity: quantity,
                 size: product.size || null,
-                color: product.color || null
-            });
+                color: product.color || null,
+            };
+
+            const response = await axios.post(route('ourcart.store'), cartItemData);
             
             if (response.data.success) {
-                await loadCartFromBackend(); // Reload cart to get updated data from backend
+                await loadCartFromBackend();
+                return response.data.data;
             }
         } catch (error) {
             console.error('Error syncing cart to backend:', error);
@@ -311,60 +363,99 @@ export const CartProvider = ({ children }) => {
         loadCartFromBackend();
     }, []);
 
-    const addToCart = async (product) => {
+    const addToCart = async (product, quantity = 1) => {
+        if (!product.id) {
+            console.error('Product ID is required');
+            return;
+        }
+
+        dispatch({ type: 'SET_LOADING', payload: true });
+        
         try {
-            // First update local state for immediate UI response
-            dispatch({ type: 'ADD_TO_CART', payload: product });
+            // Prepare product data for local state
+            const cartProduct = {
+                ...product,
+                quantity: quantity,
+                cartItemId: `temp-${Date.now()}`, // Temporary ID for local state
+            };
+
+            // Update local state immediately for better UX
+            dispatch({ type: 'ADD_TO_CART', payload: cartProduct });
             
             // Then sync with backend
-            await syncCartToBackend(product);
+            await syncCartToBackend(product, quantity);
         } catch (error) {
-            // Revert local state if backend sync fails
             console.error('Failed to add item to cart:', error);
-            await loadCartFromBackend(); // Reload from backend to sync state
+            // Reload from backend to sync state on error
+            await loadCartFromBackend();
+            throw error;
+        } finally {
+            dispatch({ type: 'SET_LOADING', payload: false });
         }
     };
 
     const removeFromCart = async (cartItemId) => {
+        dispatch({ type: 'SET_LOADING', payload: true });
+        
         try {
-            // First update local state
+            // Update local state immediately
             dispatch({ type: 'REMOVE_FROM_CART', payload: cartItemId });
             
-            // Then sync with backend
-            await removeCartItemFromBackend(cartItemId);
+            // Then sync with backend (only if it's not a temporary ID)
+            if (!cartItemId.startsWith('temp-')) {
+                await removeCartItemFromBackend(cartItemId);
+            }
         } catch (error) {
             console.error('Failed to remove item from cart:', error);
-            await loadCartFromBackend(); 
+            await loadCartFromBackend();
+            throw error;
+        } finally {
+            dispatch({ type: 'SET_LOADING', payload: false });
         }
     };
 
     const updateQuantity = async (cartItemId, quantity) => {
+        if (quantity <= 0) {
+            await removeFromCart(cartItemId);
+            return;
+        }
+
+        dispatch({ type: 'SET_LOADING', payload: true });
+        
         try {
-            if (quantity <= 0) {
-                await removeFromCart(cartItemId);
-            } else {
-                // First update local state
-                dispatch({ type: 'UPDATE_QUANTITY', payload: { id: cartItemId, quantity } });
-                
-                // Then sync with backend
+            // Update local state immediately
+            dispatch({ type: 'UPDATE_QUANTITY', payload: { cartItemId, quantity } });
+            
+            // Then sync with backend (only if it's not a temporary ID)
+            if (!cartItemId.startsWith('temp-')) {
                 await updateCartItemInBackend(cartItemId, { quantity });
             }
         } catch (error) {
             console.error('Failed to update quantity:', error);
-            await loadCartFromBackend(); // Reload from backend to sync state
+            await loadCartFromBackend();
+            throw error;
+        } finally {
+            dispatch({ type: 'SET_LOADING', payload: false });
         }
     };
 
     const clearCart = async () => {
+        dispatch({ type: 'SET_LOADING', payload: true });
+        
         try {
-            // For clearing cart, we need to remove each item individually
-            for (const item of cart.items) {
-                await removeCartItemFromBackend(item.id);
+            // Remove each item from backend
+            const backendItems = cart.items.filter(item => !item.cartItemId.startsWith('temp-'));
+            for (const item of backendItems) {
+                await removeCartItemFromBackend(item.cartItemId);
             }
             
+            // Clear local state
             dispatch({ type: 'CLEAR_CART' });
         } catch (error) {
             console.error('Failed to clear cart:', error);
+            throw error;
+        } finally {
+            dispatch({ type: 'SET_LOADING', payload: false });
         }
     };
 
@@ -379,7 +470,7 @@ export const CartProvider = ({ children }) => {
         updateQuantity,
         clearCart,
         getCartTotalPrice,
-        loadCartFromBackend // Export if you need to manually reload
+        loadCartFromBackend
     };
 
     return (

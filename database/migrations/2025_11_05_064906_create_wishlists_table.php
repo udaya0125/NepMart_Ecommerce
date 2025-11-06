@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('wishlists', function (Blueprint $table) {
             $table->id();
             $table->string('user_name');
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->string('product_name');
-            $table->text('short_description')->nullable();
-            $table->text('long_description')->nullable();
-            $table->text('features')->nullable();
-            $table->string('sku')->nullable();
-            $table->string('brand')->nullable();
+            $table->string('product_sku');
+            $table->string('product_brand');
+            $table->decimal('price', 10, 2);
+            $table->decimal('discounted_price', 10, 2)->nullable(); 
             $table->timestamps();
         });
     }

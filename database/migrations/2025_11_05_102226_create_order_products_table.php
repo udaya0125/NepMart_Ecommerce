@@ -6,37 +6,34 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
-        Schema::create('products_carts', function (Blueprint $table) {
+        Schema::create('order_products', function (Blueprint $table) {
             $table->id();
-
-            // Basic info
+            $table->string('order_id')->unique();
             $table->string('user_name');
+            $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->string('product_name');
-
-            // Product details (aligned with products table)
-            $table->string('sku')->nullable();
-            $table->string('brand')->nullable();
-            $table->integer('quantity')->default(1);
+            $table->string('payment_method');
+            $table->string('product_sku');
+            $table->string('product_brand');
+            $table->integer('quantity');
             $table->decimal('price', 10, 2);
             $table->decimal('discounted_price', 10, 2)->nullable();
-
-            // Product options
             $table->string('size')->nullable();
             $table->string('color')->nullable();
-
-            // Descriptions and extra info
-            $table->string('short_description')->nullable();
-            $table->longText('long_description')->nullable();
-            $table->longText('features')->nullable();
-
             $table->timestamps();
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
-        Schema::dropIfExists('products_carts');
+        Schema::dropIfExists('order_products');
     }
 };

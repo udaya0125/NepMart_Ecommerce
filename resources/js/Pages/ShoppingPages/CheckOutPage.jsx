@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, FormProvider } from "react-hook-form";
 import {
     ChevronDown,
     Truck,
@@ -10,23 +10,17 @@ import {
 import { useCart } from "../../Contexts/CartContext";
 import Navbar from "@/ContentWrapper/Navbar";
 import Footer from "@/ContentWrapper/Footer";
+import ShippingInformation from "./ShippingInformation"; // Import the ShippingInformation component
 
 const CheckOutPage = () => {
     const [step, setStep] = useState(1);
     const [isProcessing, setIsProcessing] = useState(false);
     const { cart, clearCart } = useCart();
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        trigger,
-        getValues,
-    } = useForm({
+    const methods = useForm({
         mode: "onChange",
         defaultValues: {
-            firstName: "",
-            lastName: "",
+            fullName: "",
             email: "",
             phone: "",
             address: "",
@@ -36,6 +30,13 @@ const CheckOutPage = () => {
             country: "",
         },
     });
+
+    const {
+        handleSubmit,
+        formState: { errors },
+        trigger,
+        getValues,
+    } = methods;
 
     // Generate HMAC SHA256 signature
     const generateSignature = async (message, secret) => {
@@ -131,8 +132,29 @@ const CheckOutPage = () => {
             // Store order details in session storage for verification after payment
             const orderData = {
                 transactionUuid,
-                orderItems: cart.items,
-                customerInfo: getValues(),
+                orderItems: cart.items.map(item => ({
+                    id: item.id,
+                    product_id: item.id, // Required for backend
+                    product_name: item.name,
+                    price: Number(item.price) || 0,
+                    discounted_price: item.discountedPrice || Number(item.price) || 0,
+                    quantity: item.quantity,
+                    size: item.size || "",
+                    color: item.color || "",
+                    product_sku: item.product_sku ,
+                    product_brand: item.product_brand,
+                    images: item.images || [],
+                })),
+                customerInfo: {
+                    fullName: data.fullName,
+                    email: data.email,
+                    phone: data.phone,
+                    address: data.address,
+                    city: data.city,
+                    state: data.state,
+                    zipCode: data.zipCode,
+                    country: data.country,
+                },
                 amounts: {
                     subtotal,
                     shipping,
@@ -142,9 +164,6 @@ const CheckOutPage = () => {
                 timestamp: new Date().toISOString(),
             };
             sessionStorage.setItem("pendingOrder", JSON.stringify(orderData));
-
-            // Clear cart after successful payment initialization
-            clearCart();
 
             // Create and submit form to eSewa
             const form = document.createElement("form");
@@ -160,6 +179,9 @@ const CheckOutPage = () => {
             });
 
             document.body.appendChild(form);
+            
+            // Clear cart after successful payment initialization
+            clearCart();
             form.submit();
         } catch (error) {
             console.error("Payment initialization error:", error);
@@ -168,26 +190,8 @@ const CheckOutPage = () => {
         }
     };
 
-    const handleNextStep = async () => {
-        let isValid = false;
-
-        if (step === 1) {
-            isValid = await trigger([
-                "firstName",
-                "lastName",
-                "email",
-                "phone",
-                "address",
-                "city",
-                "state",
-                "zipCode",
-                "country",
-            ]);
-        }
-
-        if (isValid) {
-            setStep(step + 1);
-        }
+    const handleNextStep = () => {
+        setStep(step + 1);
     };
 
     // Calculate order totals
@@ -207,7 +211,7 @@ const CheckOutPage = () => {
                 {/* Hero Section */}
                 <div className="relative h-64 md:h-80 overflow-hidden">
                     <img
-                        src="https://images.pexels.com/photos/1525612/pexels-photo-1525612.jpeg"
+                        src="https://images.pexels.com/photos-1525612/pexels-photo-1525612.jpeg"
                         alt="Checkout hero"
                         className="w-full h-full object-cover"
                     />
@@ -253,7 +257,7 @@ const CheckOutPage = () => {
                 {/* Hero Section */}
                 <div className="relative h-64 md:h-80 overflow-hidden mb-8">
                     <img
-                        src="https://images.pexels.com/photos/1525612/pexels-photo-1525612.jpeg"
+                        src="https://images.pexels.com/photos-1525612/pexels-photo-1525612.jpeg"
                         alt="Checkout hero"
                         className="w-full h-full object-cover"
                     />
@@ -327,392 +331,134 @@ const CheckOutPage = () => {
                                 </div>
                             </div>
 
-                            <form onSubmit={handleSubmit(onSubmit)}>
-                                {/* Step 1: Shipping Information */}
-                                {step === 1 && (
-                                    <div className="bg-white rounded-lg p-6">
-                                        <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                                            Shipping Information
-                                        </h2>
+                            <FormProvider {...methods}>
+                                <form onSubmit={handleSubmit(onSubmit)}>
+                                    {/* Step 1: Shipping Information */}
+                                    {step === 1 && (
+                                        <ShippingInformation 
+                                            onNextStep={handleNextStep}
+                                            isProcessing={isProcessing}
+                                        />
+                                    )}
 
-                                        <div className="grid grid-cols-2 gap-4 mb-4">
-                                            <div className="col-span-2 sm:col-span-1">
-                                                <input
-                                                    type="text"
-                                                    placeholder="First Name"
-                                                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-orange-500 ${
-                                                        errors.firstName
-                                                            ? "border-red-500"
-                                                            : "border-gray-300"
-                                                    }`}
-                                                    {...register("firstName", {
-                                                        required:
-                                                            "First name is required",
-                                                        minLength: {
-                                                            value: 2,
-                                                            message:
-                                                                "First name must be at least 2 characters",
-                                                        },
-                                                    })}
-                                                />
-                                                {errors.firstName && (
-                                                    <p className="text-red-500 text-sm mt-1">
-                                                        {
-                                                            errors.firstName
-                                                                .message
-                                                        }
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div className="col-span-2 sm:col-span-1">
-                                                <input
-                                                    type="text"
-                                                    placeholder="Last Name"
-                                                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-orange-500 ${
-                                                        errors.lastName
-                                                            ? "border-red-500"
-                                                            : "border-gray-300"
-                                                    }`}
-                                                    {...register("lastName", {
-                                                        required:
-                                                            "Last name is required",
-                                                        minLength: {
-                                                            value: 2,
-                                                            message:
-                                                                "Last name must be at least 2 characters",
-                                                        },
-                                                    })}
-                                                />
-                                                {errors.lastName && (
-                                                    <p className="text-red-500 text-sm mt-1">
-                                                        {
-                                                            errors.lastName
-                                                                .message
-                                                        }
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
+                                    {/* Step 2: eSewa Payment */}
+                                    {step === 2 && (
+                                        <div className="bg-white rounded-lg p-6">
+                                            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                                                Payment Information
+                                            </h2>
 
-                                        <div className="grid grid-cols-2 gap-4 mb-4">
-                                            <div className="col-span-2 sm:col-span-1">
-                                                <input
-                                                    type="email"
-                                                    placeholder="Email Address"
-                                                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-orange-500 ${
-                                                        errors.email
-                                                            ? "border-red-500"
-                                                            : "border-gray-300"
-                                                    }`}
-                                                    {...register("email", {
-                                                        required:
-                                                            "Email is required",
-                                                        pattern: {
-                                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                                            message:
-                                                                "Invalid email address",
-                                                        },
-                                                    })}
+                                            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
+                                                <Lock
+                                                    size={20}
+                                                    className="text-blue-600 mt-1 flex-shrink-0"
                                                 />
-                                                {errors.email && (
-                                                    <p className="text-red-500 text-sm mt-1">
-                                                        {errors.email.message}
-                                                    </p>
-                                                )}
-                                            </div>
-                                            <div className="col-span-2 sm:col-span-1">
-                                                <input
-                                                    type="tel"
-                                                    placeholder="Phone Number (e.g., 9800000000)"
-                                                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-orange-500 ${
-                                                        errors.phone
-                                                            ? "border-red-500"
-                                                            : "border-gray-300"
-                                                    }`}
-                                                    {...register("phone", {
-                                                        required:
-                                                            "Phone number is required",
-                                                        pattern: {
-                                                            value: /^[9][0-9]{9}$/,
-                                                            message:
-                                                                "Invalid Nepali phone number (must start with 9 and be 10 digits)",
-                                                        },
-                                                    })}
-                                                />
-                                                {errors.phone && (
-                                                    <p className="text-red-500 text-sm mt-1">
-                                                        {errors.phone.message}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="mb-4">
-                                            <input
-                                                type="text"
-                                                placeholder="Street Address"
-                                                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-orange-500 ${
-                                                    errors.address
-                                                        ? "border-red-500"
-                                                        : "border-gray-300"
-                                                }`}
-                                                {...register("address", {
-                                                    required:
-                                                        "Address is required",
-                                                    minLength: {
-                                                        value: 5,
-                                                        message:
-                                                            "Address must be at least 5 characters",
-                                                    },
-                                                })}
-                                            />
-                                            {errors.address && (
-                                                <p className="text-red-500 text-sm mt-1">
-                                                    {errors.address.message}
+                                                <p className="text-sm text-blue-800">
+                                                    Your payment is secure and
+                                                    encrypted through eSewa. You
+                                                    will be redirected to eSewa's
+                                                    secure payment gateway.
                                                 </p>
-                                            )}
-                                        </div>
+                                            </div>
 
-                                        <div className="grid grid-cols-2 gap-4 mb-4">
-                                            <div className="col-span-2 sm:col-span-1">
-                                                <input
-                                                    type="text"
-                                                    placeholder="City"
-                                                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-orange-500 ${
-                                                        errors.city
-                                                            ? "border-red-500"
-                                                            : "border-gray-300"
-                                                    }`}
-                                                    {...register("city", {
-                                                        required:
-                                                            "City is required",
-                                                        minLength: {
-                                                            value: 2,
-                                                            message:
-                                                                "City must be at least 2 characters",
-                                                        },
-                                                    })}
+                                            <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
+                                                <AlertCircle
+                                                    size={20}
+                                                    className="text-amber-600 mt-1 flex-shrink-0"
                                                 />
-                                                {errors.city && (
-                                                    <p className="text-red-500 text-sm mt-1">
-                                                        {errors.city.message}
+                                                <div className="text-sm text-amber-800">
+                                                    <p className="font-semibold mb-1">
+                                                        Test Mode Active
                                                     </p>
-                                                )}
-                                            </div>
-                                            <div className="col-span-2 sm:col-span-1">
-                                                <input
-                                                    type="text"
-                                                    placeholder="State/Province"
-                                                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-orange-500 ${
-                                                        errors.state
-                                                            ? "border-red-500"
-                                                            : "border-gray-300"
-                                                    }`}
-                                                    {...register("state", {
-                                                        required:
-                                                            "State is required",
-                                                        minLength: {
-                                                            value: 2,
-                                                            message:
-                                                                "State must be at least 2 characters",
-                                                        },
-                                                    })}
-                                                />
-                                                {errors.state && (
-                                                    <p className="text-red-500 text-sm mt-1">
-                                                        {errors.state.message}
+                                                    <p>
+                                                        This is a test transaction.
+                                                        Use eSewa test credentials
+                                                        to complete payment.
                                                     </p>
-                                                )}
+                                                </div>
                                             </div>
-                                        </div>
 
-                                        <div className="grid grid-cols-2 gap-4 mb-6">
-                                            <div className="col-span-2 sm:col-span-1">
-                                                <input
-                                                    type="text"
-                                                    placeholder="ZIP Code"
-                                                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-orange-500 ${
-                                                        errors.zipCode
-                                                            ? "border-red-500"
-                                                            : "border-gray-300"
-                                                    }`}
-                                                    {...register("zipCode", {
-                                                        required:
-                                                            "ZIP code is required",
-                                                        pattern: {
-                                                            value: /^[0-9]{5}$/,
-                                                            message:
-                                                                "ZIP code must be exactly 5 digits",
-                                                        },
-                                                    })}
-                                                />
-                                                {errors.zipCode && (
-                                                    <p className="text-red-500 text-sm mt-1">
-                                                        {errors.zipCode.message}
+                                            <div className="mb-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg text-center">
+                                                <div className="h-16 w-full mx-auto mb-4 flex items-center justify-center bg-white rounded shadow-sm">
+                                                    <span className="text-3xl font-bold text-green-600">
+                                                        eSewa
+                                                    </span>
+                                                </div>
+                                                <h3 className="text-lg font-bold text-gray-900 mb-2">
+                                                    Pay with eSewa
+                                                </h3>
+                                                <p className="text-sm text-gray-600 mb-4">
+                                                    Nepal's most trusted digital
+                                                    payment solution
+                                                </p>
+                                                <div className="bg-white p-4 rounded-lg inline-block shadow-sm">
+                                                    <p className="text-sm text-gray-600 mb-1">
+                                                        Total Amount
                                                     </p>
-                                                )}
+                                                    <p className="text-3xl font-bold text-orange-500">
+                                                        Rs. {total.toFixed(2)}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div className="col-span-2 sm:col-span-1">
-                                                <select
-                                                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:border-orange-500 appearance-none ${
-                                                        errors.country
-                                                            ? "border-red-500"
-                                                            : "border-gray-300"
-                                                    }`}
-                                                    {...register("country", {
-                                                        required:
-                                                            "Country is required",
-                                                    })}
+
+                                            <div className="space-y-3 mb-6 pb-6 border-b border-gray-200 text-sm">
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-600">
+                                                        Subtotal
+                                                    </span>
+                                                    <span className="font-semibold text-gray-900">
+                                                        Rs. {subtotal.toFixed(2)}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-600">
+                                                        Shipping
+                                                    </span>
+                                                    <span className="font-semibold text-gray-900">
+                                                        Rs. {shipping.toFixed(2)}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="text-gray-600">
+                                                        Tax (13% VAT)
+                                                    </span>
+                                                    <span className="font-semibold text-gray-900">
+                                                        Rs. {tax.toFixed(2)}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex gap-4">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setStep(1)}
+                                                    disabled={isProcessing}
+                                                    className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-900 font-bold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                 >
-                                                    <option value="">
-                                                        Select Country
-                                                    </option>
-                                                    <option value="nepal">
-                                                        Nepal
-                                                    </option>
-                                                    <option value="india">
-                                                        India
-                                                    </option>
-                                                    <option value="pakistan">
-                                                        Pakistan
-                                                    </option>
-                                                </select>
-                                                {errors.country && (
-                                                    <p className="text-red-500 text-sm mt-1">
-                                                        {errors.country.message}
-                                                    </p>
-                                                )}
+                                                    Back
+                                                </button>
+                                                <button
+                                                    type="submit"
+                                                    disabled={isProcessing}
+                                                    className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                    {isProcessing ? (
+                                                        <>
+                                                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                                            Processing...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            Pay with eSewa{" "}
+                                                            <ArrowRight size={20} />
+                                                        </>
+                                                    )}
+                                                </button>
                                             </div>
                                         </div>
-
-                                        <button
-                                            type="button"
-                                            onClick={handleNextStep}
-                                            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-colors"
-                                        >
-                                            Continue to Payment{" "}
-                                            <ArrowRight size={20} />
-                                        </button>
-                                    </div>
-                                )}
-
-                                {/* Step 2: eSewa Payment */}
-                                {step === 2 && (
-                                    <div className="bg-white rounded-lg p-6">
-                                        <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                                            Payment Information
-                                        </h2>
-
-                                        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg flex items-start gap-3">
-                                            <Lock
-                                                size={20}
-                                                className="text-blue-600 mt-1 flex-shrink-0"
-                                            />
-                                            <p className="text-sm text-blue-800">
-                                                Your payment is secure and
-                                                encrypted through eSewa. You
-                                                will be redirected to eSewa's
-                                                secure payment gateway.
-                                            </p>
-                                        </div>
-
-                                        <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
-                                            <AlertCircle
-                                                size={20}
-                                                className="text-amber-600 mt-1 flex-shrink-0"
-                                            />
-                                            <div className="text-sm text-amber-800">
-                                                <p className="font-semibold mb-1">
-                                                    Test Mode Active
-                                                </p>
-                                                <p>
-                                                    This is a test transaction.
-                                                    Use eSewa test credentials
-                                                    to complete payment.
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="mb-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-lg text-center">
-                                            <div className="h-16 w-full mx-auto mb-4 flex items-center justify-center bg-white rounded shadow-sm">
-                                                <span className="text-3xl font-bold text-green-600">
-                                                    eSewa
-                                                </span>
-                                            </div>
-                                            <h3 className="text-lg font-bold text-gray-900 mb-2">
-                                                Pay with eSewa
-                                            </h3>
-                                            <p className="text-sm text-gray-600 mb-4">
-                                                Nepal's most trusted digital
-                                                payment solution
-                                            </p>
-                                            <div className="bg-white p-4 rounded-lg inline-block shadow-sm">
-                                                <p className="text-sm text-gray-600 mb-1">
-                                                    Total Amount
-                                                </p>
-                                                <p className="text-3xl font-bold text-orange-500">
-                                                    Rs. {total.toFixed(2)}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="space-y-3 mb-6 pb-6 border-b border-gray-200 text-sm">
-                                            <div className="flex justify-between">
-                                                <span className="text-gray-600">
-                                                    Subtotal
-                                                </span>
-                                                <span className="font-semibold text-gray-900">
-                                                    Rs. {subtotal.toFixed(2)}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-gray-600">
-                                                    Shipping
-                                                </span>
-                                                <span className="font-semibold text-gray-900">
-                                                    Rs. {shipping.toFixed(2)}
-                                                </span>
-                                            </div>
-                                            <div className="flex justify-between">
-                                                <span className="text-gray-600">
-                                                    Tax (13% VAT)
-                                                </span>
-                                                <span className="font-semibold text-gray-900">
-                                                    Rs. {tax.toFixed(2)}
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex gap-4">
-                                            <button
-                                                type="button"
-                                                onClick={() => setStep(1)}
-                                                disabled={isProcessing}
-                                                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-900 font-bold py-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                            >
-                                                Back
-                                            </button>
-                                            <button
-                                                type="submit"
-                                                disabled={isProcessing}
-                                                className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold py-3 rounded-lg flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                                            >
-                                                {isProcessing ? (
-                                                    <>
-                                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                                        Processing...
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        Pay with eSewa{" "}
-                                                        <ArrowRight size={20} />
-                                                    </>
-                                                )}
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-                            </form>
+                                    )}
+                                </form>
+                            </FormProvider>
                         </div>
 
                         {/* Order Summary Sidebar */}

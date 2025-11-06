@@ -9,11 +9,28 @@ class Wishlist extends Model
     //
     protected $fillable = [
         'user_name',
+        'product_id',
         'product_name',
-        'short_description',
-        'long_description',
-        'features',
-        'sku',
-        'brand',
+        'product_sku',
+        'product_brand',
+        'price',
+        'discounted_price',
     ];
+
+     /**
+     * Relationship with Product model
+     */
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Accessor: Calculate total price for this cart item
+     */
+    public function getTotalPriceAttribute()
+    {
+        $price = $this->discounted_price ?? $this->price;
+        return $price * $this->quantity;
+    }
 }

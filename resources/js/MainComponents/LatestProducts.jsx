@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, Heart, Eye, ExternalLink, ShoppingCart } from 'lucide-react'
-import { Link } from '@inertiajs/react'
+import { Link, usePage } from '@inertiajs/react'
 import ProductsPopup from './ProductsPopup'
 import { useCart } from '../contexts/CartContext'
 import { useWishlist } from '../contexts/WishlistContext' 
@@ -13,11 +13,21 @@ const LatestProducts = () => {
   const [showDetails, setShowDetails] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(null)
 
+  // Get auth from page props
+  const { auth } = usePage().props;
+  const user = auth?.user;
+
   // Use the cart context
   const { addToCart } = useCart()
   
   // Use the wishlist context
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
+  const { 
+    addToWishlist, 
+    removeFromWishlist, 
+    isInWishlist, 
+    getWishlistItemId,
+    wishlist: { isLoading: wishlistLoading }
+  } = useWishlist()
 
   // Use Effect for fetching products
   useEffect(() => {
@@ -28,7 +38,7 @@ const LatestProducts = () => {
         console.log("Fetching products from:", route("ourproducts.index"))
         const response = await axios.get(route("ourproducts.index"))
         console.log("Products response:", response.data)
-        setAllProducts(response.data.data || response.data) // Handle both response formats
+        setAllProducts(response.data.data || response.data)
       } catch (err) {
         console.error("Fetching error:", err)
         console.error("Error response:", err.response)
@@ -40,15 +50,6 @@ const LatestProducts = () => {
 
     fetchProducts()
   }, [])
-
-  // Debug the products data
-  useEffect(() => {
-    if (allProducts.length > 0) {
-      console.log("Processed products:", allProducts)
-      console.log("First product details:", allProducts[0])
-      console.log("First product images:", allProducts[0].images)
-    }
-  }, [allProducts])
 
   const scroll = (direction) => {
     const container = document.getElementById("latest-products-container")
@@ -66,45 +67,78 @@ const LatestProducts = () => {
     setShowDetails(true)
   }
 
-  const handleAddToCart = (product, e) => {
+  const handleAddToCart = async (product, e) => {
     e.preventDefault()
     e.stopPropagation()
     
-    // Create a cart-ready product object
-    const cartProduct = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      images: product.images || [],
-      slug: product.slug
+    try {
+      const cartProduct = {
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        images: product.images || [],
+        slug: product.slug,
+        sku: product.sku || product.product_sku || `SKU-${product.id}`,
+        product_sku: product.product_sku || product.sku || `SKU-${product.id}`,
+        brand: product.brand || product.product_brand || 'Unknown Brand',
+        product_brand: product.product_brand || product.brand || 'Unknown Brand',
+        product_name: product.name,
+        discounted_price: product.discounted_price || product.sale_price || product.price
+      }
+
+      console.log('Adding to cart:', cartProduct)
+      await addToCart(cartProduct, 1)
+      console.log(`Added ${product.name} to cart`)
+      
+    } catch (error) {
+      console.error('Failed to add to cart:', error)
+      alert(`Failed to add ${product.name} to cart: ${error.message}`)
     }
-    
-    addToCart(cartProduct)
-    
-    // Optional: Show feedback (you can add a toast notification here)
-    console.log(`Added ${product.name} to cart`)
   }
 
-  const handleWishlistToggle = (product, e) => {
+  const handleWishlistToggle = async (product, e) => {
     e.preventDefault()
     e.stopPropagation()
     
-    const wishlistProduct = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      images: product.images || [],
-      slug: product.slug,
-      rating: product.rating || 0,
-      inStock: product.inStock !== false
-    }
+    try {
+      if (isInWishlist(product.id)) {
+        const wishlistItemId = getWishlistItemId(product.id)
+        console.log('Removing from wishlist - Product ID:', product.id, 'Wishlist Item ID:', wishlistItemId)
+        
+        if (wishlistItemId) {
+          await removeFromWishlist(wishlistItemId)
+          console.log(`Removed ${product.name} from wishlist`)
+        } else {
+          console.error('Could not find wishlist item ID for product:', product.id)
+        }
+      } else {
+        const wishlistProduct = {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          images: product.images || [],
+          slug: product.slug,
+          rating: product.rating || 0,
+          inStock: product.inStock !== false,
+          sku: product.sku || product.product_sku || `SKU-${product.id}`,
+          product_sku: product.product_sku || product.sku || `SKU-${product.id}`,
+          product_brand: product.brand || product.product_brand || 'Unknown Brand',
+          product_name: product.name,
+          discounted_price: product.discounted_price || product.sale_price || product.price
+        }
 
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id)
-      console.log(`Removed ${product.name} from wishlist`)
-    } else {
-      addToWishlist(wishlistProduct)
-      console.log(`Added ${product.name} to wishlist`)
+        console.log('Adding to wishlist:', wishlistProduct)
+        await addToWishlist(wishlistProduct)
+        console.log(`Added ${product.name} to wishlist`)
+        
+        // Show message if user is not authenticated
+        if (!user) {
+          alert('Product added to local wishlist. Sign in to sync across devices.');
+        }
+      }
+    } catch (error) {
+      console.error('Failed to update wishlist:', error)
+      alert(`Failed to update wishlist: ${error.message}`)
     }
   }
 
@@ -132,7 +166,6 @@ const LatestProducts = () => {
   // Get first image or placeholder
   const getProductImage = (product) => {
     if (product.images && product.images.length > 0) {
-      // Handle both object and string formats
       const firstImage = product.images[0];
       return typeof firstImage === 'object' 
         ? firstImage.image_path 
@@ -143,7 +176,6 @@ const LatestProducts = () => {
     return '/placeholder-image.jpg';
   }
 
-  // Loading state
   if (loading) {
     return (
       <div className="w-full bg-white py-16">
@@ -152,19 +184,11 @@ const LatestProducts = () => {
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Latest Products</h1>
             <p className="text-gray-600">Loading products...</p>
           </div>
-          <div className="flex justify-center">
-            <div className="animate-pulse flex gap-6">
-              {[1, 2, 3, 4].map(i => (
-                <div key={i} className="w-72 bg-gray-200 rounded-lg h-96 animate-pulse"></div>
-              ))}
-            </div>
-          </div>
         </div>
       </div>
-    )
+    );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="w-full bg-white py-16">
@@ -172,16 +196,10 @@ const LatestProducts = () => {
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-gray-900 mb-2">Latest Products</h1>
             <p className="text-red-500">{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Retry
-            </button>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -253,7 +271,7 @@ const LatestProducts = () => {
                         {renderStars(product.rating || 0)}
                       </div>
 
-                      {/* Price - Simplified since we only have one price field */}
+                      {/* Price */}
                       <div className="flex items-center gap-2">
                         <span className="text-lg font-semibold text-gray-900">
                           Rs.{product.price}
@@ -262,15 +280,16 @@ const LatestProducts = () => {
                     </div>
                   </Link>
 
-                  {/* Action Icons (Outside Link) */}
+                  {/* Action Icons */}
                   <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={(e) => handleWishlistToggle(product, e)}
+                      disabled={wishlistLoading}
                       className={`p-2 rounded-full shadow-md transition-colors ${
                         isInWishlist(product.id) 
                           ? "bg-pink-50 text-pink-500 hover:bg-pink-100" 
                           : "bg-white text-gray-700 hover:bg-gray-100"
-                      }`}
+                      } ${wishlistLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                       aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
                     >
                       <Heart 
@@ -312,7 +331,7 @@ const LatestProducts = () => {
             )}
           </div>
 
-          {/* Right Arrow - Only show if there are products */}
+          {/* Right Arrow */}
           {allProducts.length > 0 && (
             <button
               onClick={() => scroll("right")}

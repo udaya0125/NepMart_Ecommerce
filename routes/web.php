@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\SubCategoryController;
+use App\Http\Controllers\SubCategoryController; 
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ActivityLogsController;
@@ -14,7 +14,8 @@ use App\Http\Controllers\TestimonialController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistController;
-use App\Http\Controllers\OrderItemController;
+use App\Http\Controllers\OrderProductController;
+use App\Http\Controllers\CartItemController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -60,10 +61,10 @@ Route::middleware('auth')->group(function () {
  });
 
 
-    Route::get('/ourcart', [CartController::class, 'index'])->name('ourcart.index');
-    Route::post('/ourcart', [CartController::class, 'store'])->name('ourcart.store');
-    Route::put('/ourcart/{id}', [CartController::class, 'update'])->name('ourcart.update');
-    Route::delete('/ourcart/{id}', [CartController::class, 'destroy'])->name('ourcart.destroy');
+    Route::get('/ourcart', [CartItemController::class, 'index'])->name('ourcart.index');
+    Route::post('/ourcart', [CartItemController::class, 'store'])->name('ourcart.store');
+    Route::put('/ourcart/{id}', [CartItemController::class, 'update'])->name('ourcart.update');
+    Route::delete('/ourcart/{id}', [CartItemController::class, 'destroy'])->name('ourcart.destroy');
 
 
     Route::get('/ourwishlist', [WishlistController::class, 'index'])->name('ourwishlist.index');
@@ -74,14 +75,26 @@ Route::middleware('auth')->group(function () {
 
 
 
-    Route::get('/ourorder', [OrderItemController::class, 'index'])->name('ourorder.index');
-    Route::post('/ourorder', [OrderItemController::class, 'store'])->name('ourorder.store');
-    Route::put('/ourorder/{id}', [OrderItemController::class, 'update'])->name('ourorder.update');
-    Route::delete('/ourorder/{id}', [OrderItemController::class, 'destroy'])->name('ourorder.destroy');
+    Route::get('/ourorder', [OrderProductController::class, 'index'])->name('ourorder.index');
+    Route::post('/ourorder', [OrderProductController::class, 'store'])->name('ourorder.store');
+    Route::put('/ourorder/{id}', [OrderProductController::class, 'update'])->name('ourorder.update');
+    Route::delete('/ourorder/{id}', [OrderProductController::class, 'destroy'])->name('ourorder.destroy');
 
 
     // user for Update
     Route::put('/ouruser/{id}', [UserController::class, 'update'])->name('ouruser.update');
+
+
+
+
+    Route::get('/payment/success',function(){
+    return Inertia::render('ShoppingPages/PaymentSucess'); // Or whatever your actual component name is
+});
+
+
+Route::get('/payment/failure',function(){
+    return Inertia::render('ShoppingPages/PaymentFailure'); // Or whatever your actual component name is
+});
 });
 
 
@@ -122,6 +135,10 @@ Route::middleware(['auth', 'role:super admin'])->group(function() {
     Route::get('/user-management', function(){
         return Inertia::render('SuperAdminPage/UserManagement');
     });
+
+     Route::get('/order-products', function(){
+        return Inertia::render('SuperAdminPage/OrderProducts');
+    });
     
     Route::get('/ouruser', [UserController::class, 'index'])->name('ouruser.index');
     Route::post('/ouruser', [UserController::class, 'store'])->name('ouruser.store');
@@ -145,7 +162,7 @@ Route::middleware(['auth', 'role:super admin|admin'])->group(function() {
     Route::put('/ourcategory/{id}', [CategoryController::class, 'update'])->name('ourcategory.update'); 
     Route::delete('/ourcategory/{id}', [CategoryController::class, 'destroy'])->name('ourcategory.destroy');
 
-     Route::get('categorywithsubcategory',[CategoryController::class,'indexWithSubCategory'])->name('categorywithsubcategory.indexWithSubCategory');
+    Route::get('categorywithsubcategory',[CategoryController::class,'indexWithSubCategory'])->name('categorywithsubcategory.indexWithSubCategory');
 
     // Sub Category
 
@@ -275,9 +292,7 @@ Route::get('/check-out',function(){
     return Inertia::render('ShoppingPages/CheckOutPage');
 });
 
-Route::get('/payment/success',function(){
-    return Inertia::render('ShoppingPages/PaymentSucess'); // Or whatever your actual component name is
-});
+
 
 //
 
