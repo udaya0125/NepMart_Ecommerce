@@ -13,6 +13,7 @@ class OrderProduct extends Model
         'user_name',
         'product_id',
         'product_name',
+        'user_email',
         'payment_method',
         'product_sku',
         'product_brand',

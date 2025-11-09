@@ -148,7 +148,6 @@
 //     return context;
 // };
 
-
 import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { usePage } from '@inertiajs/react';
@@ -270,8 +269,8 @@ export const CartProvider = ({ children, user = null }) => {
             const response = await axios.get(route('ourcart.index'));
             if (response.data.success) {
                 const cartItems = response.data.data.map(item => ({
-                    cartItemId: item.id, // Use cart item ID for operations
-                    id: item.product_id, // Product ID
+                    cartItemId: String(item.id), // Ensure cartItemId is string
+                    id: item.product_id,
                     product_id: item.product_id,
                     name: item.product_name,
                     price: parseFloat(item.price),
@@ -395,15 +394,23 @@ export const CartProvider = ({ children, user = null }) => {
     };
 
     const removeFromCart = async (cartItemId) => {
+        // Ensure cartItemId is a string and validate
+        const itemId = String(cartItemId);
+        
+        if (!itemId || itemId === 'undefined' || itemId === 'null') {
+            console.error('Valid CartItemId is required');
+            return;
+        }
+
         dispatch({ type: 'SET_LOADING', payload: true });
         
         try {
             // Update local state immediately
-            dispatch({ type: 'REMOVE_FROM_CART', payload: cartItemId });
+            dispatch({ type: 'REMOVE_FROM_CART', payload: itemId });
             
             // Then sync with backend (only if it's not a temporary ID)
-            if (!cartItemId.startsWith('temp-')) {
-                await removeCartItemFromBackend(cartItemId);
+            if (!itemId.startsWith('temp-')) {
+                await removeCartItemFromBackend(itemId);
             }
         } catch (error) {
             console.error('Failed to remove item from cart:', error);
@@ -415,8 +422,16 @@ export const CartProvider = ({ children, user = null }) => {
     };
 
     const updateQuantity = async (cartItemId, quantity) => {
+        // Ensure cartItemId is a string and validate
+        const itemId = String(cartItemId);
+        
+        if (!itemId || itemId === 'undefined' || itemId === 'null') {
+            console.error('Valid CartItemId is required');
+            return;
+        }
+
         if (quantity <= 0) {
-            await removeFromCart(cartItemId);
+            await removeFromCart(itemId);
             return;
         }
 
@@ -424,11 +439,11 @@ export const CartProvider = ({ children, user = null }) => {
         
         try {
             // Update local state immediately
-            dispatch({ type: 'UPDATE_QUANTITY', payload: { cartItemId, quantity } });
+            dispatch({ type: 'UPDATE_QUANTITY', payload: { cartItemId: itemId, quantity } });
             
             // Then sync with backend (only if it's not a temporary ID)
-            if (!cartItemId.startsWith('temp-')) {
-                await updateCartItemInBackend(cartItemId, { quantity });
+            if (!itemId.startsWith('temp-')) {
+                await updateCartItemInBackend(itemId, { quantity });
             }
         } catch (error) {
             console.error('Failed to update quantity:', error);

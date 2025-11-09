@@ -65,8 +65,8 @@ const EditProductForm = ({
 
     // Shipping options
     const shippingOptions = [
-        { value: "false", label: "No" },
         { value: "true", label: "Yes" },
+        { value: "false", label: "No" },
     ];
 
     const {
@@ -138,6 +138,10 @@ const EditProductForm = ({
         if (editingProduct && showForm) {
             setIsFormInitialized(false);
 
+            // Debug free_shipping value
+            console.log("Editing product free_shipping value:", editingProduct.free_shipping);
+            console.log("Type of free_shipping:", typeof editingProduct.free_shipping);
+
             // Set existing images
             if (editingProduct.images && editingProduct.images.length > 0) {
                 setExistingImages(editingProduct.images);
@@ -207,11 +211,33 @@ const EditProductForm = ({
                         }
                     }
                 } else if (key === "free_shipping" && editingProduct[key] !== undefined) {
+                    // Fixed: Handle different possible formats of free_shipping value
+                    const freeShippingValue = editingProduct[key];
+                    
+                    // Convert to string representation that matches our options
+                    let stringValue;
+                    if (typeof freeShippingValue === 'boolean') {
+                        stringValue = freeShippingValue ? "true" : "false";
+                    } else if (typeof freeShippingValue === 'number') {
+                        stringValue = freeShippingValue === 1 ? "true" : "false";
+                    } else if (typeof freeShippingValue === 'string') {
+                        // Handle string values like "1", "0", "true", "false"
+                        stringValue = (freeShippingValue === "1" || freeShippingValue === "true" || freeShippingValue === "yes") ? "true" : "false";
+                    } else {
+                        stringValue = "false"; // default
+                    }
+                    
+                    console.log("Converted free_shipping value:", stringValue);
+                    
                     const shippingItem = shippingOptions.find(
-                        (s) => s.value === String(editingProduct[key])
+                        (s) => s.value === stringValue
                     );
                     if (shippingItem) {
                         setValue("free_shipping", shippingItem);
+                        console.log("Set free_shipping to:", shippingItem);
+                    } else {
+                        // Fallback to "No" if no match found
+                        setValue("free_shipping", shippingOptions.find(s => s.value === "false"));
                     }
                 } else if (
                     key !== "images" &&

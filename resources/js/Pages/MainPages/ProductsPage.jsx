@@ -161,13 +161,13 @@ const ProductsPage = () => {
             <div className="">
                 <div className="relative h-[550px] overflow-hidden">
                     <img
-                        src="https://images.pexels.com/photos/34391717/pexels-photo-34391717.jpeg"
+                        src="hero.png"
                         alt="Products hero image"
                         className="w-full h-full object-cover"
                     />
 
                     {/* Dark Overlay */}
-                    <div className="absolute inset-0 bg-black/40"></div>
+                    <div className="absolute inset-0 bg-black/60"></div>
 
                     {/* Text Content */}
                     <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4">

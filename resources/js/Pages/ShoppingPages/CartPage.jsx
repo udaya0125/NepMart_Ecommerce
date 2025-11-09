@@ -18,14 +18,24 @@ const CartPage = () => {
         console.log("Toggle like for item:", id);
     };
 
-    const handleUpdateQuantity = (id, newQuantity) => {
+    // Helper function to get the correct cart item ID
+    const getCartItemId = (item) => {
+        const id = item.cartItemId || item.id;
+        if (!id) {
+            console.warn('No ID found for cart item:', item);
+            return `temp-${Date.now()}`;
+        }
+        return String(id);
+    };
+
+    const handleUpdateQuantity = (cartItemId, newQuantity) => {
         if (newQuantity > 0) {
-            updateQuantity(id, newQuantity);
+            updateQuantity(cartItemId, newQuantity);
         }
     };
 
-    const handleRemoveItem = (id) => {
-        removeFromCart(id);
+    const handleRemoveItem = (cartItemId) => {
+        removeFromCart(cartItemId);
     };
 
     const handleClearCart = () => {
@@ -58,28 +68,30 @@ const CartPage = () => {
             const total = subtotal + shipping;
             const orderId = generateOrderId();
 
-            // Prepare order items data - FIXED: Ensure all required fields have values
+            // Get user email from auth or use a default
+            const userEmail = auth.user?.email || 'guest@example.com';
+            const userName = auth.user?.name || 'Guest';
+
+            // Prepare order items data - FIXED: Added user_email field
             const orderItemsData = cart.items.map(item => ({
-                user_name: auth.user?.name || 'Guest',
-                product_id: item.id || 0,
-                product_name: item.name || 'Unknown Product',
+                user_name: userName,
+                user_email: userEmail,
+                product_id: item.id || item.product_id || 0,
+                product_name: item.name || item.product_name || 'Unknown Product',
                 payment_method: "COD",
-                product_sku: item.product_sku,
-                product_brand: item.brand || item.product_brand || 'Generic Brand', // Provide fallback
+                product_sku: item.product_sku || 'N/A',
+                product_brand: item.product_brand || 'Unknown Brand',
                 quantity: item.quantity,
                 price: item.price,
-                discounted_price: item.discountedPrice || item.price,
-                size: item.size || 'One Size', // Provide default value
-                color: item.color || 'Default', // Provide default value
-                order_id: orderId, // Add order_id to each item
+                discounted_price: item.discounted_price || item.price,
+                size: item.size || 'One Size',
+                color: item.color || 'Default',
+                order_id: orderId,
             }));
 
             console.log("Sending order data:", orderItemsData);
 
-            // Option 1: Send all items in one request (if backend supports batch create)
-            // await axios.post(route('ourorder.store'), { orders: orderItemsData });
-
-            // Option 2: Send each order item individually
+            // Send each order item individually
             const orderPromises = orderItemsData.map(orderItem => 
                 axios.post(route('ourorder.store'), orderItem)
             );
@@ -91,14 +103,13 @@ const CartPage = () => {
             
             alert(`COD Order placed successfully! Order ID: ${orderId}\nTotal: Rs. ${total}`);
             
-            // Redirect to success page or orders page
+            // Redirect to home page or orders page
             window.location.href = '/';
 
         } catch (error) {
             console.error("Error placing COD order:", error);
             if (error.response) {
                 console.error("Backend validation errors:", error.response.data);
-                // More user-friendly error message
                 if (error.response.data.errors) {
                     const errorMessages = Object.values(error.response.data.errors).flat().join(', ');
                     alert(`Failed to place order: ${errorMessages}`);
@@ -124,6 +135,8 @@ const CartPage = () => {
     const subtotal = getCartTotalPrice();
     const shipping = calculateShippingFee();
     const total = subtotal + shipping;
+
+    console.log("Rendering CartPage with cart:", cart);
 
     return (
         <div>
@@ -171,114 +184,139 @@ const CartPage = () => {
                                     <p className="text-gray-500 text-lg">
                                         Your cart is empty
                                     </p>
+                                    <Link 
+                                        href="/"
+                                        className="inline-block mt-4 bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors"
+                                    >
+                                        Continue Shopping
+                                    </Link>
                                 </div>
                             ) : (
                                 <div className="space-y-4">
-                                    {cart.items.map((item) => (
-                                        <div
-                                            key={item.id}
-                                            className="border border-gray-200 rounded-lg p-4 flex gap-4"
-                                        >
-                                            <input
-                                                type="checkbox"
-                                                className="w-5 h-5 mt-1"
-                                            />
+                                    {cart.items.map((item) => {
+                                        const cartItemId = getCartItemId(item);
+                                        return (
+                                            <div
+                                                key={cartItemId}
+                                                className="border border-gray-200 rounded-lg p-4 flex gap-4"
+                                            >
+                                                {/* <input
+                                                    type="checkbox"
+                                                    className="w-5 h-5 mt-1"
+                                                    defaultChecked
+                                                /> */}
 
-                                            <img
-                                                src={item.images?.[0]}
-                                                alt={item.name}
-                                                className="w-24 h-24 object-cover rounded"
-                                            />
+                                                <img
+                                                    src={item.image || item.images?.[0] || 'm.png'}
+                                                    alt={item.name || item.product_name}
+                                                    className="w-24 h-24 object-cover rounded"
+                                                    onError={(e) => {
+                                                        e.target.src = '/placeholder-image.jpg';
+                                                    }}
+                                                />
 
-                                            <div className="flex-1">
-                                                <a
-                                                    href="#"
-                                                    className="text-blue-600 hover:text-blue-800 font-semibold text-sm mb-1 block"
-                                                >
-                                                    {item.brand || 'Generic Brand'}
-                                                </a>
-                                                <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">
-                                                    {item.name}
-                                                </h3>
-                                                <p className="text-xs text-gray-500 mb-2">
-                                                    {item.color || 'Default'} • Ends at{" "}
-                                                    {item.endTime}
-                                                </p>
+                                                <div className="flex-1">
+                                                    <a
+                                                        href="#"
+                                                        className="text-blue-600 hover:text-blue-800 font-semibold text-sm mb-1 block"
+                                                    >
+                                                        {item.product_brand || 'Brand'}
+                                                    </a>
+                                                    <h3 className="font-medium text-gray-900 mb-2 line-clamp-2">
+                                                        {item.name || item.product_name}
+                                                    </h3>
+                                                    
+                                                    {/* Display size and color if available */}
+                                                    {(item.size || item.color) && (
+                                                        <div className="text-xs text-gray-500 mb-2">
+                                                            {item.size && <span>Size: {item.size}</span>}
+                                                            {item.size && item.color && <span> • </span>}
+                                                            {item.color && <span>Color: {item.color}</span>}
+                                                        </div>
+                                                    )}
 
-                                                <div className="flex items-center gap-4">
-                                                    <div>
-                                                        <p className="text-lg font-bold text-orange-500">
-                                                            Rs.{" "}
-                                                            {item.currentPrice || item.price}
-                                                        </p>
-                                                        <p className="text-sm text-gray-400 line-through">
-                                                            Rs.{" "}
-                                                            {item.originalPrice}
-                                                        </p>
-                                                    </div>
+                                                    <div className="flex items-center gap-4">
+                                                        <div>
+                                                            <p className="text-lg font-bold text-orange-500">
+                                                                Rs.{" "}
+                                                                {item.discounted_price || item.price}
+                                                            </p>
+                                                            {item.discounted_price && item.discounted_price !== item.price && (
+                                                                <p className="text-sm text-gray-400 line-through">
+                                                                    Rs.{" "}
+                                                                    {item.price}
+                                                                </p>
+                                                            )}
+                                                        </div>
 
-                                                    <div className="flex items-center border border-gray-300 rounded">
-                                                        <button
-                                                            onClick={() =>
-                                                                handleUpdateQuantity(
-                                                                    item.id,
-                                                                    item.quantity - 1
-                                                                )
-                                                            }
-                                                            className="p-1 hover:bg-gray-100"
-                                                        >
-                                                            <Minus size={16} />
-                                                        </button>
-                                                        <span className="px-3 py-1 font-medium">
-                                                            {item.quantity}
-                                                        </span>
-                                                        <button
-                                                            onClick={() =>
-                                                                handleUpdateQuantity(
-                                                                    item.id,
-                                                                    item.quantity + 1
-                                                                )
-                                                            }
-                                                            className="p-1 hover:bg-gray-100"
-                                                        >
-                                                            <Plus size={16} />
-                                                        </button>
+                                                        <div className="flex items-center border border-gray-300 rounded">
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleUpdateQuantity(
+                                                                        cartItemId,
+                                                                        item.quantity - 1
+                                                                    )
+                                                                }
+                                                                disabled={item.quantity <= 1}
+                                                                className={`p-1 ${
+                                                                    item.quantity <= 1 
+                                                                        ? 'text-gray-400 cursor-not-allowed' 
+                                                                        : 'hover:bg-gray-100'
+                                                                }`}
+                                                            >
+                                                                <Minus size={16} />
+                                                            </button>
+                                                            <span className="px-3 py-1 font-medium">
+                                                                {item.quantity}
+                                                            </span>
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleUpdateQuantity(
+                                                                        cartItemId,
+                                                                        item.quantity + 1
+                                                                    )
+                                                                }
+                                                                className="p-1 hover:bg-gray-100"
+                                                            >
+                                                                <Plus size={16} />
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            <div className="flex flex-col gap-2">
-                                                <button
-                                                    onClick={() =>
-                                                        toggleLike(item.id)
-                                                    }
-                                                    className="p-2 hover:bg-gray-100 rounded"
-                                                >
-                                                    <Heart
-                                                        size={20}
-                                                        fill={
-                                                            item.liked
-                                                                ? "currentColor"
-                                                                : "none"
+                                                <div className="flex flex-col gap-2">
+                                                    {/* <button
+                                                        onClick={() =>
+                                                            toggleLike(cartItemId)
                                                         }
-                                                        className={
-                                                            item.liked
-                                                                ? "text-red-500"
-                                                                : "text-gray-400"
+                                                        className="p-2 hover:bg-gray-100 rounded"
+                                                    >
+                                                        <Heart
+                                                            size={20}
+                                                            fill={
+                                                                item.liked
+                                                                    ? "currentColor"
+                                                                    : "none"
+                                                            }
+                                                            className={
+                                                                item.liked
+                                                                    ? "text-red-500"
+                                                                    : "text-gray-400"
+                                                            }
+                                                        />
+                                                    </button> */}
+                                                    <button
+                                                        onClick={() =>
+                                                            handleRemoveItem(cartItemId)
                                                         }
-                                                    />
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        handleRemoveItem(item.id)
-                                                    }
-                                                    className="p-2 hover:bg-red-50 rounded text-red-500"
-                                                >
-                                                    <Trash2 size={20} />
-                                                </button>
+                                                        className="p-2 hover:bg-red-50 rounded text-red-500"
+                                                    >
+                                                        <Trash2 size={20} />
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>
@@ -353,7 +391,7 @@ const CartPage = () => {
                                         Subtotal ({cart.totalItems} items)
                                     </span>
                                     <span className="font-semibold text-gray-900">
-                                        Rs. {subtotal}
+                                        Rs. {subtotal.toFixed(2)}
                                     </span>
                                 </div>
                                 <div className="flex justify-between">
@@ -392,7 +430,7 @@ const CartPage = () => {
                                         Total
                                     </span>
                                     <span className="text-2xl font-bold text-orange-500">
-                                        Rs. {total}
+                                        Rs. {total.toFixed(2)}
                                     </span>
                                 </div>
                             </div>
@@ -417,7 +455,7 @@ const CartPage = () => {
                                             Processing...
                                         </div>
                                     ) : (
-                                        `PLACE ORDER (COD) - Rs. ${total}`
+                                        `PLACE ORDER (COD) - Rs. ${total.toFixed(2)}`
                                     )}
                                 </button>
                             )}

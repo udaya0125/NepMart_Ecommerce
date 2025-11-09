@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\OrderProduct;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use App\Mail\OrderPlaced;
+use Illuminate\Support\Facades\Mail;
 
 class OrderProductController extends Controller
 {
@@ -31,6 +33,7 @@ class OrderProductController extends Controller
             'user_name'        => 'required|string|max:255',
             'product_id'       => 'required|integer',
             'product_name'     => 'required|string|max:255',
+            'user_email'       => 'required|email|max:255',
             'payment_method'   => 'required|string|max:255',
             'product_sku'      => 'required|string|max:100',
             'product_brand'    => 'nullable|string|max:255',
@@ -45,6 +48,13 @@ class OrderProductController extends Controller
         $validated['order_id'] = 'ORD-' . now()->format('Ymd') . '-' . strtoupper(Str::random(5));
 
         $order = OrderProduct::create($validated);
+
+        try {
+            Mail::to($validated['user_email'])->send(new OrderPlaced($order));
+        } catch (\Exception $e) {
+            // Log the error but don't fail the order creation
+            \Log::error('Failed to send order confirmation email: ' . $e->getMessage());
+        }
 
         return response()->json([
             'success' => true,

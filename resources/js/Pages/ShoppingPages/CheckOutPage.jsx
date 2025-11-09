@@ -10,11 +10,16 @@ import {
 import { useCart } from "../../Contexts/CartContext";
 import Navbar from "@/ContentWrapper/Navbar";
 import Footer from "@/ContentWrapper/Footer";
-import ShippingInformation from "./ShippingInformation"; // Import the ShippingInformation component
+import ShippingInformation from "./ShippingInformation";
+import PaymentSuccess from "./PaymentSuccess";
+import PaymentFailure from "./PaymentFailure";
 
 const CheckOutPage = () => {
     const [step, setStep] = useState(1);
     const [isProcessing, setIsProcessing] = useState(false);
+    // const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+    const [showForm , setShowForm] = useState(false);
+    // const [showPaymentFailure, setShowPaymentFailure] = useState(false);
     const { cart, clearCart } = useCart();
 
     const methods = useForm({
@@ -86,18 +91,17 @@ const CheckOutPage = () => {
                 0
             );
             const shipping = 200;
-            const taxAmount = Math.round(subtotal * 0.13); // 13% VAT in Nepal
+            const taxAmount = Math.round(subtotal * 0.13);
             const totalAmount = subtotal + shipping + taxAmount;
 
-            // Generate unique transaction UUID with timestamp and random string
+            // Generate unique transaction UUID
             const transactionUuid = `TXN-${Date.now()}-${Math.random()
                 .toString(36)
                 .substring(2, 9)
                 .toUpperCase()}`;
 
             // eSewa Configuration
-            // IMPORTANT: In production, move secret key to backend API
-            const isProduction = false; // Set to true for production
+            const isProduction = false;
             const secretKey = isProduction
                 ? "YOUR_PRODUCTION_SECRET_KEY"
                 : "8gBm/:&EnhH.1/q";
@@ -106,10 +110,9 @@ const CheckOutPage = () => {
                 : "https://rc-epay.esewa.com.np/api/epay/main/v2/form";
             const productCode = isProduction ? "YOUR_PRODUCT_CODE" : "EPAYTEST";
 
-            // Get current origin for callback URLs
             const baseUrl = window.location.origin;
 
-            // eSewa payment parameters (v2 API)
+            // eSewa payment parameters
             const esewaParams = {
                 amount: subtotal.toFixed(2),
                 tax_amount: taxAmount.toFixed(2),
@@ -124,24 +127,24 @@ const CheckOutPage = () => {
                     "total_amount,transaction_uuid,product_code",
             };
 
-            // Generate signature using signed field names
+            // Generate signature
             const message = `total_amount=${esewaParams.total_amount},transaction_uuid=${esewaParams.transaction_uuid},product_code=${esewaParams.product_code}`;
             const signature = await generateSignature(message, secretKey);
             esewaParams.signature = signature;
 
-            // Store order details in session storage for verification after payment
+            // Store order details
             const orderData = {
                 transactionUuid,
                 orderItems: cart.items.map(item => ({
                     id: item.id,
-                    product_id: item.id, // Required for backend
+                    product_id: item.id,
                     product_name: item.name,
                     price: Number(item.price) || 0,
                     discounted_price: item.discountedPrice || Number(item.price) || 0,
                     quantity: item.quantity,
                     size: item.size || "",
                     color: item.color || "",
-                    product_sku: item.product_sku ,
+                    product_sku: item.product_sku,
                     product_brand: item.product_brand,
                     images: item.images || [],
                 })),
@@ -200,7 +203,7 @@ const CheckOutPage = () => {
         0
     );
     const shipping = 200;
-    const tax = Math.round(subtotal * 0.13); // Updated to 13% VAT
+    const tax = Math.round(subtotal * 0.13);
     const total = subtotal + shipping + tax;
 
     if (cart.items.length === 0) {
@@ -211,7 +214,7 @@ const CheckOutPage = () => {
                 {/* Hero Section */}
                 <div className="relative h-64 md:h-80 overflow-hidden">
                     <img
-                        src="https://images.pexels.com/photos-1525612/pexels-photo-1525612.jpeg"
+                        src="https://images.pexels.com/photos/1525612/pexels-photo-1525612.jpeg"
                         alt="Checkout hero"
                         className="w-full h-full object-cover"
                     />
@@ -257,7 +260,7 @@ const CheckOutPage = () => {
                 {/* Hero Section */}
                 <div className="relative h-64 md:h-80 overflow-hidden mb-8">
                     <img
-                        src="https://images.pexels.com/photos-1525612/pexels-photo-1525612.jpeg"
+                        src="https://images.pexels.com/photos/1525612/pexels-photo-1525612.jpeg"
                         alt="Checkout hero"
                         className="w-full h-full object-cover"
                     />
@@ -544,6 +547,27 @@ const CheckOutPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Payment Success Popup - This will be shown when redirected from eSewa */}
+            {showForm && (
+                <PaymentSuccess 
+                   setShowForm={setShowForm}
+                   showForm={showForm}
+                />
+            )}
+
+            {/* Payment Failure Popup - This will be shown when redirected from eSewa */}
+            {showForm && (
+                <PaymentFailure 
+                    setShowForm={setShowForm}
+                    showForm={showForm}
+                    onRetry={() => {
+                        setShowForm(false);
+                        setStep(2);
+                    }}
+                />
+            )}
+
             <Footer />
         </>
     );

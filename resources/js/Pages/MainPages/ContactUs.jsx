@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import emailjs from "@emailjs/browser";
 import Footer from "@/ContentWrapper/Footer";
 import Navbar from "@/ContentWrapper/Navbar";
 
@@ -11,9 +12,42 @@ const ContactUs = () => {
         reset,
     } = useForm();
 
-    const onSubmit = (data) => {
-        console.log("Form Submitted:", data);
-        reset();
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitStatus, setSubmitStatus] = useState(null);
+
+    const onSubmit = async (data) => {
+        setIsSubmitting(true);
+        setSubmitStatus(null);
+
+        try {
+            const templateParams = {
+                from_name: data.name,
+                from_email: data.email,
+                message: data.message,
+                to_name: "Your Company", // You can customize this
+            };
+
+            await emailjs.send(
+                import.meta.env.VITE_service_id,
+                import.meta.env.VITE_template_id_contact,
+                templateParams,
+                import.meta.env.VITE_public_key
+            );
+
+            setSubmitStatus({
+                type: "success",
+                message: "Message sent successfully! We'll get back to you soon.",
+            });
+            reset();
+        } catch (error) {
+            console.error("EmailJS Error:", error);
+            setSubmitStatus({
+                type: "error",
+                message: "Failed to send message. Please try again later.",
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -29,11 +63,6 @@ const ContactUs = () => {
                 {/* Dark Overlay */}
                 <div className="absolute inset-0 bg-black/40"></div>
 
-                {/* Decorative Blur Elements */}
-                {/* <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <div className="absolute top-20 left-20 w-64 h-64 bg-white rounded-full blur-3xl"></div>
-                    <div className="absolute bottom-20 right-20 w-96 h-96 bg-white rounded-full blur-3xl"></div>
-                </div> */}
                 {/* Text Content */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4">
                     <h1 className="text-5xl md:text-6xl font-bold text-center mb-4">
@@ -47,6 +76,7 @@ const ContactUs = () => {
                     </p>
                 </div>
             </div>
+
             {/* Map Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 mt-4 px-6 md:px-12 mb-6 gap-8">
                 <div className="w-full h-[450px] md:h-[500px] lg:h-[550px] overflow-hidden rounded-xl shadow-lg sticky top-32 self-start">
@@ -71,9 +101,22 @@ const ContactUs = () => {
                         </p>
                     </div>
 
+                    {/* Status Messages */}
+                    {submitStatus && (
+                        <div
+                            className={`mb-4 p-4 rounded-lg ${
+                                submitStatus.type === "success"
+                                    ? "bg-green-100 text-green-700 border border-green-300"
+                                    : "bg-red-100 text-red-700 border border-red-300"
+                            }`}
+                        >
+                            {submitStatus.message}
+                        </div>
+                    )}
+
                     <form
                         onSubmit={handleSubmit(onSubmit)}
-                        className="flex flex-col gap-4 "
+                        className="flex flex-col gap-4"
                     >
                         {/* Name */}
                         <div>
@@ -87,6 +130,7 @@ const ContactUs = () => {
                                 })}
                                 placeholder="Enter your name"
                                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                disabled={isSubmitting}
                             />
                             {errors.name && (
                                 <p className="text-red-500 text-sm mt-1">
@@ -111,6 +155,7 @@ const ContactUs = () => {
                                 })}
                                 placeholder="Enter your email"
                                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                disabled={isSubmitting}
                             />
                             {errors.email && (
                                 <p className="text-red-500 text-sm mt-1">
@@ -131,6 +176,7 @@ const ContactUs = () => {
                                 rows="5"
                                 placeholder="Write your message here..."
                                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                                disabled={isSubmitting}
                             ></textarea>
                             {errors.message && (
                                 <p className="text-red-500 text-sm mt-1">
@@ -142,9 +188,14 @@ const ContactUs = () => {
                         {/* Submit Button */}
                         <button
                             type="submit"
-                            className=" bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+                            disabled={isSubmitting}
+                            className={`bg-blue-600 text-white font-semibold py-2 rounded-lg transition duration-300 ${
+                                isSubmitting
+                                    ? "opacity-50 cursor-not-allowed"
+                                    : "hover:bg-blue-700"
+                            }`}
                         >
-                            Send Message
+                            {isSubmitting ? "Sending..." : "Send Message"}
                         </button>
                     </form>
                 </div>

@@ -112,9 +112,9 @@ const AdminSideBar = ({
                     {!isCollapsed && (
                         <div className="flex items-center gap-2 flex-1 pr-10">
                             <img
-                                src="logo.jpg"
+                                src="logo/logo.png"
                                 alt="Logo"
-                                className="h-12 w-[5rem] rounded-lg"
+                                className="h-12 w-[5rem] rounded-lg object-contain"
                             />
                         </div>
                     )}

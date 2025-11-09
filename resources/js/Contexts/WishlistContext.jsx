@@ -146,7 +146,7 @@ export const WishlistProvider = ({ children, user = null }) => {
             user_name: auth.user?.name || 'Guest',
             product_id: product.id,
             product_name: product.name || product.product_name || 'Unknown Product',
-            product_sku: product.sku || product.product_sku || `SKU-${product.id}`,
+            product_sku: product.sku || product.product_sku,
             product_brand: product.brand || product.product_brand || 'Unknown Brand',
             price: product.price || product.discounted_price || 0,
             discounted_price: product.discounted_price || product.price || 0,

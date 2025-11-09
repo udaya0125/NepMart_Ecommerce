@@ -1,6 +1,6 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Trash2 } from "lucide-react";
 import { usePage } from "@inertiajs/react";
 import axios from "axios";
 
@@ -10,6 +10,7 @@ const ShippingInformation = ({ onNextStep, isProcessing }) => {
         formState: { errors },
         trigger,
         setValue,
+        reset,
     } = useFormContext();
 
     const handleNextStep = async () => {
@@ -75,21 +76,45 @@ const ShippingInformation = ({ onNextStep, isProcessing }) => {
         }
     };
 
+    const handleClearForm = () => {
+        // Reset all shipping information fields to empty values
+        reset({
+            fullName: "",
+            email: "",
+            phone: "",
+            address: "",
+            city: "",
+            state: "",
+            zipCode: "",
+            country: "",
+        });
+    };
+
     return (
         <div className="bg-white rounded-lg p-6">
-            <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-900">
                     Shipping Information
                 </h2>
-                {auth.user && (
+                <div className="flex gap-2">
                     <button
                         type="button"
-                        onClick={handleAutoFill}
-                        className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-4 rounded-lg transition-colors mb-6"
+                        onClick={handleClearForm}
+                        className="bg-gray-500 hover:bg-gray-600 text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center gap-2"
                     >
-                        Auto Fill
+                        <Trash2 size={16} />
+                        Clear Form
                     </button>
-                )}
+                    {auth.user && (
+                        <button
+                            type="button"
+                            onClick={handleAutoFill}
+                            className="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors"
+                        >
+                            Auto Fill
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className="mb-4">

@@ -179,11 +179,11 @@ const UserManagement = () => {
                   className="w-10 h-10 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center">
+                <div className="rounded-full flex items-center justify-center">
                   <img
-                    src="/user/user3.png"
+                    src="/user/user01.png"
                     alt="Default user"
-                    className="w-6 h-6"
+                    className="w-10 h-10 object-contain"
                   />
                 </div>
               )}

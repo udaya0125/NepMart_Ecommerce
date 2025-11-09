@@ -1,0 +1,803 @@
+{
+  "products": {
+    "Electronics": [
+      {
+        "id": 1,
+        "name": "Apple iPhone 15 Pro Max",
+        "slug": "apple-iphone-15-pro-max",
+        "price": 119999,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&h=400&fit=crop"
+        ],
+        "discount": 8,
+        "shortDescription": "Latest iPhone with A17 Pro chip and titanium design.",
+        "longDescription": "The iPhone 15 Pro Max features a durable titanium design, the powerful A17 Pro chip for next-level performance, and an advanced camera system with 5x optical zoom. With all-day battery life and the Dynamic Island, it's the ultimate iPhone experience.",
+        "sizes": ["128GB", "256GB", "512GB", "1TB"],
+        "colors": ["Natural Titanium", "Blue Titanium", "White Titanium", "Black Titanium"],
+        "inStock": false,
+        "stockQuantity": 25,
+        "reviews": [
+          {
+            "user": "Rajesh Kumar",
+            "rating": 5,
+            "comment": "Amazing phone! The camera quality is outstanding and battery lasts all day.",
+            "date": "2024-01-15"
+          },
+          {
+            "user": "Priya Sharma",
+            "rating": 5,
+            "comment": "Lightweight and powerful. The titanium finish feels premium.",
+            "date": "2024-01-10"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "14-day return policy",
+        "features": ["A17 Pro Chip", "Titanium Design", "5x Optical Zoom", "USB-C", "Dynamic Island"],
+        "brand": "Apple",
+        "category": "Smartphones",
+        "sku": "APP-IP15PM-001"
+      },
+      {
+        "id": 2,
+        "name": "Samsung Galaxy S24 Ultra",
+        "slug": "samsung-galaxy-s24-ultra",
+        "price": 129999,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1556656793-08538906a9f8?w=400&h=400&fit=crop"
+        ],
+        "discount": 10,
+        "shortDescription": "Flagship Android phone with AI features and S Pen.",
+        "longDescription": "The Galaxy S24 Ultra revolutionizes mobile AI with Galaxy AI features. It features a 6.8-inch Dynamic AMOLED 2X display, Snapdragon 8 Gen 3 processor, and integrated S Pen. The quad camera system with 200MP sensor delivers professional-grade photography.",
+        "sizes": ["256GB", "512GB", "1TB"],
+        "colors": ["Titanium Gray", "Titanium Black", "Titanium Violet", "Titanium Yellow"],
+        "inStock": true,
+        "stockQuantity": 18,
+        "reviews": [
+          {
+            "user": "Amit Patel",
+            "rating": 5,
+            "comment": "The AI features are game-changing! Camera is incredible.",
+            "date": "2024-01-12"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "14-day return policy",
+        "features": ["Galaxy AI", "S Pen", "200MP Camera", "Snapdragon 8 Gen 3", "Titanium Frame"],
+        "brand": "Samsung",
+        "category": "Smartphones",
+        "sku": "SAM-GS24U-001"
+      },
+      {
+        "id": 3,
+        "name": "Sony WH-1000XM5 Wireless Headphones",
+        "slug": "sony-wh-1000xm5-wireless-headphones",
+        "price": 29990,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=400&h=400&fit=crop"
+        ],
+        "discount": 12,
+        "shortDescription": "Industry-leading noise cancellation with 30-hour battery.",
+        "longDescription": "Experience the next level of noise cancellation with the WH-1000XM5 headphones. Featuring Dual Noise Sensor technology, 30-hour battery life with quick charging, and exceptional sound quality with LDAC support. The comfortable, lightweight design is perfect for all-day wear.",
+        "sizes": ["One Size"],
+        "colors": ["Black", "Silver", "Blue"],
+        "inStock": true,
+        "stockQuantity": 30,
+        "reviews": [
+          {
+            "user": "Deepak Singh",
+            "rating": 5,
+            "comment": "Best noise cancellation I've ever experienced. Sound quality is amazing!",
+            "date": "2024-01-14"
+          },
+          {
+            "user": "Neha Gupta",
+            "rating": 5,
+            "comment": "Super comfortable for long flights. Battery life is impressive.",
+            "date": "2024-01-08"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Industry-leading ANC", "30-hour Battery", "Quick Charge", "Touch Controls", "LDAC Support"],
+        "brand": "Sony",
+        "category": "Audio",
+        "sku": "SON-WHXM5-001"
+      },
+      {
+        "id": 4,
+        "name": "MacBook Air M3 13-inch",
+        "slug": "macbook-air-m3-13-inch",
+        "price": 114900,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=400&h=400&fit=crop&crop=right"
+        ],
+        "discount": 5,
+        "shortDescription": "Powerful laptop with M3 chip and 18-hour battery life.",
+        "longDescription": "The MacBook Air with M3 chip delivers incredible performance in an ultra-portable design. With up to 18 hours of battery life, a stunning Liquid Retina display, and support for up to two external displays. Perfect for work, creativity, and entertainment on the go.",
+        "sizes": ["8GB/256GB", "8GB/512GB", "16GB/512GB"],
+        "colors": ["Space Gray", "Silver", "Starlight", "Midnight"],
+        "inStock": true,
+        "stockQuantity": 15,
+        "reviews": [
+          {
+            "user": "Vikram Mehta",
+            "rating": 5,
+            "comment": "Incredible performance and battery life. Perfect for my work.",
+            "date": "2024-01-13"
+          },
+          {
+            "user": "Anjali Reddy",
+            "rating": 5,
+            "comment": "Lightweight yet powerful. The display is beautiful.",
+            "date": "2024-01-07"
+          }
+        ],
+        "estimatedDelivery": "4-6 business days",
+        "freeShipping": true,
+        "returns": "14-day return policy",
+        "features": ["M3 Chip", "18-hour Battery", "Liquid Retina Display", "Fanless Design", "MagSafe Charging"],
+        "brand": "Apple",
+        "category": "Laptops",
+        "sku": "APP-MBA13-001"
+      },
+      {
+        "id": 5,
+        "name": "Samsung 55-inch 4K QLED Smart TV",
+        "slug": "samsung-55-inch-4k-qled-smart-tv",
+        "price": 84990,
+        "priceMax": 99990,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1571415060716-baff5f1c5be4?w=400&h=400&fit=crop"
+        ],
+        "discount": 15,
+        "shortDescription": "Quantum Dot technology with HDR10+ and Alexa built-in.",
+        "longDescription": "Immerse yourself in breathtaking picture quality with Samsung's 55-inch QLED 4K TV. Featuring Quantum Dot technology for brilliant colors, HDR10+ for enhanced contrast, and Quantum Processor 4K for optimized picture and sound. With Alexa built-in and multiple streaming apps, entertainment is at your command.",
+        "sizes": ["55-inch"],
+        "colors": ["Black", "Titan Gray"],
+        "inStock": true,
+        "stockQuantity": 12,
+        "reviews": [
+          {
+            "user": "Rohit Verma",
+            "rating": 4,
+            "comment": "Picture quality is stunning. Easy to set up and use.",
+            "date": "2024-01-11"
+          }
+        ],
+        "estimatedDelivery": "5-7 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Quantum Dot", "4K Resolution", "HDR10+", "Alexa Built-in", "Quantum Processor"],
+        "brand": "Samsung",
+        "category": "Televisions",
+        "sku": "SAM-55Q80-001"
+      }
+    ],
+    "Clothing": [
+      {
+        "id": 6,
+        "name": "Men's Cotton Regular Fit T-Shirts Pack",
+        "slug": "mens-cotton-regular-fit-t-shirts-pack",
+        "price": 1599,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop&crop=left",
+          "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop&crop=right"
+        ],
+        "discount": 20,
+        "shortDescription": "Comfortable 3-pack cotton t-shirts in versatile colors.",
+        "longDescription": "Essential wardrobe staples made from 100% premium cotton. These regular fit t-shirts feature a comfortable crew neck, double-stitched seams for durability, and a soft finish that gets better with every wash. Perfect for casual wear, workouts, or layering.",
+        "sizes": ["S", "M", "L", "XL", "XXL"],
+        "colors": ["White/Black/Grey", "Navy/Black/White", "Assorted Colors"],
+        "inStock": true,
+        "stockQuantity": 50,
+        "reviews": [
+          {
+            "user": "Karan Malhotra",
+            "rating": 4,
+            "comment": "Great quality for the price. Comfortable and true to size.",
+            "date": "2024-01-15"
+          },
+          {
+            "user": "Rahul Joshi",
+            "rating": 4,
+            "comment": "Good basic tees. The fabric is soft and holds up well after washing.",
+            "date": "2024-01-09"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["100% Cotton", "Regular Fit", "Crew Neck", "Machine Wash", "3-Pack"],
+        "brand": "Urban Classics",
+        "category": "Men's Clothing",
+        "sku": "URB-TSP-001"
+      },
+      {
+        "id": 7,
+        "name": "Women's Floral Print Maxi Dress",
+        "slug": "womens-floral-print-maxi-dress",
+        "price": 3499,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=400&h=400&fit=crop"
+        ],
+        "discount": 25,
+        "shortDescription": "Elegant floral maxi dress with flowy design for summer.",
+        "longDescription": "Embrace effortless elegance with this beautiful floral maxi dress. Made from lightweight, breathable fabric that drapes beautifully, featuring a vibrant floral pattern, adjustable spaghetti straps, and a flattering A-line silhouette. Perfect for summer parties, beach vacations, or casual outings.",
+        "sizes": ["XS", "S", "M", "L", "XL"],
+        "colors": ["Multi Floral", "Blue Floral", "Pink Floral", "Red Floral"],
+        "inStock": true,
+        "stockQuantity": 35,
+        "reviews": [
+          {
+            "user": "Simran Kaur",
+            "rating": 5,
+            "comment": "Absolutely love this dress! So comfortable and the print is beautiful.",
+            "date": "2024-01-14"
+          },
+          {
+            "user": "Pooja Shah",
+            "rating": 5,
+            "comment": "Perfect for summer. The fabric is light and flowy.",
+            "date": "2024-01-08"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Lightweight Fabric", "Adjustable Straps", "A-line Silhouette", "Machine Washable", "Maxi Length"],
+        "brand": "Summer Bloom",
+        "category": "Women's Clothing",
+        "sku": "SUM-MAXI-001"
+      },
+      {
+        "id": 8,
+        "name": "Men's Slim Fit Denim Jeans",
+        "slug": "mens-slim-fit-denim-jeans",
+        "price": 2799,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1582418702059-97ebafb35d09?w=400&h=400&fit=crop"
+        ],
+        "discount": 30,
+        "shortDescription": "Comfortable slim fit jeans with stretch for all-day wear.",
+        "longDescription": "These slim fit jeans combine style and comfort with their stretch denim fabric. Featuring a modern slim fit through the thigh and knee with a tapered leg opening, five-pocket design, and durable construction. Perfect for casual wear or dressing up for a night out.",
+        "sizes": ["28x30", "30x30", "32x30", "32x32", "34x32", "36x32"],
+        "colors": ["Dark Blue", "Medium Blue", "Black", "Light Wash"],
+        "inStock": true,
+        "stockQuantity": 40,
+        "reviews": [
+          {
+            "user": "Aditya Rao",
+            "rating": 4,
+            "comment": "Great fitting jeans with just the right amount of stretch.",
+            "date": "2024-01-12"
+          },
+          {
+            "user": "Nitin Sharma",
+            "rating": 4,
+            "comment": "Comfortable and stylish. Good quality denim.",
+            "date": "2024-01-06"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Stretch Denim", "Slim Fit", "Five-Pocket", "Machine Wash", "Tapered Leg"],
+        "brand": "Denim Craft",
+        "category": "Men's Clothing",
+        "sku": "DNM-JNS-001"
+      },
+      {
+        "id": 9,
+        "name": "Women's Winter Warm Hoodie",
+        "slug": "womens-winter-warm-hoodie",
+        "price": 2299,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop&crop=left",
+          "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop&crop=right",
+          "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&h=400&fit=crop"
+        ],
+        "discount": 15,
+        "shortDescription": "Cozy fleece hoodie with front pocket for winter comfort.",
+        "longDescription": "Stay warm and stylish in this premium fleece hoodie. Made from soft, brushed fabric that provides exceptional warmth, featuring a roomy front pocket, adjustable drawstring hood, and ribbed cuffs and hem for a secure fit. Perfect for lounging, casual outings, or layering in colder weather.",
+        "sizes": ["XS", "S", "M", "L", "XL"],
+        "colors": ["Heather Grey", "Navy Blue", "Black", "Burgundy", "Forest Green"],
+        "inStock": true,
+        "stockQuantity": 45,
+        "reviews": [
+          {
+            "user": "Meera Iyer",
+            "rating": 5,
+            "comment": "So comfortable and warm! Perfect for winter mornings.",
+            "date": "2024-01-13"
+          },
+          {
+            "user": "Ananya Das",
+            "rating": 5,
+            "comment": "Love the quality and fit. The fabric is super soft.",
+            "date": "2024-01-07"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Premium Fleece", "Kangaroo Pocket", "Adjustable Hood", "Ribbed Cuffs", "Soft Fabric"],
+        "brand": "Comfort Wear",
+        "category": "Women's Clothing",
+        "sku": "CMF-HOD-001"
+      },
+      {
+        "id": 10,
+        "name": "Men's Formal Business Shirt",
+        "slug": "mens-formal-business-shirt",
+        "price": 1899,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=400&fit=crop"
+        ],
+        "discount": 20,
+        "shortDescription": "Classic formal shirt with slim fit for professional wear.",
+        "longDescription": "Make a professional statement with this classic formal shirt. Crafted from premium cotton with a smooth finish, featuring a slim fit design, single button cuffs, and a traditional collar. Perfect for office wear, business meetings, or formal occasions when paired with suits or blazers.",
+        "sizes": ["S", "M", "L", "XL", "XXL"],
+        "colors": ["White", "Light Blue", "Pale Pink", "Lavender"],
+        "inStock": true,
+        "stockQuantity": 38,
+        "reviews": [
+          {
+            "user": "Rohan Mehra",
+            "rating": 4,
+            "comment": "Excellent quality fabric and perfect fit for formal occasions.",
+            "date": "2024-01-11"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Premium Cotton", "Slim Fit", "Formal Collar", "Single Cuff", "Iron Easy"],
+        "brand": "Executive Style",
+        "category": "Men's Clothing",
+        "sku": "EXC-SHR-001"
+      }
+    ],
+    "Bags": [
+      {
+        "id": 11,
+        "name": "Premium Leather Laptop Backpack",
+        "slug": "premium-leather-laptop-backpack",
+        "price": 5499,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=left",
+          "https://images.unsplash.com/photo-1585916420730-d7f95e942d43?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=right"
+        ],
+        "discount": 10,
+        "shortDescription": "Durable leather backpack with laptop compartment and smart organization.",
+        "longDescription": "This premium leather backpack combines style with functionality. Featuring a dedicated padded laptop compartment that fits up to 15-inch devices, multiple organizational pockets for accessories, and premium leather that develops a beautiful patina over time. The ergonomic shoulder straps ensure comfortable carrying throughout your day.",
+        "sizes": ["15-inch", "17-inch"],
+        "colors": ["Brown Leather", "Black Leather", "Tan Leather"],
+        "inStock": true,
+        "stockQuantity": 22,
+        "reviews": [
+          {
+            "user": "Arjun Nair",
+            "rating": 5,
+            "comment": "Perfect for work and travel. The leather quality is exceptional.",
+            "date": "2024-01-15"
+          },
+          {
+            "user": "Siddharth Roy",
+            "rating": 5,
+            "comment": "Love the design and organization. Fits all my work essentials perfectly.",
+            "date": "2024-01-09"
+          }
+        ],
+        "estimatedDelivery": "4-6 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Genuine Leather", "Laptop Compartment", "Multiple Pockets", "Ergonomic Straps", "Water Resistant"],
+        "brand": "Leather Craft",
+        "category": "Backpacks",
+        "sku": "LTH-BPK-001"
+      },
+      {
+        "id": 12,
+        "name": "Women's Designer Handbag",
+        "slug": "womens-designer-handbag",
+        "price": 7999,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop"
+        ],
+        "discount": 15,
+        "shortDescription": "Elegant designer handbag with multiple compartments and gold hardware.",
+        "longDescription": "Make a fashion statement with this elegant designer handbag. Crafted from high-quality synthetic leather with luxurious gold-tone hardware, featuring multiple interior compartments, a secure zip closure, and an adjustable shoulder strap. The sophisticated design is perfect for work, parties, or everyday use.",
+        "sizes": ["Medium"],
+        "colors": ["Black", "Brown", "Navy Blue", "Burgundy"],
+        "inStock": true,
+        "stockQuantity": 28,
+        "reviews": [
+          {
+            "user": "Divya Kapoor",
+            "rating": 5,
+            "comment": "Beautiful bag! The quality is amazing and it's very spacious.",
+            "date": "2024-01-14"
+          },
+          {
+            "user": "Ritu Singh",
+            "rating": 5,
+            "comment": "Perfect size for daily use. Gets lots of compliments!",
+            "date": "2024-01-08"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Premium Material", "Multiple Compartments", "Adjustable Strap", "Gold Hardware", "Zip Closure"],
+        "brand": "Fashion Elite",
+        "category": "Handbags",
+        "sku": "FSN-HBG-001"
+      },
+      {
+        "id": 13,
+        "name": "Travel Duffel Bag with Shoe Compartment",
+        "slug": "travel-duffel-bag-with-shoe-compartment",
+        "price": 3299,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=left",
+          "https://images.unsplash.com/photo-1585916420730-d7f95e942d43?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=right"
+        ],
+        "discount": 20,
+        "shortDescription": "Spacious duffel bag with separate shoe compartment for travelers.",
+        "longDescription": "The perfect travel companion for gym enthusiasts and weekend travelers. This spacious duffel bag features a separate ventilated shoe compartment, multiple pockets for organization, durable water-resistant material, and comfortable shoulder straps. The main compartment offers ample space for clothes, toiletries, and other essentials.",
+        "sizes": ["Medium", "Large"],
+        "colors": ["Black", "Navy Blue", "Grey", "Olive Green"],
+        "inStock": true,
+        "stockQuantity": 32,
+        "reviews": [
+          {
+            "user": "Vishal Kumar",
+            "rating": 4,
+            "comment": "Great for gym and short trips. The shoe compartment is very useful.",
+            "date": "2024-01-12"
+          },
+          {
+            "user": "Ankit Malhotra",
+            "rating": 4,
+            "comment": "Durable and spacious. Perfect for weekend getaways.",
+            "date": "2024-01-06"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Shoe Compartment", "Water Resistant", "Multiple Pockets", "Adjustable Strap", "Spacious"],
+        "brand": "Travel Gear",
+        "category": "Duffel Bags",
+        "sku": "TRV-DUF-001"
+      },
+      {
+        "id": 14,
+        "name": "Mini Crossbody Bag for Women",
+        "slug": "mini-crossbody-bag-for-women",
+        "price": 2499,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop"
+        ],
+        "discount": 10,
+        "shortDescription": "Compact crossbody bag with adjustable strap for essentials.",
+        "longDescription": "This chic mini crossbody bag is perfect for carrying your daily essentials in style. Featuring a compact design with multiple card slots, a main compartment for phone and wallet, and an adjustable crossbody strap for comfortable wear. The elegant design works perfectly for parties, dates, or casual outings.",
+        "sizes": ["Small"],
+        "colors": ["Black", "Brown", "Pink", "Red", "Cream"],
+        "inStock": true,
+        "stockQuantity": 45,
+        "reviews": [
+          {
+            "user": "Shreya Menon",
+            "rating": 5,
+            "comment": "Perfect size for essentials! Love the adjustable strap.",
+            "date": "2024-01-13"
+          },
+          {
+            "user": "Nandini Patel",
+            "rating": 5,
+            "comment": "So cute and practical. Fits my phone, wallet, and keys perfectly.",
+            "date": "2024-01-07"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Compact Design", "Adjustable Strap", "Multiple Slots", "Crossbody Style", "Lightweight"],
+        "brand": "Chic Style",
+        "category": "Crossbody Bags",
+        "sku": "CHC-CRS-001"
+      },
+      {
+        "id": 15,
+        "name": "Waterproof Hiking Backpack",
+        "slug": "waterproof-hiking-backpack",
+        "price": 4299,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=left",
+          "https://images.unsplash.com/photo-1585916420730-d7f95e942d43?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=right"
+        ],
+        "discount": 25,
+        "shortDescription": "Durable hiking backpack with hydration pack compatibility.",
+        "longDescription": "Conquer the trails with this professional hiking backpack. Made from durable, waterproof material with reinforced stitching, featuring a hydration pack compartment, multiple external pockets for quick access, compression straps, and a ventilated back panel for comfort during long hikes. Perfect for day hikes, camping trips, and outdoor adventures.",
+        "sizes": ["20L", "30L"],
+        "colors": ["Forest Green", "Navy Blue", "Charcoal Grey", "Orange"],
+        "inStock": true,
+        "stockQuantity": 18,
+        "reviews": [
+          {
+            "user": "Adventure Seeker",
+            "rating": 4,
+            "comment": "Great for hiking! Comfortable and plenty of storage.",
+            "date": "2024-01-11"
+          }
+        ],
+        "estimatedDelivery": "4-6 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Waterproof", "Hydration Compatible", "Multiple Pockets", "Compression Straps", "Ventilated Back"],
+        "brand": "Outdoor Pro",
+        "category": "Hiking Bags",
+        "sku": "OUT-HIK-001"
+      }
+    ],
+    "Accessories": [
+      {
+        "id": 16,
+        "name": "Premium Analog Watch with Leather Strap",
+        "slug": "premium-analog-watch-with-leather-strap",
+        "price": 8999,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1547996160-81dfd9c4b1cd?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1518131672697-613becd4fab5?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=400&h=400&fit=crop"
+        ],
+        "discount": 15,
+        "shortDescription": "Elegant analog watch with genuine leather strap and sapphire glass.",
+        "longDescription": "This sophisticated analog watch combines classic design with modern craftsmanship. Featuring a precision quartz movement, scratch-resistant sapphire crystal glass, and genuine leather strap that ages beautifully. The minimalist dial with Roman numerals and elegant hands offers a timeless look suitable for both formal and casual occasions.",
+        "sizes": ["40mm", "42mm"],
+        "colors": ["Brown Leather", "Black Leather", "Tan Leather"],
+        "inStock": true,
+        "stockQuantity": 20,
+        "reviews": [
+          {
+            "user": "Rahul Khanna",
+            "rating": 5,
+            "comment": "Beautiful watch! The leather strap is high quality and very comfortable.",
+            "date": "2024-01-15"
+          },
+          {
+            "user": "Varun Desai",
+            "rating": 5,
+            "comment": "Elegant design and keeps perfect time. Great value for money.",
+            "date": "2024-01-09"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Genuine Leather", "Sapphire Crystal", "Quartz Movement", "Water Resistant", "Analog Display"],
+        "brand": "Time Craft",
+        "category": "Watches",
+        "sku": "TIM-ANA-001"
+      },
+      {
+        "id": 17,
+        "name": "Designer Polarized Sunglasses",
+        "slug": "designer-polarized-sunglasses",
+        "price": 3499,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1577803645773-f96470509666?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400&h=400&fit=crop&crop=left"
+        ],
+        "discount": 20,
+        "shortDescription": "UV protection sunglasses with polarized lenses and stylish frame.",
+        "longDescription": "Protect your eyes in style with these designer polarized sunglasses. Featuring 100% UV protection, polarized lenses that reduce glare and enhance visual clarity, and a lightweight yet durable frame. The contemporary design adds a touch of sophistication to any outfit while providing essential eye protection.",
+        "sizes": ["One Size"],
+        "colors": ["Black Frame", "Brown Frame", "Tortoise Shell", "Gold Frame"],
+        "inStock": true,
+        "stockQuantity": 35,
+        "reviews": [
+          {
+            "user": "Aryan Verma",
+            "rating": 4,
+            "comment": "Great sunglasses! The polarization really reduces glare while driving.",
+            "date": "2024-01-14"
+          },
+          {
+            "user": "Neha Kapoor",
+            "rating": 4,
+            "comment": "Comfortable and stylish. Perfect for sunny days.",
+            "date": "2024-01-08"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["100% UV Protection", "Polarized Lenses", "Lightweight Frame", "Scratch Resistant", "Includes Case"],
+        "brand": "Sun Style",
+        "category": "Sunglasses",
+        "sku": "SUN-GLS-001"
+      },
+      {
+        "id": 18,
+        "name": "Wireless Earbuds with Charging Case",
+        "slug": "wireless-earbuds-with-charging-case",
+        "price": 5999,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1590658165737-15a047b8b5e3?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1590658165737-15a047b8b5e3?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1590658165737-15a047b8b5e3?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=400&fit=crop"
+        ],
+        "discount": 10,
+        "shortDescription": "True wireless earbuds with 24-hour battery and noise cancellation.",
+        "longDescription": "Experience wireless freedom with these advanced true wireless earbuds. Featuring active noise cancellation, 24-hour total battery life with charging case, Bluetooth 5.3 connectivity, and IPX5 water resistance. The comfortable fit and touch controls make them perfect for workouts, commuting, or everyday use.",
+        "sizes": ["One Size"],
+        "colors": ["White", "Black", "Blue", "Pink"],
+        "inStock": true,
+        "stockQuantity": 42,
+        "reviews": [
+          {
+            "user": "Kiran Mehta",
+            "rating": 5,
+            "comment": "Excellent sound quality and battery life. The noise cancellation works great!",
+            "date": "2024-01-13"
+          },
+          {
+            "user": "Rohit Nair",
+            "rating": 5,
+            "comment": "Perfect for workouts. Stay secure in ears and sound amazing.",
+            "date": "2024-01-07"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Active Noise Cancellation", "24-hour Battery", "Bluetooth 5.3", "IPX5 Waterproof", "Touch Controls"],
+        "brand": "Sound Wave",
+        "category": "Audio",
+        "sku": "SND-EBD-001"
+      },
+      {
+        "id": 19,
+        "name": "Leather Wallet with RFID Protection",
+        "slug": "leather-wallet-with-rfid-protection",
+        "price": 1999,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&h=400&fit=crop&crop=bottom"
+        ],
+        "discount": 15,
+        "shortDescription": "Slim genuine leather wallet with RFID blocking technology.",
+        "longDescription": "This genuine leather wallet combines minimalist design with advanced security features. Crafted from premium leather that develops a beautiful patina over time, it features multiple card slots, a transparent ID window, cash compartment, and RFID blocking technology to protect your cards from digital theft. The slim profile ensures comfort when carried.",
+        "sizes": ["One Size"],
+        "colors": ["Brown", "Black", "Tan"],
+        "inStock": true,
+        "stockQuantity": 55,
+        "reviews": [
+          {
+            "user": "Sanjay Roy",
+            "rating": 4,
+            "comment": "Perfect slim wallet! Great quality leather and RFID protection is a bonus.",
+            "date": "2024-01-12"
+          },
+          {
+            "user": "Amitabh Kumar",
+            "rating": 4,
+            "comment": "Love the compact design and security features. Holds everything I need.",
+            "date": "2024-01-06"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Genuine Leather", "RFID Protection", "Multiple Card Slots", "ID Window", "Slim Design"],
+        "brand": "Leather Guard",
+        "category": "Wallets",
+        "sku": "LTH-WLT-001"
+      },
+      {
+        "id": 20,
+        "name": "Smart Fitness Band with Heart Rate Monitor",
+        "slug": "smart-fitness-band-with-heart-rate-monitor",
+        "price": 2999,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1434493652601-8d45cb8c0117?w=400&h=400&fit=crop"
+        ],
+        "discount": 25,
+        "shortDescription": "Advanced fitness tracker with SpO2 monitoring and 7-day battery.",
+        "longDescription": "Track your health and fitness goals with this advanced smart fitness band. Featuring 24/7 heart rate monitoring, SpO2 blood oxygen tracking, sleep analysis, and multiple sports modes. With 7-day battery life, IP68 water resistance, and smartphone notifications, it's your perfect companion for an active lifestyle.",
+        "sizes": ["Small", "Medium", "Large"],
+        "colors": ["Black", "Blue", "Pink", "Green"],
+        "inStock": true,
+        "stockQuantity": 38,
+        "reviews": [
+          {
+            "user": "Fitness Enthusiast",
+            "rating": 4,
+            "comment": "Great features for the price! Accurate heart rate monitoring.",
+            "date": "2024-01-11"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Heart Rate Monitor", "SpO2 Tracking", "7-day Battery", "IP68 Waterproof", "Sleep Tracking"],
+        "brand": "Fit Track",
+        "category": "Wearables",
+        "sku": "FIT-BND-001"
+      }
+    ]
+  }
+}

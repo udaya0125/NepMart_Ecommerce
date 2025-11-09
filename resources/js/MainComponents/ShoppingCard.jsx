@@ -6,12 +6,44 @@ import { useCart } from "../contexts/CartContext";
 const ShoppingCard = ({ isOpen, onClose }) => {
     const { cart, removeFromCart, updateQuantity, getCartTotalPrice } = useCart();
 
-    const handleQuantityChange = (productId, newQuantity) => {
-        updateQuantity(productId, newQuantity);
+    const handleQuantityChange = async (cartItemId, newQuantity) => {
+        // Ensure we have a valid cartItemId
+        if (!cartItemId) {
+            console.error('No cartItemId provided');
+            return;
+        }
+        
+        try {
+            await updateQuantity(cartItemId, newQuantity);
+        } catch (error) {
+            console.error('Error updating quantity:', error);
+            alert('Failed to update quantity. Please try again.');
+        }
     };
 
-    const handleRemoveItem = (productId) => {
-        removeFromCart(productId);
+    const handleRemoveItem = async (cartItemId) => {
+        if (!cartItemId) {
+            console.error('No cartItemId provided');
+            return;
+        }
+        
+        try {
+            await removeFromCart(cartItemId);
+        } catch (error) {
+            console.error('Error removing item:', error);
+            alert('Failed to remove item. Please try again.');
+        }
+    };
+
+    // Helper function to get the correct cart item ID
+    const getCartItemId = (item) => {
+        // Priority: cartItemId -> id -> generate temporary ID
+        const id = item.cartItemId || item.id;
+        if (!id) {
+            console.warn('No ID found for cart item:', item);
+            return `temp-${Date.now()}`;
+        }
+        return String(id); // Ensure it's always a string
     };
 
     return (
@@ -61,49 +93,70 @@ const ShoppingCard = ({ isOpen, onClose }) => {
                             </div>
                         ) : (
                             <div className="space-y-4">
-                                {cart.items.map((item) => (
-                                    <div
-                                        key={item.id}
-                                        className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
-                                    >
-                                        <img
-                                            src={item.images?.[0]}
-                                            alt={item.name}
-                                            className="w-16 h-16 object-cover rounded"
-                                        />
-                                        <div className="flex-1 min-w-0">
-                                            <h3 className="font-medium text-gray-900 text-sm line-clamp-2">
-                                                {item.name}
-                                            </h3>
-                                            <p className="text-red-600 font-semibold">
-                                                Rs.{item.price}
-                                            </p>
-                                            <div className="flex items-center gap-2 mt-2">
-                                                <button
-                                                    onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                                                    className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
-                                                >
-                                                    <Minus className="w-3 h-3" />
-                                                </button>
-                                                <span className="w-8 text-center font-medium">
-                                                    {item.quantity}
-                                                </span>
-                                                <button
-                                                    onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                                                    className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
-                                                >
-                                                    <Plus className="w-3 h-3" />
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <button
-                                            onClick={() => handleRemoveItem(item.id)}
-                                            className="p-1 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+                                {cart.items.map((item) => {
+                                    const cartItemId = getCartItemId(item);
+                                    return (
+                                        <div
+                                            key={cartItemId}
+                                            className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
                                         >
-                                            <Trash2 className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                ))}
+                                            <img
+                                                src={`storage/${item.images?.[0]}`}
+                                                alt={item.name || item.product_name}
+                                                className="w-16 h-16 object-cover rounded"
+                                                onError={(e) => {
+                                                    e.target.src = '/placeholder-image.jpg';
+                                                }}
+                                            />
+                                            <div className="flex-1 min-w-0">
+                                                <h3 className="font-medium text-gray-900 text-sm line-clamp-2">
+                                                    {item.name || item.product_name}
+                                                </h3>
+                                                <p className="text-red-600 font-semibold">
+                                                    Rs.{item.discounted_price || item.price}
+                                                </p>
+                                                
+                                                {/* Display size and color if available */}
+                                                {(item.size || item.color) && (
+                                                    <div className="text-xs text-gray-500 mt-1">
+                                                        {item.size && <span>Size: {item.size}</span>}
+                                                        {item.size && item.color && <span> • </span>}
+                                                        {item.color && <span>Color: {item.color}</span>}
+                                                    </div>
+                                                )}
+                                                
+                                                <div className="flex items-center gap-2 mt-2">
+                                                    <button
+                                                        onClick={() => handleQuantityChange(cartItemId, item.quantity - 1)}
+                                                        disabled={item.quantity <= 1}
+                                                        className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
+                                                            item.quantity <= 1 
+                                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                                                : 'bg-gray-200 hover:bg-gray-300'
+                                                        }`}
+                                                    >
+                                                        <Minus className="w-3 h-3" />
+                                                    </button>
+                                                    <span className="w-8 text-center font-medium">
+                                                        {item.quantity}
+                                                    </span>
+                                                    <button
+                                                        onClick={() => handleQuantityChange(cartItemId, item.quantity + 1)}
+                                                        className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center hover:bg-gray-300 transition-colors"
+                                                    >
+                                                        <Plus className="w-3 h-3" />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => handleRemoveItem(cartItemId)}
+                                                className="p-1 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         )}
                     </div>

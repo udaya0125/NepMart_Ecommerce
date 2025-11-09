@@ -88,7 +88,7 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/payment/success',function(){
-    return Inertia::render('ShoppingPages/PaymentSucess'); // Or whatever your actual component name is
+    return Inertia::render('ShoppingPages/PaymentSuccess'); // Or whatever your actual component name is
 });
 
 
@@ -136,7 +136,7 @@ Route::middleware(['auth', 'role:super admin'])->group(function() {
         return Inertia::render('SuperAdminPage/UserManagement');
     });
 
-     Route::get('/order-products', function(){
+    Route::get('/order-products', function(){
         return Inertia::render('SuperAdminPage/OrderProducts');
     });
     
@@ -144,6 +144,13 @@ Route::middleware(['auth', 'role:super admin'])->group(function() {
     Route::post('/ouruser', [UserController::class, 'store'])->name('ouruser.store');
     Route::put('/ouruser/{id}', [UserController::class, 'update'])->name('ouruser.update');
     Route::delete('/ouruser/{id}', [UserController::class, 'destroy'])->name('ouruser.destroy');
+
+
+
+
+    Route::get('/message', function(){
+        return Inertia::render('SuperAdminPage/Message');
+    });
 });
 
 
@@ -292,7 +299,9 @@ Route::get('/check-out',function(){
     return Inertia::render('ShoppingPages/CheckOutPage');
 });
 
-
+Route::get('/all-products',function(){
+    return Inertia::render('MainPages/AllProductsPage');
+});
 
 //
 

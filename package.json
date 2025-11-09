@@ -23,6 +23,7 @@
         "vite": "^7.0.7"
     },
     "dependencies": {
+        "@emailjs/browser": "^4.4.1",
         "chart.js": "^4.5.1",
         "crypto-js": "^4.2.0",
         "lucide-react": "^0.548.0",

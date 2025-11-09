@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('user_name');
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
             $table->string('product_name');
+            $table->string('user_email');
             $table->string('payment_method');
             $table->string('product_sku');
             $table->string('product_brand');
