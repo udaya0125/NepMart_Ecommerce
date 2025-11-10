@@ -101,7 +101,7 @@ const ShoppingCard = ({ isOpen, onClose }) => {
                                             className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
                                         >
                                             <img
-                                                src={`storage/${item.images?.[0]}`}
+                                                src={item.images?.[0] || 'https://images.pexels.com/photos/220769/pexels-photo-220769.jpeg'}
                                                 alt={item.name || item.product_name}
                                                 className="w-16 h-16 object-cover rounded"
                                                 onError={(e) => {
