@@ -194,6 +194,181 @@
         "brand": "Samsung",
         "category": "Televisions",
         "sku": "SAM-55Q80-001"
+      },
+      {
+        "id": 21,
+        "name": "Apple iPad Air 5th Generation",
+        "slug": "apple-ipad-air-5th-generation",
+        "price": 54900,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1561154464-82e9adf32764?w=400&h=400&fit=crop"
+        ],
+        "discount": 8,
+        "shortDescription": "Powerful iPad with M1 chip and Liquid Retina display.",
+        "longDescription": "The iPad Air with M1 chip delivers stunning performance in a sleek, portable design. Featuring a 10.9-inch Liquid Retina display, support for Apple Pencil and Magic Keyboard, and all-day battery life. Perfect for creativity, productivity, and entertainment.",
+        "sizes": ["64GB", "256GB"],
+        "colors": ["Space Gray", "Blue", "Pink", "Purple", "Starlight"],
+        "inStock": true,
+        "stockQuantity": 20,
+        "reviews": [
+          {
+            "user": "Sanjay Mehta",
+            "rating": 5,
+            "comment": "Perfect balance of power and portability. Great for work and entertainment.",
+            "date": "2024-01-16"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "14-day return policy",
+        "features": ["M1 Chip", "Liquid Retina Display", "Apple Pencil Support", "All-day Battery", "5G Capable"],
+        "brand": "Apple",
+        "category": "Tablets",
+        "sku": "APP-IPA5-001"
+      },
+      {
+        "id": 22,
+        "name": "Dell XPS 13 Laptop",
+        "slug": "dell-xps-13-laptop",
+        "price": 89990,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=400&fit=crop"
+        ],
+        "discount": 12,
+        "shortDescription": "Ultra-thin laptop with InfinityEdge display and Intel Core i7.",
+        "longDescription": "The Dell XPS 13 combines stunning design with powerful performance. Featuring an InfinityEdge display with minimal borders, Intel Core i7 processor, and premium aluminum construction. Perfect for professionals and students who need power and portability.",
+        "sizes": ["8GB/256GB", "16GB/512GB", "16GB/1TB"],
+        "colors": ["Platinum Silver", "Frost White"],
+        "inStock": true,
+        "stockQuantity": 14,
+        "reviews": [
+          {
+            "user": "Priya Nair",
+            "rating": 4,
+            "comment": "Beautiful display and very portable. Perfect for my business trips.",
+            "date": "2024-01-14"
+          }
+        ],
+        "estimatedDelivery": "4-6 business days",
+        "freeShipping": true,
+        "returns": "14-day return policy",
+        "features": ["InfinityEdge Display", "Intel Core i7", "Aluminum Body", "Thunderbolt 4", "Windows 11"],
+        "brand": "Dell",
+        "category": "Laptops",
+        "sku": "DEL-XPS13-001"
+      },
+      {
+        "id": 23,
+        "name": "Apple Watch Series 9",
+        "slug": "apple-watch-series-9",
+        "price": 41900,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1579586337278-3f436c25d4a1?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1579586337278-3f436c25d4a1?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1579586337278-3f436c25d4a1?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1434493652601-8d45cb8c0117?w=400&h=400&fit=crop"
+        ],
+        "discount": 10,
+        "shortDescription": "Advanced smartwatch with blood oxygen app and ECG.",
+        "longDescription": "Apple Watch Series 9 features a powerful S9 chip, advanced health monitoring including blood oxygen and ECG apps, and innovative Double Tap gesture control. With always-on Retina display and comprehensive fitness tracking, it's your ultimate health and connectivity companion.",
+        "sizes": ["41mm", "45mm"],
+        "colors": ["Midnight", "Starlight", "Silver", "Product Red", "Pink"],
+        "inStock": true,
+        "stockQuantity": 25,
+        "reviews": [
+          {
+            "user": "Rahul Sharma",
+            "rating": 5,
+            "comment": "The health features are incredible. Love the new gesture controls!",
+            "date": "2024-01-15"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "14-day return policy",
+        "features": ["S9 Chip", "Blood Oxygen App", "ECG", "Double Tap", "Always-on Display"],
+        "brand": "Apple",
+        "category": "Wearables",
+        "sku": "APP-AWS9-001"
+      },
+      {
+        "id": 24,
+        "name": "PlayStation 5 Console",
+        "slug": "playstation-5-console",
+        "price": 54990,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=400&h=400&fit=crop"
+        ],
+        "discount": 5,
+        "shortDescription": "Next-gen gaming console with 4K/120fps and ray tracing.",
+        "longDescription": "Experience next-generation gaming with PlayStation 5. Featuring lightning-fast loading with SSD, haptic feedback, adaptive triggers, 3D Audio, and stunning 4K/120fps gaming with ray tracing. The ultimate console for immersive gaming experiences.",
+        "sizes": ["Standard Edition"],
+        "colors": ["White", "Black"],
+        "inStock": true,
+        "stockQuantity": 8,
+        "reviews": [
+          {
+            "user": "Gaming Pro",
+            "rating": 5,
+            "comment": "Absolutely incredible gaming experience. The graphics and loading times are mind-blowing!",
+            "date": "2024-01-13"
+          }
+        ],
+        "estimatedDelivery": "5-7 business days",
+        "freeShipping": true,
+        "returns": "14-day return policy",
+        "features": ["4K/120fps Gaming", "Ray Tracing", "SSD Storage", "Haptic Feedback", "3D Audio"],
+        "brand": "Sony",
+        "category": "Gaming",
+        "sku": "SON-PS5-001"
+      },
+      {
+        "id": 25,
+        "name": "Bose QuietComfort Earbuds II",
+        "slug": "bose-quietcomfort-earbuds-ii",
+        "price": 27990,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1590658165737-15a047b8b5e3?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1590658165737-15a047b8b5e3?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1590658165737-15a047b8b5e3?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=400&h=400&fit=crop"
+        ],
+        "discount": 15,
+        "shortDescription": "Premium noise cancelling earbuds with CustomTune technology.",
+        "longDescription": "Bose QuietComfort Earbuds II feature CustomTune technology that personalizes noise cancellation and sound to your ears. With immersive audio, secure fit, and 6-hour battery life, these earbuds deliver the best noise cancellation in their class.",
+        "sizes": ["One Size"],
+        "colors": ["Triple Black", "Soapstone"],
+        "inStock": true,
+        "stockQuantity": 22,
+        "reviews": [
+          {
+            "user": "Audio Lover",
+            "rating": 5,
+            "comment": "The noise cancellation is phenomenal! Sound quality is crystal clear.",
+            "date": "2024-01-12"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["CustomTune Technology", "Noise Cancellation", "6-hour Battery", "Secure Fit", "Immersive Audio"],
+        "brand": "Bose",
+        "category": "Audio",
+        "sku": "BOS-QCE2-001"
       }
     ],
     "Clothing": [
@@ -395,6 +570,181 @@
         "brand": "Executive Style",
         "category": "Men's Clothing",
         "sku": "EXC-SHR-001"
+      },
+      {
+        "id": 26,
+        "name": "Men's Oversized Hoodie Collection",
+        "slug": "mens-oversized-hoodie-collection",
+        "price": 3299,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop&crop=left",
+          "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop&crop=right",
+          "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&h=400&fit=crop"
+        ],
+        "discount": 20,
+        "shortDescription": "Trendy oversized hoodies in multiple colors for streetwear style.",
+        "longDescription": "Embrace streetwear fashion with these premium oversized hoodies. Made from heavyweight cotton blend fabric for ultimate comfort, featuring a relaxed fit, adjustable drawstring hood, and large front pocket. Perfect for casual outings, lounging, or creating stylish layered looks.",
+        "sizes": ["S", "M", "L", "XL", "XXL"],
+        "colors": ["Charcoal Black", "Heather Grey", "Navy Blue", "Olive Green", "Burgundy"],
+        "inStock": true,
+        "stockQuantity": 35,
+        "reviews": [
+          {
+            "user": "Street Style King",
+            "rating": 5,
+            "comment": "Perfect oversized fit! The fabric quality is amazing and very comfortable.",
+            "date": "2024-01-16"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Heavyweight Cotton", "Oversized Fit", "Adjustable Hood", "Kangaroo Pocket", "Ribbed Cuffs"],
+        "brand": "Urban Street",
+        "category": "Men's Clothing",
+        "sku": "URB-HOD-001"
+      },
+      {
+        "id": 27,
+        "name": "Women's Graphic Print T-Shirts Pack",
+        "slug": "womens-graphic-print-t-shirts-pack",
+        "price": 1999,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1503341455253-b2e723bb3dbb?w=400&h=400&fit=crop"
+        ],
+        "discount": 25,
+        "shortDescription": "3-pack graphic t-shirts with trendy prints and comfortable fit.",
+        "longDescription": "Express your style with this collection of graphic print t-shirts. Each shirt features unique, trendy designs printed with high-quality techniques that won't fade. Made from soft, breathable cotton with a comfortable regular fit that's perfect for everyday wear.",
+        "sizes": ["XS", "S", "M", "L", "XL"],
+        "colors": ["Black/White/Grey", "Pastel Colors", "Vibrant Colors"],
+        "inStock": true,
+        "stockQuantity": 42,
+        "reviews": [
+          {
+            "user": "Style Queen",
+            "rating": 4,
+            "comment": "Love the designs! The fabric is soft and fits true to size.",
+            "date": "2024-01-15"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Premium Cotton", "Graphic Prints", "Regular Fit", "Machine Wash", "3-Pack"],
+        "brand": "Trendy Tees",
+        "category": "Women's Clothing",
+        "sku": "TRD-TSP-001"
+      },
+      {
+        "id": 28,
+        "name": "Men's Cargo Pants Collection",
+        "slug": "mens-cargo-pants-collection",
+        "price": 3599,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1582418702059-97ebafb35d09?w=400&h=400&fit=crop"
+        ],
+        "discount": 15,
+        "shortDescription": "Utility cargo pants with multiple pockets and comfortable fit.",
+        "longDescription": "Combine style and functionality with these modern cargo pants. Featuring multiple utility pockets, durable cotton-twill fabric, and a comfortable straight fit. Perfect for outdoor activities, casual wear, or adding a utilitarian touch to your everyday style.",
+        "sizes": ["28x30", "30x30", "32x30", "32x32", "34x32", "36x32"],
+        "colors": ["Khaki", "Olive Green", "Black", "Dark Grey"],
+        "inStock": true,
+        "stockQuantity": 28,
+        "reviews": [
+          {
+            "user": "Adventure Seeker",
+            "rating": 4,
+            "comment": "Great for hiking and outdoor activities. Plenty of storage pockets!",
+            "date": "2024-01-14"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Cotton-Twill Fabric", "Multiple Pockets", "Straight Fit", "Durable", "Utility Style"],
+        "brand": "Outdoor Gear",
+        "category": "Men's Clothing",
+        "sku": "OUT-CRP-001"
+      },
+      {
+        "id": 29,
+        "name": "Women's High-Waisted Yoga Pants",
+        "slug": "womens-high-waisted-yoga-pants",
+        "price": 2799,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1506629905607-e48b0e67d879?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1506629905607-e48b0e67d879?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1506629905607-e48b0e67d879?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400&h=400&fit=crop"
+        ],
+        "discount": 20,
+        "shortDescription": "High-waisted leggings with four-way stretch for workouts and casual wear.",
+        "longDescription": "Experience ultimate comfort with these high-waisted yoga pants. Made from premium four-way stretch fabric that moves with you, featuring a wide waistband for tummy control, and squat-proof material. Perfect for yoga, workouts, or comfortable everyday wear.",
+        "sizes": ["XS", "S", "M", "L", "XL"],
+        "colors": ["Black", "Charcoal Grey", "Navy Blue", "Burgundy", "Olive Green"],
+        "inStock": true,
+        "stockQuantity": 50,
+        "reviews": [
+          {
+            "user": "Fitness Lover",
+            "rating": 5,
+            "comment": "Most comfortable yoga pants ever! The high waist is very flattering.",
+            "date": "2024-01-13"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Four-way Stretch", "High Waist", "Squat-proof", "Moisture Wicking", "Wide Waistband"],
+        "brand": "Active Life",
+        "category": "Women's Clothing",
+        "sku": "ACT-YGP-001"
+      },
+      {
+        "id": 30,
+        "name": "Men's Premium Wool Blend Sweaters",
+        "slug": "mens-premium-wool-blend-sweaters",
+        "price": 4599,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=400&h=400&fit=crop"
+        ],
+        "discount": 18,
+        "shortDescription": "Luxury wool blend sweaters for sophisticated winter styling.",
+        "longDescription": "Stay warm in style with these premium wool blend sweaters. Crafted from a luxurious blend of wool and cashmere for exceptional softness and warmth, featuring a classic crew neck design and tailored fit. Perfect for layering or wearing as a standalone piece during colder months.",
+        "sizes": ["S", "M", "L", "XL", "XXL"],
+        "colors": ["Camel", "Navy Blue", "Charcoal Grey", "Burgundy", "Forest Green"],
+        "inStock": true,
+        "stockQuantity": 25,
+        "reviews": [
+          {
+            "user": "Fashion Forward",
+            "rating": 5,
+            "comment": "Excellent quality! The wool blend is incredibly soft and warm.",
+            "date": "2024-01-12"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Wool-Cashmere Blend", "Crew Neck", "Tailored Fit", "Luxury Fabric", "Winter Essential"],
+        "brand": "Premium Knits",
+        "category": "Men's Clothing",
+        "sku": "PRM-SWT-001"
       }
     ],
     "Bags": [
@@ -596,6 +946,76 @@
         "brand": "Outdoor Pro",
         "category": "Hiking Bags",
         "sku": "OUT-HIK-001"
+      },
+      {
+        "id": 31,
+        "name": "Vintage Leather Messenger Bag",
+        "slug": "vintage-leather-messenger-bag",
+        "price": 6999,
+        "rating": 5,
+        "images": [
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=left",
+          "https://images.unsplash.com/photo-1585916420730-d7f95e942d43?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop&crop=right"
+        ],
+        "discount": 15,
+        "shortDescription": "Classic leather messenger bag with vintage charm and modern functionality.",
+        "longDescription": "Carry your essentials in timeless style with this vintage-inspired leather messenger bag. Handcrafted from full-grain leather that develops a beautiful patina over time, featuring multiple interior compartments, a padded laptop sleeve, and adjustable crossbody strap. Perfect for professionals, students, or anyone who appreciates classic design.",
+        "sizes": ["13-inch", "15-inch"],
+        "colors": ["Brown Leather", "Black Leather", "Tan Leather"],
+        "inStock": true,
+        "stockQuantity": 20,
+        "reviews": [
+          {
+            "user": "Classic Style",
+            "rating": 5,
+            "comment": "Absolutely love this bag! The leather quality is superb and it's very functional.",
+            "date": "2024-01-16"
+          }
+        ],
+        "estimatedDelivery": "4-6 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Full-grain Leather", "Vintage Design", "Padded Laptop Sleeve", "Multiple Compartments", "Adjustable Strap"],
+        "brand": "Heritage Leather",
+        "category": "Messenger Bags",
+        "sku": "HER-MSG-001"
+      },
+      {
+        "id": 32,
+        "name": "Women's Tote Bag with Zipper",
+        "slug": "womens-tote-bag-with-zipper",
+        "price": 3599,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=400&h=400&fit=crop"
+        ],
+        "discount": 20,
+        "shortDescription": "Spacious tote bag with secure zipper closure for daily use.",
+        "longDescription": "This versatile tote bag combines style with practicality. Featuring a spacious main compartment with secure zipper closure, multiple interior pockets for organization, and comfortable shoulder straps. Made from durable canvas material with leather accents, perfect for work, shopping, or casual outings.",
+        "sizes": ["Medium", "Large"],
+        "colors": ["Beige", "Black", "Navy Blue", "Burgundy"],
+        "inStock": true,
+        "stockQuantity": 35,
+        "reviews": [
+          {
+            "user": "Practical Shopper",
+            "rating": 4,
+            "comment": "Perfect everyday bag! Love the zipper closure for security.",
+            "date": "2024-01-15"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Zipper Closure", "Spacious Interior", "Multiple Pockets", "Durable Canvas", "Leather Accents"],
+        "brand": "Everyday Carry",
+        "category": "Tote Bags",
+        "sku": "EVR-TOT-001"
       }
     ],
     "Accessories": [
@@ -797,6 +1217,76 @@
         "brand": "Fit Track",
         "category": "Wearables",
         "sku": "FIT-BND-001"
+      },
+      {
+        "id": 33,
+        "name": "Silver Chain Necklace for Men",
+        "slug": "silver-chain-necklace-for-men",
+        "price": 2499,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop"
+        ],
+        "discount": 15,
+        "shortDescription": "Sterling silver chain necklace with secure lobster clasp.",
+        "longDescription": "Elevate your style with this elegant sterling silver chain necklace. Crafted from high-quality 925 sterling silver, featuring a classic link design and secure lobster clasp closure. The versatile length makes it perfect for everyday wear or special occasions, complementing any outfit with understated sophistication.",
+        "sizes": ["18-inch", "20-inch", "22-inch"],
+        "colors": ["Silver"],
+        "inStock": true,
+        "stockQuantity": 30,
+        "reviews": [
+          {
+            "user": "Style Conscious",
+            "rating": 4,
+            "comment": "Beautiful silver chain! Good weight and the clasp is very secure.",
+            "date": "2024-01-16"
+          }
+        ],
+        "estimatedDelivery": "3-5 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["925 Sterling Silver", "Lobster Clasp", "Classic Design", "Tarnish Resistant", "Versatile Length"],
+        "brand": "Silver Craft",
+        "category": "Jewelry",
+        "sku": "SLV-NCK-001"
+      },
+      {
+        "id": 34,
+        "name": "Designer Leather Belt Collection",
+        "slug": "designer-leather-belt-collection",
+        "price": 1899,
+        "rating": 4,
+        "images": [
+          "https://images.unsplash.com/photo-1601924582970-9238bcb495d9?w=400&h=400&fit=crop",
+          "https://images.unsplash.com/photo-1601924582970-9238bcb495d9?w=400&h=400&fit=crop&crop=top",
+          "https://images.unsplash.com/photo-1601924582970-9238bcb495d9?w=400&h=400&fit=crop&crop=bottom",
+          "https://images.unsplash.com/photo-1627123424574-724758594e93?w=400&h=400&fit=crop"
+        ],
+        "discount": 20,
+        "shortDescription": "Premium leather belts in multiple colors with metal buckles.",
+        "longDescription": "Complete your outfit with these premium leather belts. Made from genuine leather that softens and improves with age, featuring polished metal buckles and precise stitching. Available in various widths and colors to match different styles and occasions, from formal to casual wear.",
+        "sizes": ["30", "32", "34", "36", "38", "40"],
+        "colors": ["Black", "Brown", "Tan", "Dark Brown"],
+        "inStock": true,
+        "stockQuantity": 45,
+        "reviews": [
+          {
+            "user": "Fashionable Gent",
+            "rating": 4,
+            "comment": "Great quality belts! The leather is genuine and the buckles are sturdy.",
+            "date": "2024-01-15"
+          }
+        ],
+        "estimatedDelivery": "2-4 business days",
+        "freeShipping": true,
+        "returns": "30-day free returns",
+        "features": ["Genuine Leather", "Metal Buckle", "Multiple Sizes", "Formal & Casual", "Durable Stitching"],
+        "brand": "Leather Works",
+        "category": "Belts",
+        "sku": "LTH-BLT-001"
       }
     ]
   }

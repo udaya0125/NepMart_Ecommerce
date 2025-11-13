@@ -12,11 +12,14 @@ import {
     CheckCheck,
     Trash2,
 } from "lucide-react";
-import { usePage } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
+import axios from "axios";
 
 const AdminNavBar = ({ onMenuToggle }) => {
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
     const [isMessageMenuOpen, setIsMessageMenuOpen] = useState(false);
+    const [allCategory, setAllCategory] = useState([]);
+    const [reloadTrigger, setReloadTrigger] = useState(0);
     const [messageList, setMessageList] = useState([
         {
             id: 1,
@@ -65,6 +68,23 @@ const AdminNavBar = ({ onMenuToggle }) => {
     const user = usePage().props.auth.user;
 
     const unreadCount = messageList.filter((msg) => msg.unread).length;
+
+
+      useEffect(() => {
+
+        const fetchCategory = async () => {
+            try {
+                const response = await axios.get(
+                    route("categorywithsubcategory.indexWithSubCategory")
+                );
+                setAllCategory(response.data.data || []);
+            } catch (error) {
+                console.error("Error fetching category:", error);
+                setAllCategory([]);
+            }
+        };
+        fetchCategory();
+    }, [reloadTrigger]);
 
     const toggleUserMenu = () => {
         setIsUserMenuOpen(!isUserMenuOpen);
@@ -130,6 +150,8 @@ const AdminNavBar = ({ onMenuToggle }) => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
+
+    
 
     return (
         <nav className="fixed top-0 right-0 w-full lg:w-[97%] h-16 z-30 transition-all duration-300 bg-white/80 border-gray-200/50 backdrop-blur-xl border-b">
@@ -338,10 +360,10 @@ const AdminNavBar = ({ onMenuToggle }) => {
                                             Account Settings
                                         </button>
 
-                                        <button className="flex items-center w-full px-4 py-3 text-sm transition-colors text-gray-700 hover:bg-gray-50 group">
+                                        <Link href={'/privacy-security'} className="flex items-center w-full px-4 py-3 text-sm transition-colors text-gray-700 hover:bg-gray-50 group">
                                             <Shield className="w-4 h-4 mr-3 text-gray-400 group-hover:text-emerald-500 transition-colors" />
                                             Privacy & Security
-                                        </button>
+                                        </Link>
                                     </div>
 
                                     {/* Separator */}

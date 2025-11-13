@@ -15,11 +15,13 @@ import {
     DollarSign,
     ShoppingCart,
 } from "lucide-react";
-import productsData from "../../../JsonData/Products.json";
 import Navbar from "@/ContentWrapper/Navbar";
 import Footer from "@/ContentWrapper/Footer";
-import { useCart } from '../../Contexts/CartContext'; 
-import { useWishlist } from '../../Contexts/WishlistContext'; // Import the useWishlist hook
+import { useCart } from "../../Contexts/CartContext";
+import { useWishlist } from "../../Contexts/WishlistContext";
+import axios from "axios";
+import { usePage } from "@inertiajs/react";
+import parse from "html-react-parser";
 
 const ProductsPage = () => {
     const [quantity, setQuantity] = useState(1);
@@ -29,109 +31,320 @@ const ProductsPage = () => {
     const [selectedColor, setSelectedColor] = useState("");
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [newReview, setNewReview] = useState({
+        rating: 0,
+        comment: "",
+        user_name: "",
+        email: "",
+    });
+    const [reviewSubmitting, setReviewSubmitting] = useState(false);
+    const [reviewSuccess, setReviewSuccess] = useState(false);
+    const [addingToCart, setAddingToCart] = useState(false);
+    const [buyNowLoading, setBuyNowLoading] = useState(false);
 
     // Use the cart context
     const { addToCart } = useCart();
-    
+
     // Use the wishlist context
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
+    // Get the current route parameters
+    const { props } = usePage();
+    const slug = window.location.pathname.split("/").pop();
+
     useEffect(() => {
-        const loadProduct = () => {
-            setLoading(true);
-            
-            // Get slug from URL path
-            const pathParts = window.location.pathname.split('/');
-            const slug = pathParts[pathParts.length - 1];
-            
-            if (!slug) {
-                setProduct(null);
+        const fetchProduct = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                if (!slug) {
+                    setError("Product not found");
+                    setLoading(false);
+                    return;
+                }
+
+                console.log("Fetching product with slug:", slug);
+
+                // Fetch all products and find the one with matching slug
+                const response = await axios.get(route("ourproducts.index")); // Adjust this to your actual API endpoint
+                console.log("Products response:", response.data);
+
+                const allProducts = response.data.data || response.data;
+
+                // Find product by slug
+                const foundProduct = allProducts.find((p) => p.slug === slug);
+
+                if (!foundProduct) {
+                    setError("Product not found");
+                    setProduct(null);
+                } else {
+                    setProduct(foundProduct);
+                }
+            } catch (err) {
+                console.error("Fetching error:", err);
+                setError("Failed to load product. Please try again later.");
+            } finally {
                 setLoading(false);
-                return;
             }
-            
-            let foundProduct = null;
-            const categories = Object.keys(productsData.products || {});
-            
-            for (const category of categories) {
-                const categoryProducts = productsData.products[category];
-                foundProduct = categoryProducts.find(p => p.slug === slug);
-                if (foundProduct) break;
-            }
-            
-            setProduct(foundProduct);
-            setLoading(false);
         };
 
-        loadProduct();
-    }, []);
+        fetchProduct();
+    }, [slug]);
 
-    const handleAddToCart = () => {
-        if (!product || !product.inStock) return;
-        
-        // Create a cart-ready product object
-        const cartProduct = {
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            images: product.images,
-            slug: product.slug
-        };
-        
-        // Add the product to cart with the selected quantity
-        for (let i = 0; i < quantity; i++) {
-            addToCart(cartProduct);
+    const handleAddToCart = async () => {
+        if (!product || !product.in_stock) {
+            console.error("Product not available or out of stock");
+            return;
         }
-        
-        // Optional: Show feedback (you can add a toast notification here)
-        console.log(`Added ${quantity} ${product.name} to cart`);
+
+        setAddingToCart(true);
+        try {
+            // Create a cart-ready product object with proper structure
+            const cartProduct = {
+                id: product.id,
+                name: product.name,
+                price: parseFloat(product.price),
+                discounted_price: product.discounted_price ? parseFloat(product.discounted_price) : null,
+                images: product.images ? product.images.map((img) => img.image_path) : [],
+                slug: product.slug,
+                size: selectedSize,
+                color: selectedColor,
+                sku: product.sku,
+                brand: product.brand,
+                product_name: product.name,
+                product_sku: product.sku,
+                product_brand: product.brand,
+            };
+
+            console.log("Adding to cart:", cartProduct, "Quantity:", quantity);
+
+            // Use the addToCart function with both product and quantity
+            await addToCart(cartProduct, quantity);
+            
+            console.log(`Successfully added ${quantity} ${product.name} to cart`);
+            
+            // Optional: Show success message
+            // You can add a toast notification here
+            
+        } catch (error) {
+            console.error("Failed to add to cart:", error);
+            // Handle error (show error message to user)
+            alert("Failed to add product to cart. Please try again.");
+        } finally {
+            setAddingToCart(false);
+        }
     };
 
-    const handleWishlistToggle = () => {
+    const handleBuyNow = async () => {
+        if (!product || !product.in_stock) {
+            console.error("Product not available or out of stock");
+            return;
+        }
+
+        setBuyNowLoading(true);
+        try {
+            // Create a cart-ready product object with proper structure
+            const cartProduct = {
+                id: product.id,
+                name: product.name,
+                price: parseFloat(product.price),
+                discounted_price: product.discounted_price ? parseFloat(product.discounted_price) : null,
+                images: product.images ? product.images.map((img) => img.image_path) : [],
+                slug: product.slug,
+                size: selectedSize,
+                color: selectedColor,
+                sku: product.sku,
+                brand: product.brand,
+                product_name: product.name,
+                product_sku: product.sku,
+                product_brand: product.brand,
+            };
+
+            console.log("Buy Now - Adding to cart:", cartProduct, "Quantity:", quantity);
+
+            // Add to cart first
+            await addToCart(cartProduct, quantity);
+            
+            console.log(`Successfully added ${quantity} ${product.name} to cart, redirecting to checkout`);
+            
+            // Then redirect to checkout
+            window.location.href = "/check-out";
+            
+        } catch (error) {
+            console.error("Failed to add to cart for Buy Now:", error);
+            alert("Failed to proceed with Buy Now. Please try again.");
+        } finally {
+            setBuyNowLoading(false);
+        }
+    };
+
+    const handleWishlistToggle = async () => {
         if (!product) return;
-        
-        const wishlistProduct = {
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            images: product.images,
-            slug: product.slug,
-            rating: product.rating,
-            inStock: product.inStock
-        };
 
-        if (isInWishlist(product.id)) {
-            removeFromWishlist(product.id);
-            console.log(`Removed ${product.name} from wishlist`);
-        } else {
-            addToWishlist(wishlistProduct);
-            console.log(`Added ${product.name} to wishlist`);
+        try {
+            const wishlistProduct = {
+                id: product.id,
+                name: product.name,
+                price: parseFloat(product.price),
+                discounted_price: product.discounted_price ? parseFloat(product.discounted_price) : null,
+                images: product.images ? product.images.map((img) => img.image_path) : [],
+                slug: product.slug,
+                rating: product.reviews && product.reviews.length > 0
+                    ? product.reviews.reduce((acc, review) => acc + review.rating, 0) / product.reviews.length
+                    : 0,
+                inStock: product.in_stock,
+                sku: product.sku,
+                brand: product.brand,
+                product_name: product.name,
+                product_sku: product.sku,
+                product_brand: product.brand,
+            };
+
+            if (isInWishlist(product.id)) {
+                await removeFromWishlist(product.id);
+                console.log(`Removed ${product.name} from wishlist`);
+            } else {
+                await addToWishlist(wishlistProduct);
+                console.log(`Added ${product.name} to wishlist`);
+            }
+        } catch (error) {
+            console.error("Wishlist operation failed:", error);
+            alert("Failed to update wishlist. Please try again.");
         }
     };
 
-    const handleBuyNow = () => {
-        handleAddToCart(); // Add to cart first
-        // Then redirect to checkout page
-        window.location.href = '/check-out';
+    const handleReviewSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!isReviewFormValid()) {
+            alert("Please fill in all required fields");
+            return;
+        }
+
+        if (!product) {
+            alert("Product not found");
+            return;
+        }
+
+        setReviewSubmitting(true);
+
+        try {
+            // Send review to backend using the correct endpoint
+            const response = await axios.post(
+                `/ourproducts/${product.id}/reviews`,
+                {
+                    user_name: newReview.user_name,
+                    email: newReview.email,
+                    rating: newReview.rating,
+                    comment: newReview.comment,
+                    // user_id can be added here if you have authenticated users
+                }
+            );
+
+            if (response.data.status) {
+                // Review submitted successfully
+                setReviewSuccess(true);
+
+                // Reset form
+                setNewReview({
+                    rating: 0,
+                    comment: "",
+                    user_name: "",
+                    email: "",
+                });
+
+                // Refresh product data to show the new review
+                const updatedResponse = await axios.get(
+                    route("ourproducts.index")
+                );
+                const allProducts =
+                    updatedResponse.data.data || updatedResponse.data;
+                const updatedProduct = allProducts.find(
+                    (p) => p.id === product.id
+                );
+
+                if (updatedProduct) {
+                    setProduct(updatedProduct);
+                }
+
+                setTimeout(() => setReviewSuccess(false), 5000);
+            } else {
+                alert(
+                    "Failed to submit review: " +
+                        (response.data.message || "Unknown error")
+                );
+            }
+        } catch (error) {
+            console.error("Error submitting review:", error);
+            if (error.response && error.response.data.errors) {
+                const errors = Object.values(error.response.data.errors)
+                    .flat()
+                    .join(", ");
+                alert("Failed to submit review: " + errors);
+            } else {
+                alert("Failed to submit review. Please try again.");
+            }
+        } finally {
+            setReviewSubmitting(false);
+        }
     };
 
-    // Early return if product not found
-    if (loading) {
+    const isReviewFormValid = () => {
         return (
-            <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                    <div className="text-gray-500 text-lg">Loading product...</div>
-                </div>
-            </div>
+            newReview.rating > 0 &&
+            newReview.comment.trim() !== "" &&
+            newReview.user_name.trim() !== "" &&
+            newReview.email.trim() !== ""
         );
-    }
+    };
 
-    const images = product.images || [];
-    const sizes = product.sizes || [];
-    const colors = product.colors || [];
-    const features = product.features || [];
-    const reviews = product.reviews || [];
+    // Parse string fields to arrays
+    const parseStringToArray = (str) => {
+        if (!str) return [];
+        try {
+            if (Array.isArray(str)) return str;
+            return str
+                .split(",")
+                .map((item) => item.trim())
+                .filter((item) => item);
+        } catch (error) {
+            console.error("Error parsing string to array:", error);
+            return [];
+        }
+    };
+
+    // Parse HTML content with html-react-parser
+    const parseHTMLContent = (content) => {
+        if (!content) return "No description available.";
+        try {
+            return parse(content);
+        } catch (error) {
+            console.error("Error parsing HTML content:", error);
+            return content;
+        }
+    };
+
+    // Parse features array with HTML content
+    const parseFeatures = (featuresArray) => {
+        if (!featuresArray || !Array.isArray(featuresArray)) return [];
+
+        return featuresArray.map((feature) => {
+            try {
+                return {
+                    raw: feature,
+                    parsed: parseHTMLContent(feature),
+                };
+            } catch (error) {
+                console.error("Error parsing feature:", error);
+                return {
+                    raw: feature,
+                    parsed: feature,
+                };
+            }
+        });
+    };
 
     const decrementQuantity = () => {
         if (quantity > 1) setQuantity(quantity - 1);
@@ -147,13 +360,77 @@ const ProductsPage = () => {
             <Star
                 key={i}
                 className={`w-4 h-4 md:w-5 md:h-5 ${
-                    i < safeRating
+                    i < Math.floor(safeRating)
                         ? "fill-yellow-400 text-yellow-400"
                         : "text-gray-300"
                 }`}
             />
         ));
     };
+
+    // Early return if loading or error
+    if (loading) {
+        return (
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <div className="text-gray-500 text-lg">
+                        Loading product...
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="text-red-500 text-lg mb-4">{error}</div>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
+                    >
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    if (!product) {
+        return (
+            <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="text-gray-500 text-lg">
+                        Product not found
+                    </div>
+                    <button
+                        onClick={() => window.history.back()}
+                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 mt-4"
+                    >
+                        Go Back
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
+    // Prepare data from API response
+    const images = product.images
+        ? product.images.map((img) => `/storage/${img.image_path}`)
+        : [];
+    const sizes = parseStringToArray(product.sizes);
+    const colors = parseStringToArray(product.colors);
+    const features = parseFeatures(parseStringToArray(product.features));
+    const reviews = product.reviews || [];
+
+    // Calculate average rating
+    const averageRating =
+        reviews.length > 0
+            ? reviews.reduce((acc, review) => acc + review.rating, 0) /
+              reviews.length
+            : 0;
 
     return (
         <div>
@@ -175,11 +452,12 @@ const ProductsPage = () => {
                             Our Products
                         </h1>
                         <p className="text-xl md:text-2xl text-center max-w-2xl mb-8">
-                            Discover premium quality products crafted with excellence
+                            Discover premium quality products crafted with
+                            excellence
                         </p>
                     </div>
                 </div>
-                
+
                 {/* Product Section */}
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
@@ -192,7 +470,9 @@ const ProductsPage = () => {
                                         {images.map((img, idx) => (
                                             <button
                                                 key={idx}
-                                                onClick={() => setSelectedImage(idx)}
+                                                onClick={() =>
+                                                    setSelectedImage(idx)
+                                                }
                                                 className={`flex-shrink-0 w-16 h-16 lg:w-20 lg:h-20 bg-gray-100 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                                                     selectedImage === idx
                                                         ? "border-blue-500 ring-2 ring-blue-200"
@@ -201,7 +481,9 @@ const ProductsPage = () => {
                                             >
                                                 <img
                                                     src={img}
-                                                    alt={`Thumbnail ${idx + 1}`}
+                                                    alt={`${
+                                                        product.name
+                                                    } thumbnail ${idx + 1}`}
                                                     className="w-full h-full object-cover"
                                                 />
                                             </button>
@@ -218,8 +500,11 @@ const ProductsPage = () => {
                                     )}
                                     <div className="aspect-square flex items-center justify-center p-8">
                                         <img
-                                            src={images[selectedImage] || "/placeholder-image.jpg"}
-                                            alt={product.name || "Product Image"}
+                                            src={
+                                                images[selectedImage] ||
+                                                "/placeholder-image.jpg"
+                                            }
+                                            alt={product.name}
                                             className="w-full h-full object-contain rounded-lg"
                                         />
                                     </div>
@@ -243,7 +528,9 @@ const ProductsPage = () => {
                                 <div className="flex items-center justify-center gap-3 py-4 px-4">
                                     <Truck className="w-5 h-5 text-blue-600 flex-shrink-0" />
                                     <span className="font-semibold text-gray-900 text-sm text-center">
-                                        {product.freeShipping ? "Free Shipping" : "Fast Shipping"}
+                                        {product.free_shipping
+                                            ? "Free Shipping"
+                                            : "Fast Shipping"}
                                     </span>
                                 </div>
                             </div>
@@ -261,28 +548,32 @@ const ProductsPage = () => {
                                 </div>
 
                                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 leading-tight">
-                                    {product.name || "Product Name"}
+                                    {product.name}
                                 </h1>
 
                                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-3">
                                     <div className="flex items-center gap-2">
-                                        {product.discount && (
+                                        {product.discount > 0 && (
                                             <span className="text-gray-400 line-through text-lg">
-                                                $
-                                                {(
-                                                    product.price /
-                                                    (1 - product.discount / 100)
-                                                ).toFixed(0)}
+                                                Rs.{product.price}
                                             </span>
                                         )}
                                         <span className="text-2xl sm:text-3xl font-bold text-gray-900">
-                                            Rs.{product.price || 0}
+                                            Rs.
+                                            {product.discounted_price ||
+                                                product.price}
                                         </span>
+                                        {product.discount > 0 && (
+                                            <span className="text-red-600 font-semibold text-sm bg-red-50 px-2 py-1 rounded">
+                                                Save {product.discount}%
+                                            </span>
+                                        )}
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        {renderStars(product.rating)}
+                                        {renderStars(averageRating)}
                                         <span className="text-sm text-gray-600">
-                                            ({reviews.length} review{reviews.length !== 1 ? "s" : ""})
+                                            ({reviews.length} review
+                                            {reviews.length !== 1 ? "s" : ""})
                                         </span>
                                     </div>
                                 </div>
@@ -290,27 +581,34 @@ const ProductsPage = () => {
                                 <div className="flex items-center gap-2 mb-4">
                                     <Flame className="w-4 h-4 text-red-500" />
                                     <span className="text-sm font-medium text-gray-700">
-                                        {Math.floor((product.stockQuantity || 0) * 0.3)} products sold in last 4 hours
+                                        {Math.floor(
+                                            (product.stock_quantity || 0) * 0.3
+                                        )}{" "}
+                                        products sold in last 4 hours
                                     </span>
                                 </div>
                             </div>
 
                             {/* Description */}
                             <p className="text-gray-600 text-sm leading-relaxed">
-                                {product.shortDescription || "No description available."}
+                                {product.short_description ||
+                                    "No description available."}
                             </p>
 
                             {/* Size Selection */}
                             {sizes.length > 0 && (
                                 <div>
                                     <label className="text-sm font-semibold text-gray-700 mb-3 block">
-                                        Size {selectedSize && `• ${selectedSize}`}
+                                        Size{" "}
+                                        {selectedSize && `• ${selectedSize}`}
                                     </label>
                                     <div className="flex gap-2 flex-wrap">
                                         {sizes.map((size) => (
                                             <button
                                                 key={size}
-                                                onClick={() => setSelectedSize(size)}
+                                                onClick={() =>
+                                                    setSelectedSize(size)
+                                                }
                                                 className={`px-4 py-2.5 border rounded-xl text-sm font-medium transition-all duration-200 ${
                                                     selectedSize === size
                                                         ? "border-gray-900 bg-gray-900 text-white shadow-md"
@@ -328,13 +626,16 @@ const ProductsPage = () => {
                             {colors.length > 0 && (
                                 <div>
                                     <label className="text-sm font-semibold text-gray-700 mb-3 block">
-                                        Color {selectedColor && `• ${selectedColor}`}
+                                        Color{" "}
+                                        {selectedColor && `• ${selectedColor}`}
                                     </label>
                                     <div className="flex gap-2 flex-wrap">
                                         {colors.map((color) => (
                                             <button
                                                 key={color}
-                                                onClick={() => setSelectedColor(color)}
+                                                onClick={() =>
+                                                    setSelectedColor(color)
+                                                }
                                                 className={`px-4 py-2.5 border rounded-xl text-sm font-medium transition-all duration-200 ${
                                                     selectedColor === color
                                                         ? "border-gray-900 bg-gray-900 text-white shadow-md"
@@ -352,13 +653,15 @@ const ProductsPage = () => {
                             <div>
                                 <span
                                     className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium ${
-                                        product.inStock
+                                        product.in_stock
                                             ? "bg-green-50 text-green-700 border border-green-200"
                                             : "bg-red-50 text-red-700 border border-red-200"
                                     }`}
                                 >
-                                    {product.inStock
-                                        ? `✓ ${product.stockQuantity || 0} in stock`
+                                    {product.in_stock
+                                        ? `✓ ${
+                                              product.stock_quantity || 0
+                                          } in stock`
                                         : "✗ Out of stock"}
                                 </span>
                             </div>
@@ -389,20 +692,36 @@ const ProductsPage = () => {
                                     </div>
                                     <button
                                         onClick={handleAddToCart}
+                                        disabled={!product.in_stock || addingToCart}
                                         className="flex-1 bg-gray-900 text-white font-semibold py-3.5 rounded-xl hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2"
-                                        disabled={!product.inStock}
                                     >
-                                        <ShoppingCart className="w-4 h-4" />
-                                        ADD TO CART
+                                        {addingToCart ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                                ADDING...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <ShoppingCart className="w-4 h-4" />
+                                                ADD TO CART
+                                            </>
+                                        )}
                                     </button>
                                 </div>
 
                                 <button
                                     onClick={handleBuyNow}
-                                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-3.5 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
-                                    disabled={!product.inStock}
+                                    disabled={!product.in_stock || buyNowLoading}
+                                    className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-3.5 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2"
                                 >
-                                    BUY NOW
+                                    {buyNowLoading ? (
+                                        <>
+                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                            PROCESSING...
+                                        </>
+                                    ) : (
+                                        "BUY NOW"
+                                    )}
                                 </button>
                             </div>
 
@@ -410,47 +729,76 @@ const ProductsPage = () => {
                             <div className="flex flex-wrap gap-4 pt-2">
                                 {[
                                     { icon: BarChart2, label: "COMPARE" },
-                                    { 
-                                        icon: Heart, 
+                                    {
+                                        icon: Heart,
                                         label: "WISHLIST",
                                         isWishlist: true,
-                                        isActive: isInWishlist(product.id)
+                                        isActive: isInWishlist(product.id),
                                     },
                                     { icon: MessageCircle, label: "ASK US" },
                                     { icon: Share2, label: "SHARE" },
-                                ].map(({ icon: Icon, label, isWishlist, isActive }) => (
-                                    <button
-                                        key={label}
-                                        onClick={isWishlist ? handleWishlistToggle : undefined}
-                                        className={`flex items-center gap-2 text-sm transition-colors duration-200 ${
-                                            isWishlist && isActive
-                                                ? "text-pink-600 hover:text-pink-700"
-                                                : "text-gray-600 hover:text-gray-900"
-                                        }`}
-                                    >
-                                        <Icon 
-                                            size={18} 
-                                            fill={isWishlist && isActive ? "currentColor" : "none"}
-                                        />
-                                        {label}
-                                    </button>
-                                ))}
+                                ].map(
+                                    ({
+                                        icon: Icon,
+                                        label,
+                                        isWishlist,
+                                        isActive,
+                                    }) => (
+                                        <button
+                                            key={label}
+                                            onClick={
+                                                isWishlist
+                                                    ? handleWishlistToggle
+                                                    : undefined
+                                            }
+                                            className={`flex items-center gap-2 text-sm transition-colors duration-200 ${
+                                                isWishlist && isActive
+                                                    ? "text-pink-600 hover:text-pink-700"
+                                                    : "text-gray-600 hover:text-gray-900"
+                                            }`}
+                                        >
+                                            <Icon
+                                                size={18}
+                                                fill={
+                                                    isWishlist && isActive
+                                                        ? "currentColor"
+                                                        : "none"
+                                                }
+                                            />
+                                            {label}
+                                        </button>
+                                    )
+                                )}
                             </div>
 
                             {/* Delivery Info */}
                             <div className="space-y-3 pt-4 border-t border-gray-200">
                                 <div className="flex items-center gap-3 text-sm text-gray-700">
-                                    <Check size={18} className="text-green-600 flex-shrink-0" />
+                                    <Check
+                                        size={18}
+                                        className="text-green-600 flex-shrink-0"
+                                    />
                                     <span>
-                                        <span className="font-semibold">Estimated Delivery:</span>{" "}
-                                        {product.estimatedDelivery || "Not specified"}
+                                        <span className="font-semibold">
+                                            Estimated Delivery:
+                                        </span>{" "}
+                                        {product.estimated_delivery ||
+                                            "Not specified"}
                                     </span>
                                 </div>
                                 <div className="flex items-center gap-3 text-sm text-gray-700">
-                                    <Check size={18} className="text-green-600 flex-shrink-0" />
+                                    <Check
+                                        size={18}
+                                        className="text-green-600 flex-shrink-0"
+                                    />
                                     <span>
-                                        <span className="font-semibold">Free Shipping & Returns:</span>{" "}
-                                        {product.freeShipping ? "Free shipping available" : "Shipping costs apply"} •{" "}
+                                        <span className="font-semibold">
+                                            Free Shipping & Returns:
+                                        </span>{" "}
+                                        {product.free_shipping
+                                            ? "Free shipping available"
+                                            : "Shipping costs apply"}{" "}
+                                        •{" "}
                                         {product.returns || "Standard returns"}
                                     </span>
                                 </div>
@@ -464,9 +812,18 @@ const ProductsPage = () => {
                             <div className="flex gap-8 px-6 overflow-x-auto">
                                 {[
                                     { id: "description", label: "Description" },
-                                    { id: "additional", label: "Additional Info" },
-                                    { id: "reviews", label: `Reviews (${reviews.length})` },
-                                    { id: "shipping", label: "Shipping & Return" },
+                                    {
+                                        id: "additional",
+                                        label: "Additional Info",
+                                    },
+                                    {
+                                        id: "reviews",
+                                        label: `Reviews (${reviews.length})`,
+                                    },
+                                    {
+                                        id: "shipping",
+                                        label: "Shipping & Return",
+                                    },
                                 ].map((tab) => (
                                     <button
                                         key={tab.id}
@@ -490,9 +847,12 @@ const ProductsPage = () => {
                                         <h2 className="text-2xl font-bold text-gray-900 mb-4">
                                             About this item
                                         </h2>
-                                        <p className="text-gray-600 leading-relaxed">
-                                            {product.longDescription || product.shortDescription || "No description available."}
-                                        </p>
+                                        <div className="text-gray-600 leading-relaxed prose prose-lg max-w-none">
+                                            {parseHTMLContent(
+                                                product.long_description ||
+                                                    product.short_description
+                                            )}
+                                        </div>
                                     </div>
 
                                     {features.length > 0 && (
@@ -500,14 +860,24 @@ const ProductsPage = () => {
                                             <h3 className="text-xl font-bold text-gray-900 mb-4">
                                                 Product Features
                                             </h3>
+
                                             <div className="bg-gray-50 p-6 rounded-xl">
                                                 <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                                    {features.map((feature, index) => (
-                                                        <li key={index} className="flex items-center gap-3">
-                                                            <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
-                                                            <span className="text-gray-700">{feature}</span>
-                                                        </li>
-                                                    ))}
+                                                    {features.map(
+                                                        (feature, index) => (
+                                                            <li
+                                                                key={index}
+                                                                className="flex items-center gap-3"
+                                                            >
+                                                                <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />
+                                                                <span className="text-gray-700">
+                                                                    {
+                                                                        feature.parsed
+                                                                    }
+                                                                </span>
+                                                            </li>
+                                                        )
+                                                    )}
                                                 </ul>
                                             </div>
                                         </div>
@@ -521,23 +891,57 @@ const ProductsPage = () => {
                                             <table className="w-full">
                                                 <tbody>
                                                     {[
-                                                        ["Brand", product.brand],
-                                                        ["Category", product.category],
+                                                        [
+                                                            "Brand",
+                                                            product.brand,
+                                                        ],
+                                                        [
+                                                            "Category",
+                                                            product.category
+                                                                ?.category,
+                                                        ],
+                                                        [
+                                                            "Sub Category",
+                                                            product.sub_category
+                                                                ?.sub_category,
+                                                        ],
                                                         ["SKU", product.sku],
-                                                        ["In Stock", product.inStock ? "Yes" : "No"],
-                                                        ["Stock Quantity", product.stockQuantity],
-                                                        ["Available Sizes", sizes.join(", ") || "One Size"],
-                                                        ["Available Colors", colors.join(", ") || "Multiple"],
-                                                    ].map(([key, value], idx) => (
-                                                        <tr key={idx} className="border-b border-gray-200 last:border-b-0">
-                                                            <td className="px-6 py-4 bg-gray-50 font-semibold text-gray-900 w-1/3">
-                                                                {key}
-                                                            </td>
-                                                            <td className="px-6 py-4 text-gray-700">
-                                                                {value || "N/A"}
-                                                            </td>
-                                                        </tr>
-                                                    ))}
+                                                        [
+                                                            "In Stock",
+                                                            product.in_stock
+                                                                ? "Yes"
+                                                                : "No",
+                                                        ],
+                                                        [
+                                                            "Stock Quantity",
+                                                            product.stock_quantity,
+                                                        ],
+                                                        [
+                                                            "Available Sizes",
+                                                            sizes.join(", ") ||
+                                                                "One Size",
+                                                        ],
+                                                        [
+                                                            "Available Colors",
+                                                            colors.join(", ") ||
+                                                                "Multiple",
+                                                        ],
+                                                    ].map(
+                                                        ([key, value], idx) => (
+                                                            <tr
+                                                                key={idx}
+                                                                className="border-b border-gray-200 last:border-b-0"
+                                                            >
+                                                                <td className="px-6 py-4 bg-gray-50 font-semibold text-gray-900 w-1/3">
+                                                                    {key}
+                                                                </td>
+                                                                <td className="px-6 py-4 text-gray-700">
+                                                                    {value ||
+                                                                        "N/A"}
+                                                                </td>
+                                                            </tr>
+                                                        )
+                                                    )}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -556,11 +960,16 @@ const ProductsPage = () => {
                                                 Features
                                             </h4>
                                             <ul className="list-disc list-inside space-y-2">
-                                                {features.map((feature, index) => (
-                                                    <li key={index} className="text-gray-700">
-                                                        {feature}
-                                                    </li>
-                                                ))}
+                                                {features.map(
+                                                    (feature, index) => (
+                                                        <li
+                                                            key={index}
+                                                            className="text-gray-700"
+                                                        >
+                                                            {feature.parsed}
+                                                        </li>
+                                                    )
+                                                )}
                                             </ul>
                                         </div>
                                         <div>
@@ -568,7 +977,8 @@ const ProductsPage = () => {
                                                 Specifications
                                             </h4>
                                             <p className="text-gray-600">
-                                                All specifications are based on manufacturer data and may vary.
+                                                All specifications are based on
+                                                manufacturer data and may vary.
                                             </p>
                                         </div>
                                     </div>
@@ -581,52 +991,245 @@ const ProductsPage = () => {
                                         Customer Reviews ({reviews.length})
                                     </h3>
 
+                                    {/* Review Summary */}
                                     <div className="flex items-center gap-8">
                                         <div className="text-center">
                                             <div className="text-4xl font-bold text-gray-900">
-                                                {(product.rating || 0).toFixed(1)}
+                                                {averageRating.toFixed(1)}
                                             </div>
                                             <div className="flex justify-center mt-2">
-                                                {renderStars(product.rating)}
+                                                {renderStars(averageRating)}
                                             </div>
                                             <div className="text-sm text-gray-500 mt-1">
-                                                {reviews.length} review{reviews.length !== 1 ? "s" : ""}
+                                                {reviews.length} review
+                                                {reviews.length !== 1
+                                                    ? "s"
+                                                    : ""}
                                             </div>
                                         </div>
                                     </div>
 
+                                    {/* Success Message */}
+                                    {reviewSuccess && (
+                                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                            <div className="flex items-center gap-2 text-green-800">
+                                                <CheckCircle className="w-5 h-5" />
+                                                <span className="font-medium">
+                                                    Thank you for your review!
+                                                    It has been submitted
+                                                    successfully.
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Review Form */}
+                                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                                        <h4 className="text-xl font-bold text-gray-900 mb-4">
+                                            Write a Review
+                                        </h4>
+                                        <form
+                                            className="space-y-4"
+                                            onSubmit={handleReviewSubmit}
+                                        >
+                                            {/* Rating Selection */}
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    Your Rating *
+                                                </label>
+                                                <div className="flex gap-2">
+                                                    {[1, 2, 3, 4, 5].map(
+                                                        (star) => (
+                                                            <button
+                                                                key={star}
+                                                                type="button"
+                                                                className={`text-2xl focus:outline-none ${
+                                                                    star <=
+                                                                    (newReview.rating ||
+                                                                        0)
+                                                                        ? "text-yellow-400"
+                                                                        : "text-gray-300"
+                                                                }`}
+                                                                onClick={() =>
+                                                                    setNewReview(
+                                                                        {
+                                                                            ...newReview,
+                                                                            rating: star,
+                                                                        }
+                                                                    )
+                                                                }
+                                                            >
+                                                                ★
+                                                            </button>
+                                                        )
+                                                    )}
+                                                </div>
+                                                <div className="text-sm text-gray-500 mt-1">
+                                                    {newReview.rating
+                                                        ? `${newReview.rating} out of 5 stars`
+                                                        : "Select a rating"}
+                                                </div>
+                                            </div>
+
+                                            {/* Review Comment */}
+                                            <div>
+                                                <label
+                                                    htmlFor="reviewComment"
+                                                    className="block text-sm font-medium text-gray-700 mb-2"
+                                                >
+                                                    Your Review *
+                                                </label>
+                                                <textarea
+                                                    id="reviewComment"
+                                                    rows="4"
+                                                    value={newReview.comment}
+                                                    onChange={(e) =>
+                                                        setNewReview({
+                                                            ...newReview,
+                                                            comment:
+                                                                e.target.value,
+                                                        })
+                                                    }
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    placeholder="Share your thoughts about this product..."
+                                                    required
+                                                />
+                                            </div>
+
+                                            {/* Reviewer Name */}
+                                            <div>
+                                                <label
+                                                    htmlFor="reviewerName"
+                                                    className="block text-sm font-medium text-gray-700 mb-2"
+                                                >
+                                                    Your Name *
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="reviewerName"
+                                                    value={newReview.user_name}
+                                                    onChange={(e) =>
+                                                        setNewReview({
+                                                            ...newReview,
+                                                            user_name:
+                                                                e.target.value,
+                                                        })
+                                                    }
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    placeholder="Enter your name"
+                                                    required
+                                                />
+                                            </div>
+
+                                            {/* Reviewer Email */}
+                                            <div>
+                                                <label
+                                                    htmlFor="reviewerEmail"
+                                                    className="block text-sm font-medium text-gray-700 mb-2"
+                                                >
+                                                    Your Email *
+                                                </label>
+                                                <input
+                                                    type="email"
+                                                    id="reviewerEmail"
+                                                    value={newReview.email}
+                                                    onChange={(e) =>
+                                                        setNewReview({
+                                                            ...newReview,
+                                                            email: e.target
+                                                                .value,
+                                                        })
+                                                    }
+                                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                                    placeholder="Enter your email"
+                                                    required
+                                                />
+                                            </div>
+
+                                            {/* Submit Button */}
+                                            <button
+                                                type="submit"
+                                                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                disabled={
+                                                    !isReviewFormValid() ||
+                                                    reviewSubmitting
+                                                }
+                                            >
+                                                {reviewSubmitting ? (
+                                                    <>
+                                                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                                        Submitting...
+                                                    </>
+                                                ) : (
+                                                    "Submit Review"
+                                                )}
+                                            </button>
+
+                                            <p className="text-sm text-gray-500">
+                                                Your review will be published
+                                                after approval. Please ensure
+                                                your review is honest and
+                                                helpful to other customers.
+                                            </p>
+                                        </form>
+                                    </div>
+
+                                    {/* Existing Reviews */}
                                     <div className="space-y-6">
+                                        <h4 className="text-xl font-bold text-gray-900">
+                                            Customer Reviews ({reviews.length})
+                                        </h4>
+
                                         {reviews.length > 0 ? (
                                             reviews.map((review, index) => (
-                                                <div key={index} className="border-b border-gray-200 pb-6 last:border-b-0">
+                                                <div
+                                                    key={index}
+                                                    className="border-b border-gray-200 pb-6 last:border-b-0"
+                                                >
                                                     <div className="flex items-center gap-4 mb-3">
                                                         <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
                                                             <span className="font-semibold text-white text-sm">
-                                                                {review.user?.charAt(0) || "U"}
+                                                                {review.user_name?.charAt(
+                                                                    0
+                                                                ) ||
+                                                                    review.user?.name?.charAt(
+                                                                        0
+                                                                    ) ||
+                                                                    "U"}
                                                             </span>
                                                         </div>
                                                         <div>
                                                             <div className="font-semibold text-gray-900">
-                                                                {review.user || "Anonymous User"}
+                                                                {review.user_name ||
+                                                                    review.user
+                                                                        ?.name ||
+                                                                    "Anonymous User"}
                                                             </div>
                                                             <div className="flex items-center gap-2">
-                                                                {renderStars(review.rating)}
+                                                                {renderStars(
+                                                                    review.rating
+                                                                )}
                                                                 <span className="text-sm text-gray-500">
-                                                                    {review.date
-                                                                        ? new Date(review.date).toLocaleDateString()
+                                                                    {review.created_at
+                                                                        ? new Date(
+                                                                              review.created_at
+                                                                          ).toLocaleDateString()
                                                                         : "Unknown date"}
                                                                 </span>
                                                             </div>
                                                         </div>
                                                     </div>
+
                                                     <p className="text-gray-700 leading-relaxed">
-                                                        {review.comment || "No comment provided."}
+                                                        {review.comment ||
+                                                            "No comment provided."}
                                                     </p>
                                                 </div>
                                             ))
                                         ) : (
                                             <div className="text-center py-8 text-gray-500">
-                                                No reviews yet. Be the first to review this product!
+                                                No reviews yet. Be the first to
+                                                review this product!
                                             </div>
                                         )}
                                     </div>
@@ -645,18 +1248,31 @@ const ProductsPage = () => {
                                             </h4>
                                             <div className="space-y-3 text-gray-600">
                                                 <p>
-                                                    <strong>Estimated Delivery:</strong>{" "}
-                                                    {product.estimatedDelivery || "Not specified"}
+                                                    <strong>
+                                                        Estimated Delivery:
+                                                    </strong>{" "}
+                                                    {product.estimated_delivery ||
+                                                        "Not specified"}
                                                 </p>
                                                 <p>
-                                                    <strong>Free Shipping:</strong>{" "}
-                                                    {product.freeShipping ? "Yes" : "No"}
+                                                    <strong>
+                                                        Free Shipping:
+                                                    </strong>{" "}
+                                                    {product.free_shipping
+                                                        ? "Yes"
+                                                        : "No"}
                                                 </p>
                                                 <p>
-                                                    <strong>Processing Time:</strong> 1-2 business days
+                                                    <strong>
+                                                        Processing Time:
+                                                    </strong>{" "}
+                                                    1-2 business days
                                                 </p>
                                                 <p>
-                                                    <strong>International Shipping:</strong> Available to most countries
+                                                    <strong>
+                                                        International Shipping:
+                                                    </strong>{" "}
+                                                    Available to most countries
                                                 </p>
                                             </div>
                                         </div>
@@ -667,16 +1283,25 @@ const ProductsPage = () => {
                                             <div className="space-y-3 text-gray-600">
                                                 <p>
                                                     <strong>Returns:</strong>{" "}
-                                                    {product.returns || "Standard 30-day return policy"}
+                                                    {product.returns ||
+                                                        "Standard 30-day return policy"}
                                                 </p>
                                                 <p>
-                                                    <strong>Condition:</strong> Items must be in original condition with tags attached
+                                                    <strong>Condition:</strong>{" "}
+                                                    Items must be in original
+                                                    condition with tags attached
                                                 </p>
                                                 <p>
-                                                    <strong>Process:</strong> Contact customer service within 30 days of delivery
+                                                    <strong>Process:</strong>{" "}
+                                                    Contact customer service
+                                                    within 30 days of delivery
                                                 </p>
                                                 <p>
-                                                    <strong>Refund Time:</strong> 5-10 business days after receipt
+                                                    <strong>
+                                                        Refund Time:
+                                                    </strong>{" "}
+                                                    5-10 business days after
+                                                    receipt
                                                 </p>
                                             </div>
                                         </div>
@@ -687,7 +1312,7 @@ const ProductsPage = () => {
                     </div>
                 </div>
             </div>
-            <Footer/>
+            <Footer />
         </div>
     );
 };

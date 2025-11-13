@@ -36,7 +36,8 @@ const ContactUs = () => {
 
             setSubmitStatus({
                 type: "success",
-                message: "Message sent successfully! We'll get back to you soon.",
+                message:
+                    "Message sent successfully! We'll get back to you soon.",
             });
             reset();
         } catch (error) {
@@ -53,33 +54,32 @@ const ContactUs = () => {
     return (
         <div>
             <Navbar />
-            <div className="relative h-[550px] overflow-hidden">
-                <img
-                    src="https://images.pexels.com/photos/1525612/pexels-photo-1525612.jpeg"
-                    alt="Products hero image"
-                    className="w-full h-full object-cover"
-                />
-
-                {/* Dark Overlay */}
-                <div className="absolute inset-0 bg-black/40"></div>
-
-                {/* Text Content */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4">
-                    <h1 className="text-5xl md:text-6xl font-bold text-center mb-4">
+            {/* Hero Section */}
+            <div
+                className="relative h-96 overflow-hidden bg-cover bg-center"
+                style={{
+                    backgroundImage:
+                        'url("https://images.unsplash.com/photo-1607082350899-7e105aa886ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80")',
+                }}
+            >
+                <div className="absolute inset-0 bg-black/30"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-900/40 to-transparent"></div>
+                <div className="relative z-10 flex flex-col items-center justify-center h-full text-white px-4">
+                    <h1 className="text-5xl md:text-6xl font-bold mb-4 tracking-wide">
                         Contact Page
                     </h1>
-                    <p className="text-xl md:text-2xl text-center max-w-2xl mb-8">
-                        Lorem ipsum, dolor sit amet consectetur adipisicing
-                        elit. Sed, eligendi quibusdam odio totam quod unde quae
-                        suscipit doloremque itaque iure optio at cum corrupti
-                        nesciunt vitae possimus porro ipsa excepturi?
+                    <p className="text-lg md:text-xl text-gray-100 mb-6">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit.
+                        Eos sit odit assumenda esse quam inventore laboriosam
+                        explicabo fugiat a voluptas natus fuga magnam maiores
+                        mollitia eius animi, suscipit reiciendis? Eveniet.
                     </p>
                 </div>
             </div>
 
             {/* Map Section */}
-            <div className="grid grid-cols-1 md:grid-cols-2 mt-4 px-6 md:px-12 mb-6 gap-8">
-                <div className="w-full h-[450px] md:h-[500px] lg:h-[550px] overflow-hidden rounded-xl shadow-lg sticky top-32 self-start">
+            <div className="grid grid-cols-1 md:grid-cols-2 mt-12 px-6 md:px-12 mb-6 gap-8 ">
+                <div className="w-full h-[450px] md:h-[500px] lg:h-[550px] overflow-hidden rounded-xl shadow-lg lg:sticky lg:top-32 lg:self-start">
                     <iframe
                         src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d1787.1372630750714!2d83.97662754194413!3d28.229288200915114!3m2!1i1024!2i768!4f13.1!5e1!3m2!1sen!2snp!4v1760679190550!5m2!1sen!2snp"
                         className="w-full h-full border-0"

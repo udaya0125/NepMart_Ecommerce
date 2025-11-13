@@ -112,14 +112,16 @@ export const WishlistProvider = ({ children, user = null }) => {
                     price: parseFloat(item.price),
                     discounted_price: item.discounted_price ? parseFloat(item.discounted_price) : null,
                     product_name: item.product_name,
-                    product_sku: item.product_sku,
+                    product_sku: item.product_sku,                  
                     product_brand: item.product_brand,
                     user_name: item.user_name,
                     addedDate: item.created_at || new Date().toISOString(),
                     // Include additional product data that might be needed
-                    image: item.product?.images?.[0] || null,
+                    images: item.product?.images?.[0]?.image_path || '',
                     inStock: item.product?.in_stock !== false
                 }));
+
+                console.log('Loaded wishlist items from backend:', wishlistItems); // Debug log
                 
                 if (isMounted.current) {
                     dispatch({

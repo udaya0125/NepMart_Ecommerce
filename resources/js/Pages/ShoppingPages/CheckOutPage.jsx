@@ -478,7 +478,7 @@ const CheckOutPage = () => {
                                             className="flex gap-3"
                                         >
                                             <img
-                                                src={item.images?.[0]}
+                                                src={`storage/${item.images}`}
                                                 alt={item.name}
                                                 className="w-16 h-16 object-cover rounded"
                                             />

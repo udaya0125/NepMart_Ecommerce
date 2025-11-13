@@ -1,56 +1,109 @@
 import React, { useState, useEffect } from "react";
 import { Star, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
+import axios from "axios";
 
 const Hero = () => {
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [heroSlides, setHeroSlides] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
-    const heroSlides = [
-        {
-            title: "Summer Collection 2025",
-            subtitle: "Trending Fashion & Accessories",
-            description: "Discover the hottest styles of the season with up to 50% off",
-            buttonText: "Shop Now",
-            image: "https://images.pexels.com/photos/1179229/pexels-photo-1179229.jpeg"
-        },
-        {
-            title: "New Arrivals",
-            subtitle: "Premium Quality Products",
-            description: "Elevate your lifestyle with our exclusive collection",
-            buttonText: "Explore Collection",
-            image: "https://images.pexels.com/photos/8169649/pexels-photo-8169649.jpeg"
-        },
-        {
-            title: "Limited Time Offer",
-            subtitle: "Flash Sale Ends Soon",
-            description: "Get amazing deals on selected items before they're gone",
-            buttonText: "Grab Deals",
-            image: "https://images.pexels.com/photos/1525612/pexels-photo-1525612.jpeg"
-        },
-    ];
-
+    // Use Effect for fetching hero slides
     useEffect(() => {
+        const fetchHeroSlides = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                console.log("Fetching hero slides from:", route("ourhome.index"));
+                const response = await axios.get(route("ourhome.index"));
+                console.log("Hero slides response:", response.data);
+                
+                // Handle both response formats
+                const slidesData = response.data.data || response.data;
+                setHeroSlides(slidesData);
+            } catch (err) {
+                console.error("Fetching error:", err);
+                console.error("Error response:", err.response);
+                setError("Failed to load hero slides. Please try again later.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchHeroSlides();
+    }, []);
+
+    // Auto-slide effect - only run if we have slides
+    useEffect(() => {
+        if (heroSlides.length === 0) return;
+        
         const slideInterval = setInterval(() => {
             setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
         }, 5000);
+        
         return () => clearInterval(slideInterval);
     }, [heroSlides.length]);
 
     const prevSlide = () => {
+        if (heroSlides.length === 0) return;
         setCurrentSlide((prev) =>
             prev === 0 ? heroSlides.length - 1 : prev - 1
         );
     };
 
     const nextSlide = () => {
+        if (heroSlides.length === 0) return;
         setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     };
 
     const goToSlide = (index) => {
+        if (heroSlides.length === 0) return;
         setCurrentSlide(index);
     };
 
+    // Loading state
+    if (loading) {
+        return (
+            <div className="relative w-full overflow-hidden">
+                <div className="relative w-full h-screen flex items-center justify-center">
+                    <div className="text-white text-xl">Loading hero slides...</div>
+                </div>
+            </div>
+        );
+    }
+
+    // Error state
+    if (error) {
+        return (
+            <div className="relative w-full overflow-hidden">
+                <div className="relative w-full h-screen flex items-center justify-center">
+                    <div className="text-white text-xl text-center">
+                        {error}
+                        <button 
+                            onClick={() => window.location.reload()} 
+                            className="ml-4 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-white px-4 py-2 rounded-full transition-all duration-300"
+                        >
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // No slides state
+    if (heroSlides.length === 0) {
+        return (
+            <div className="relative w-full overflow-hidden">
+                <div className="relative w-full h-screen flex items-center justify-center">
+                    <div className="text-white text-xl">No hero slides available</div>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="relative w-full  overflow-hidden">
+        <div className="relative w-full overflow-hidden">
             <div className="relative w-full h-screen">
                 <div
                     className="flex transition-transform duration-700 ease-in-out h-full"
@@ -58,10 +111,10 @@ const Hero = () => {
                 >
                     {heroSlides.map((slide, index) => (
                         <div
-                            key={index}
+                            key={slide.id || index}
                             className="min-w-full h-full relative"
                             style={{
-                                backgroundImage: `url(${slide.image})`,
+                                backgroundImage: `url(${`storage/${slide.image_path}`})`,
                                 backgroundSize: 'cover',
                                 backgroundPosition: 'center',
                                 backgroundRepeat: 'no-repeat'
@@ -100,8 +153,6 @@ const Hero = () => {
                                         {slide.description}
                                     </p>
 
-
-
                                     <div className="flex justify-center items-center gap-8 md:gap-16 mt-12 pt-8 border-t border-white/20">
                                         <div>
                                             <p className="text-3xl md:text-4xl font-bold">5K+</p>
@@ -124,33 +175,38 @@ const Hero = () => {
                     ))}
                 </div>
 
-                <button
-                    onClick={prevSlide}
-                    className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-white p-4 transition-all duration-300 hover:scale-110 z-20 rounded-full hidden lg:block"
-                >
-                    <ChevronLeft size={24} />
-                </button>
-
-                <button
-                    onClick={nextSlide}
-                    className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-white p-4 transition-all duration-300 hover:scale-110 z-20 rounded-full hidden lg:block"
-                >
-                    <ChevronRight size={24} />
-                </button>
-
-                <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3 z-20">
-                    {heroSlides.map((_, index) => (
+                {/* Navigation buttons - only show if we have multiple slides */}
+                {heroSlides.length > 1 && (
+                    <>
                         <button
-                            key={index}
-                            onClick={() => goToSlide(index)}
-                            className={`transition-all duration-300 rounded-full ${
-                                currentSlide === index
-                                    ? "bg-white w-12 h-3"
-                                    : "bg-white/50 hover:bg-white/75 w-3 h-3"
-                            }`}
-                        ></button>
-                    ))}
-                </div>
+                            onClick={prevSlide}
+                            className="absolute left-6 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-white p-4 transition-all duration-300 hover:scale-110 z-20 rounded-full hidden lg:block"
+                        >
+                            <ChevronLeft size={24} />
+                        </button>
+
+                        <button
+                            onClick={nextSlide}
+                            className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white/20 hover:bg-white/40 backdrop-blur-sm text-white p-4 transition-all duration-300 hover:scale-110 z-20 rounded-full hidden lg:block"
+                        >
+                            <ChevronRight size={24} />
+                        </button>
+
+                        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3 z-20">
+                            {heroSlides.map((_, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => goToSlide(index)}
+                                    className={`transition-all duration-300 rounded-full ${
+                                        currentSlide === index
+                                            ? "bg-white w-12 h-3"
+                                            : "bg-white/50 hover:bg-white/75 w-3 h-3"
+                                    }`}
+                                ></button>
+                            ))}
+                        </div>
+                    </>
+                )}
             </div>
         </div>
     );

@@ -12,7 +12,7 @@ const CustomerSideBar = ({ isMobileOpen, onMobileToggle }) => {
             dashboard: "Dashboard",
             "customer-home": "Home",
             "customer-products": "Products",
-            "product-cart": "Cart",
+            "": "Address",
             "customer-setting": "Settings",
         };
         setActiveItem(activeMap[path] || "Dashboard");
@@ -22,7 +22,7 @@ const CustomerSideBar = ({ isMobileOpen, onMobileToggle }) => {
         { href: "/customer-dashboard", icon: Home, label: "Dashboard" },
         { href: "/customer-home", icon: Home, label: "Home" },
         { href: "/customer-products", icon: Package, label: "Products" },
-        { href: "/product-cart", icon: BookOpen, label: "Cart" },
+        { href: "/product-cart", icon: BookOpen, label: "Address" },
         { href: "/customer-setting", icon: Settings, label: "Settings" },
     ];
 
@@ -37,7 +37,7 @@ const CustomerSideBar = ({ isMobileOpen, onMobileToggle }) => {
             )}
 
             <div
-                className={`fixed left-0 top-0 h-screen z-50 transition-all duration-300 w-64 bg-white border-r border-gray-200 ${
+                className={`fixed left-0 top-0 h-screen z-50 transition-all duration-300 w-[300px] bg-white border-r border-gray-200 ${
                     isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
                 }`}
             >

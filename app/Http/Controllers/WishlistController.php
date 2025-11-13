@@ -13,7 +13,8 @@ class WishlistController extends Controller
     public function index()
     {
         try {
-            $wishlistItems = Wishlist::all();
+            // Eager load the product relationship with its images
+            $wishlistItems = Wishlist::with(['product.images'])->get();
 
             return response()->json([
                 'success' => true,
@@ -36,7 +37,7 @@ class WishlistController extends Controller
     {
         $validated = $request->validate([
             'user_name' => 'required|string|max:255',
-            'product_id' => 'required|integer',
+            'product_id' => 'required|integer|exists:products,id', // Added exists validation
             'product_name' => 'required|string|max:255',
             'product_sku' => 'nullable|string|max:255',
             'product_brand' => 'nullable|string|max:255',
@@ -45,7 +46,23 @@ class WishlistController extends Controller
         ]);
 
         try {
+            // Check if item already exists in wishlist for this user
+            $existingItem = Wishlist::where('user_name', $validated['user_name'])
+                ->where('product_id', $validated['product_id'])
+                ->first();
+
+            if ($existingItem) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Product already exists in wishlist.',
+                    'data' => $existingItem->load('product.images')
+                ], 409); // 409 Conflict
+            }
+
             $wishlist = Wishlist::create($validated);
+
+            // Load the product relationship with images
+            $wishlist->load('product.images');
 
             return response()->json([
                 'success' => true,
@@ -77,6 +94,9 @@ class WishlistController extends Controller
         try {
             $wishlist = Wishlist::findOrFail($id);
             $wishlist->update($validated);
+
+            // Load the product relationship with images
+            $wishlist->load('product.images');
 
             return response()->json([
                 'success' => true,

@@ -3,14 +3,29 @@
 namespace App\Http\Controllers;
 
 use App\Models\Blog;
-use App\Models\ActivityLog; // 👈 Import the ActivityLog model
+use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Auth; // Optional: if you use authentication
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        $blogs = Blog::with('category')->latest()->get();
+
+        return response()->json([
+            'status' => true,
+            'message' => 'All blogs fetched successfully.',
+            'data' => $blogs
+        ], 200);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -30,10 +45,7 @@ class BlogController extends Controller
         // Handle image upload
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '-' . Str::slug(pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads/blogs'), $imageName);
-            $imagePath = 'uploads/blogs/' . $imageName;
+            $imagePath = $request->file('image')->store('blogs', 'public');
         }
 
         $blog = Blog::create([
@@ -49,7 +61,7 @@ class BlogController extends Controller
 
         // 🔔 Log activity: Blog created
         ActivityLog::create([
-            'name'        => Auth::check() ? Auth::user()->name : 'Guest', // or 'Admin', etc.
+            'name'        => Auth::check() ? Auth::user()->name : 'Guest',
             'ip_address'  => $request->ip(),
             'title'       => 'Created blog: ' . $blog->title,
         ]);
@@ -81,14 +93,14 @@ class BlogController extends Controller
 
         // Handle new image upload
         if ($request->hasFile('image')) {
-            if ($blog->image && File::exists(public_path($blog->image))) {
-                File::delete(public_path($blog->image));
+            // Delete old image
+            if ($blog->image && Storage::disk('public')->exists($blog->image)) {
+                Storage::disk('public')->delete($blog->image);
             }
 
-            $image = $request->file('image');
-            $imageName = time() . '-' . Str::slug(pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME)) . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads/blogs'), $imageName);
-            $blog->image = 'uploads/blogs/' . $imageName;
+            // Store new image
+            $imagePath = $request->file('image')->store('blogs', 'public');
+            $blog->image = $imagePath;
         }
 
         $blog->update([
@@ -124,8 +136,9 @@ class BlogController extends Controller
 
         $blogTitle = $blog->title; // Save title before deletion
 
-        if ($blog->image && File::exists(public_path($blog->image))) {
-            File::delete(public_path($blog->image));
+        // Delete image
+        if ($blog->image && Storage::disk('public')->exists($blog->image)) {
+            Storage::disk('public')->delete($blog->image);
         }
 
         $blog->delete();
@@ -140,18 +153,6 @@ class BlogController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Blog deleted successfully.'
-        ], 200);
-    }
-
-    // index() remains unchanged
-    public function index()
-    {
-        $blogs = Blog::with('category')->latest()->get();
-
-        return response()->json([
-            'status' => true,
-            'message' => 'All blogs fetched successfully.',
-            'data' => $blogs
         ], 200);
     }
 }

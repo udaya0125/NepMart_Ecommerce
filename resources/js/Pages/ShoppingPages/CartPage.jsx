@@ -207,7 +207,7 @@ const CartPage = () => {
                                                 /> */}
 
                                                 <img
-                                                    src={item.image || item.images?.[0] || 'm.png'}
+                                                    src={`storage/${item.images}`}
                                                     alt={item.name || item.product_name}
                                                     className="w-24 h-24 object-cover rounded"
                                                     onError={(e) => {

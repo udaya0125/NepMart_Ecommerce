@@ -10,6 +10,10 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
     const [storageError, setStorageError] = useState(null);
     const [isGeneratingInvoice, setIsGeneratingInvoice] = useState(false);
 
+    import.meta.env.VITE_service_id;
+    import.meta.env.VITE_template_id_payment;
+    import.meta.env.VITE_public_key;
+
     useEffect(() => {
         // Check if we're coming from eSewa redirect
         const urlParams = new URLSearchParams(window.location.search);

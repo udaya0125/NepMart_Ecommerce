@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     ChevronLeft,
     ChevronRight,
@@ -8,20 +8,75 @@ import {
     ShoppingCart,
 } from "lucide-react";
 import ProductsPopup from "./ProductsPopup";
-import productsData from "../../JsonData/Products.json";
 import { Link } from "@inertiajs/react";
 import { useCart } from "../Contexts/CartContext";
 import { useWishlist } from "../Contexts/WishlistContext";
+import axios from "axios";
 
 const PopularProducts = () => {
-    const [activeTab, setActiveTab] = useState("Fashion");
+    const [activeTab, setActiveTab] = useState("");
     const [showDetails, setShowDetails] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [allProducts, setAllProducts] = useState([]);
+    const [allCategories, setAllCategories] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     const { addToCart } = useCart();
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
-    const products = productsData?.products || {};
-    const activeProducts = products[activeTab] || [];
+    // Fetch categories and products
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                // Fetch categories
+                console.log("Fetching categories from:", route("ourcategory.index"));
+                const categoriesResponse = await axios.get(route("ourcategory.index"));
+                const categoriesData = categoriesResponse.data.data || categoriesResponse.data || [];
+                console.log("Categories response:", categoriesData);
+                setAllCategories(categoriesData);
+
+                // Set first category as active tab if available
+                if (categoriesData.length > 0) {
+                    setActiveTab(categoriesData[0].category || categoriesData[0].name);
+                }
+
+                // Fetch products
+                console.log("Fetching products from:", route("ourproducts.index"));
+                const productsResponse = await axios.get(route("ourproducts.index"));
+                const productsData = productsResponse.data.data || productsResponse.data || [];
+                console.log("Products response:", productsData);
+                setAllProducts(productsData);
+
+            } catch (err) {
+                console.error("Fetching error:", err);
+                console.error("Error response:", err.response);
+                setError("Failed to load products. Please try again later.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    // Filter products by active category
+    const getFilteredProducts = () => {
+        if (!activeTab || allProducts.length === 0) return [];
+        
+        return allProducts.filter(product => {
+            // Check if product belongs to the active category
+            // You might need to adjust this based on your actual data structure
+            return product.category?.category === activeTab || 
+                   product.category_id === activeTab ||
+                   product.category?.name === activeTab;
+        });
+    };
+
+    const activeProducts = getFilteredProducts();
 
     const scroll = (direction) => {
         const container = document.getElementById("products-container");
@@ -46,8 +101,8 @@ const PopularProducts = () => {
         const cartProduct = {
             id: product.id,
             name: product.name,
-            price: product.price,
-            images: product.images,
+            price: product.discounted_price || product.price,
+            images: product.images?.map(img => img.image_path) || [product.image],
             slug: product.slug
         };
         
@@ -62,11 +117,11 @@ const PopularProducts = () => {
         const wishlistProduct = {
             id: product.id,
             name: product.name,
-            price: product.price,
-            images: product.images,
+            price: product.discounted_price || product.price,
+            images: product.images?.map(img => img.image_path) || [product.image],
             slug: product.slug,
-            rating: product.rating,
-            inStock: true // You can modify this based on your product data
+            rating: product.rating || 4, // Default rating if not available
+            inStock: product.in_stock !== undefined ? product.in_stock : (product.stock_quantity > 0)
         };
 
         if (isInWishlist(product.id)) {
@@ -79,13 +134,14 @@ const PopularProducts = () => {
     };
 
     const renderStars = (rating) => {
+        const productRating = rating || 4; // Default rating if not available
         return (
             <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
                     <svg
                         key={i}
                         className={`w-4 h-4 ${
-                            i < rating ? "text-yellow-400" : "text-gray-300"
+                            i < productRating ? "text-yellow-400" : "text-gray-300"
                         }`}
                         fill="currentColor"
                         viewBox="0 0 20 20"
@@ -97,24 +153,79 @@ const PopularProducts = () => {
         );
     };
 
+    // Get product image
+   const getProductImage = (product) => {
+    if (product.images && product.images.length > 0) {
+        // Find primary image or use first image
+        const primaryImage = product.images.find(img => img.is_primary);
+        const imagePath = primaryImage
+            ? primaryImage.image_path
+            : product.images[0].image_path;
+
+        // Ensure it uses the /storage path
+        return imagePath.startsWith('/storage/')
+            ? imagePath
+            : `/storage/${imagePath}`;
+    }
+
+    // If product has a single image or fallback placeholder
+    if (product.image) {
+        return product.image.startsWith('/storage/')
+            ? product.image
+            : `/storage/${product.image}`;
+    }
+
+    // Default placeholder
+    return "/images/placeholder-product.jpg";
+};
+
+
+    if (loading) {
+        return (
+            <div className="w-full max-w-7xl mx-auto px-4 py-12">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+                    <p className="text-gray-500 mt-4">Loading products...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="w-full max-w-7xl mx-auto px-4 py-12">
+                <div className="text-center text-red-500">
+                    <p>{error}</p>
+                    <button 
+                        onClick={() => window.location.reload()} 
+                        className="mt-4 px-4 py-2 bg-gray-900 text-white rounded hover:bg-gray-800"
+                    >
+                        Retry
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="w-full max-w-7xl mx-auto px-4 py-12">
             <h2 className="text-4xl font-semibold text-center mb-8 text-gray-900">
                 Popular Products
             </h2>
 
+            {/* Category Tabs */}
             <div className="flex justify-center gap-8 mb-10">
-                {["Fashion", "Accessories", "Apparel"].map((tab) => (
+                {allCategories.map((category) => (
                     <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
+                        key={category.id}
+                        onClick={() => setActiveTab(category.category || category.name)}
                         className={`text-lg font-medium pb-2 transition-all ${
-                            activeTab === tab
+                            activeTab === (category.category || category.name)
                                 ? "text-gray-900 border-b-2 border-gray-900"
                                 : "text-gray-500 hover:text-gray-700"
                         }`}
                     >
-                        {tab}
+                        {category.category || category.name}
                     </button>
                 ))}
             </div>
@@ -141,39 +252,46 @@ const PopularProducts = () => {
                             >
                                 <Link
                                     href={`/products/${product.slug}`}
-                                    method="get"
                                     className="block"
                                 >
                                     <div className="relative bg-white h-72 flex items-center justify-center overflow-hidden">
                                         <img
-                                            src={product.images[0]}
+                                            src={getProductImage(product)}
                                             alt={product.name}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                         />
-                                        {product.discount && (
+                                        {product.discount && product.discount > 0 && (
                                             <div className="absolute top-3 left-3 bg-black text-white px-2 py-1 text-xs font-semibold">
                                                 -{product.discount}%
                                             </div>
                                         )}
+                                        {!product.in_stock && (
+                                            <div className="absolute top-3 right-3 bg-red-500 text-white px-2 py-1 text-xs font-semibold">
+                                                Out of Stock
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="p-4 flex flex-col items-center">
-                                        <h3 className="text-sm font-medium text-gray-900 mb-2 h-10 line-clamp-2">
+                                        <h3 className="text-sm font-medium text-gray-900 mb-2 h-10 line-clamp-2 text-center">
                                             {product.name}
                                         </h3>
                                         <div className="mb-2">
                                             {renderStars(product.rating)}
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <span className="text-lg font-semibold text-gray-900">
-                                                Rs.{product.price}
-                                            </span>
-                                            {product.priceMax && (
+                                            {product.discount && product.discount > 0 ? (
                                                 <>
-                                                    <span className="text-gray-400">–</span>
                                                     <span className="text-lg font-semibold text-gray-900">
-                                                        {product.priceMax}
+                                                        Rs.{product.discounted_price || (product.price - (product.price * product.discount / 100)).toFixed(2)}
+                                                    </span>
+                                                    <span className="text-sm text-gray-500 line-through">
+                                                        Rs.{product.price}
                                                     </span>
                                                 </>
+                                            ) : (
+                                                <span className="text-lg font-semibold text-gray-900">
+                                                    Rs.{product.price}
+                                                </span>
                                             )}
                                         </div>
                                     </div>
@@ -197,10 +315,15 @@ const PopularProducts = () => {
                                     </button>
                                     <button
                                         onClick={(e) => handleAddToCart(product, e)}
-                                        className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
+                                        disabled={!product.in_stock}
+                                        className={`p-2 rounded-full shadow-md transition-colors ${
+                                            product.in_stock 
+                                                ? "bg-white text-gray-700 hover:bg-gray-100" 
+                                                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                        }`}
                                         aria-label="Add to cart"
                                     >
-                                        <ShoppingCart className="w-4 h-4 text-gray-700" />
+                                        <ShoppingCart className="w-4 h-4" />
                                     </button>
                                     <button
                                         onClick={(e) => {
@@ -213,18 +336,19 @@ const PopularProducts = () => {
                                     >
                                         <Eye className="w-4 h-4 text-gray-700" />
                                     </button>
-                                    <button
+                                    <Link
+                                        href={`/products/${product.slug}`}
                                         className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
-                                        aria-label="View on external site"
+                                        aria-label="View product details"
                                     >
                                         <ExternalLink className="w-4 h-4 text-gray-700" />
-                                    </button>
+                                    </Link>
                                 </div>
                             </div>
                         ))
                     ) : (
-                        <div className="text-center text-gray-500 col-span-full">
-                            No products available in this category.
+                        <div className="text-center text-gray-500 w-full py-12">
+                            {activeTab ? `No products available in ${activeTab} category.` : "Please select a category."}
                         </div>
                     )}
                 </div>

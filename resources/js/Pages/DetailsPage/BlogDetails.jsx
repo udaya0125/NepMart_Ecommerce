@@ -1,17 +1,35 @@
 import React, { useState, useEffect } from "react";
 import { Calendar, User, ArrowLeft, Share2, MessageCircle, Heart, Clock, Tag } from "lucide-react";
 import { Link, usePage } from "@inertiajs/react";
+import axios from "axios";
 import Footer from "@/ContentWrapper/Footer";
 import Navbar from "@/ContentWrapper/Navbar";
-import blogPosts from "../../../JsonData/Blog.json";
 
 const BlogDetails = () => {
     const [blog, setBlog] = useState(null);
+    const [allBlogs, setAllBlogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("content");
 
     useEffect(() => {
-        const loadBlog = () => {
+        const fetchBlogs = async () => {
+            try {
+                const response = await axios.get(route("ourblog.index"));
+                const blogsData = Array.isArray(response.data) 
+                    ? response.data 
+                    : response.data.data || [];
+                setAllBlogs(blogsData);
+            } catch (error) {
+                console.error("Fetching error", error);
+                setAllBlogs([]);
+            }
+        };
+
+        fetchBlogs();
+    }, []);
+
+    useEffect(() => {
+        const loadBlog = async () => {
             setLoading(true);
             
             // Get slug from URL path
@@ -24,15 +42,91 @@ const BlogDetails = () => {
                 return;
             }
             
-            // Find blog by slug
-            const foundBlog = blogPosts.blogPosts.find(post => post.slug === slug);
-            
-            setBlog(foundBlog);
-            setLoading(false);
+            try {
+                // Fetch all blogs first
+                const response = await axios.get(route("ourblog.index"));
+                const blogsData = Array.isArray(response.data) 
+                    ? response.data 
+                    : response.data.data || [];
+                
+                // Find blog by slug
+                const foundBlog = blogsData.find(post => post.slug === slug);
+                setBlog(foundBlog);
+                setAllBlogs(blogsData);
+            } catch (error) {
+                console.error("Error fetching blog:", error);
+                setBlog(null);
+            } finally {
+                setLoading(false);
+            }
         };
 
         loadBlog();
     }, []);
+
+    // Format date for display
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    };
+
+    // Get image URL - handle storage paths
+    const getImageUrl = (imagePath) => {
+    if (!imagePath) return '/default-blog-image.jpg'; // fallback
+    if (imagePath.startsWith('http')) return imagePath; // full URL case
+    return `/${imagePath}`; // for paths like uploads/blogs/xxx.jpg
+};
+
+
+    console.log(allBlogs)
+
+    // Get category name
+    const getCategoryName = (blog) => {
+        return blog.category?.category || 'Uncategorized';
+    };
+
+    // Sanitize and render HTML content
+    const renderHTML = (htmlContent) => {
+        if (!htmlContent) return null;
+        
+        return (
+            <div 
+                className="prose prose-lg max-w-none"
+                dangerouslySetInnerHTML={{ __html: htmlContent }}
+            />
+        );
+    };
+
+    // Parse key features from HTML string
+    const parseKeyFeatures = (keyFeaturesHtml) => {
+        if (!keyFeaturesHtml) return [];
+        
+        try {
+            // Extract text content from HTML and split by commas
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = keyFeaturesHtml;
+            const textContent = tempDiv.textContent || tempDiv.innerText || '';
+            
+            // Split by commas and clean up
+            return textContent
+                .split(',')
+                .map(feature => feature.trim().replace(/^"|"$/g, '').replace(/^&nbsp;|^\\"/g, ''))
+                .filter(feature => feature.length > 0);
+        } catch (error) {
+            console.error('Error parsing key features:', error);
+            return [];
+        }
+    };
+
+    // Get related posts
+    const relatedPosts = blog ? allBlogs
+        .filter(post => post.id !== blog.id && post.category_id === blog.category_id)
+        .slice(0, 3) : [];
 
     // Early return if blog not found
     if (loading) {
@@ -66,9 +160,7 @@ const BlogDetails = () => {
         );
     }
 
-    const relatedPosts = blogPosts.blogPosts
-        .filter(post => post.id !== blog.id && post.category === blog.category)
-        .slice(0, 3);
+    const keyFeaturesList = parseKeyFeatures(blog.key_features);
 
     return (
         <div className="bg-gray-50 text-gray-800">
@@ -77,7 +169,7 @@ const BlogDetails = () => {
             {/* ===== HERO SECTION ===== */}
             <div className="relative h-[500px] overflow-hidden">
                 <img
-                    src={blog.image}
+                    src={getImageUrl(blog.image)}
                     alt={blog.title}
                     className="w-full h-full object-cover"
                 />
@@ -86,7 +178,7 @@ const BlogDetails = () => {
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4">
                     <div className="mb-4">
                         <span className="bg-purple-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                            {blog.category}
+                            {getCategoryName(blog)}
                         </span>
                     </div>
                     <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 max-w-4xl">
@@ -126,11 +218,11 @@ const BlogDetails = () => {
                                         </div>
                                         <div className="flex items-center gap-2 text-gray-600">
                                             <Calendar className="w-4 h-4" />
-                                            <span>{blog.date}</span>
+                                            <span>{formatDate(blog.created_at)}</span>
                                         </div>
                                         <div className="flex items-center gap-2 text-gray-600">
                                             <Clock className="w-4 h-4" />
-                                            <span>{blog.readTime}</span>
+                                            <span>{blog.read_time}</span>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-4">
@@ -191,32 +283,30 @@ const BlogDetails = () => {
                                             <h2 className="text-2xl font-bold text-gray-900">
                                                 Introduction
                                             </h2>
-                                            <p className="text-gray-700 leading-relaxed">
-                                                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                                            </p>
+                                            {renderHTML(blog.introduction)}
 
-                                            <h2 className="text-2xl font-bold text-gray-900">
-                                                Key Takeaways
-                                            </h2>
-                                            <p className="text-gray-700 leading-relaxed">
-                                                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                                            </p>
-
-                                            <div className="bg-gray-50 p-6 rounded-xl">
-                                                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                                                    Summary
-                                                </h3>
-                                                <ul className="space-y-3">
-                                                    {[1, 2, 3].map((item) => (
-                                                        <li key={item} className="flex items-center gap-3">
-                                                            <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
-                                                            <span className="text-gray-700">
-                                                                Important point {item} about {blog.category.toLowerCase()}
-                                                            </span>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
+                                            {keyFeaturesList.length > 0 && (
+                                                <>
+                                                    <h2 className="text-2xl font-bold text-gray-900">
+                                                        Key Features
+                                                    </h2>
+                                                    <div className="bg-gray-50 p-6 rounded-xl">
+                                                        <h3 className="text-xl font-bold text-gray-900 mb-4">
+                                                            Summary
+                                                        </h3>
+                                                        <ul className="space-y-3">
+                                                            {keyFeaturesList.map((feature, index) => (
+                                                                <li key={index} className="flex items-center gap-3">
+                                                                    <div className="w-2 h-2 bg-purple-600 rounded-full"></div>
+                                                                    <span className="text-gray-700">
+                                                                        {feature}
+                                                                    </span>
+                                                                </li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
                                     </div>
                                 )}
@@ -236,18 +326,18 @@ const BlogDetails = () => {
                                 {activeTab === "related" && (
                                     <div className="space-y-6">
                                         <h3 className="text-2xl font-bold text-gray-900">
-                                            More from {blog.category}
+                                            More from {getCategoryName(blog)}
                                         </h3>
                                         <div className="space-y-4">
                                             {relatedPosts.map((relatedBlog) => (
                                                 <Link
                                                     key={relatedBlog.id}
-                                                    href={`/blog/${relatedBlog.slug}`}
+                                                    href={`/blog-details/${relatedBlog.slug}`}
                                                     className="block p-4 border border-gray-200 rounded-lg hover:border-purple-300 hover:bg-purple-50 transition-all duration-200"
                                                 >
                                                     <div className="flex items-center gap-4">
                                                         <img
-                                                            src={relatedBlog.image}
+                                                            src={getImageUrl(relatedBlog.image)}
                                                             alt={relatedBlog.title}
                                                             className="w-16 h-16 object-cover rounded-lg flex-shrink-0"
                                                         />
@@ -256,9 +346,9 @@ const BlogDetails = () => {
                                                                 {relatedBlog.title}
                                                             </h4>
                                                             <div className="flex items-center gap-4 text-sm text-gray-600">
-                                                                <span>{relatedBlog.date}</span>
+                                                                <span>{formatDate(relatedBlog.created_at)}</span>
                                                                 <span>•</span>
-                                                                <span>{relatedBlog.readTime}</span>
+                                                                <span>{relatedBlog.read_time}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -288,7 +378,7 @@ const BlogDetails = () => {
                                 </div>
                             </div>
                             <p className="text-sm text-gray-600">
-                                Passionate about sharing insights and trends in {blog.category.toLowerCase()}.
+                                Passionate about sharing insights and trends in {getCategoryName(blog).toLowerCase()}.
                             </p>
                         </div>
 
@@ -297,7 +387,7 @@ const BlogDetails = () => {
                             <h3 className="font-semibold text-gray-900 mb-4">Category</h3>
                             <div className="flex items-center gap-2">
                                 <Tag className="w-4 h-4 text-purple-600" />
-                                <span className="text-gray-700">{blog.category}</span>
+                                <span className="text-gray-700">{getCategoryName(blog)}</span>
                             </div>
                         </div>
 
@@ -307,15 +397,15 @@ const BlogDetails = () => {
                             <div className="space-y-3 text-sm">
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Reading Time</span>
-                                    <span className="font-medium text-gray-900">{blog.readTime}</span>
+                                    <span className="font-medium text-gray-900">{blog.read_time}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Published</span>
-                                    <span className="font-medium text-gray-900">{blog.date}</span>
+                                    <span className="font-medium text-gray-900">{formatDate(blog.created_at)}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span className="text-gray-600">Category</span>
-                                    <span className="font-medium text-gray-900">{blog.category}</span>
+                                    <span className="font-medium text-gray-900">{getCategoryName(blog)}</span>
                                 </div>
                             </div>
                         </div>
@@ -330,7 +420,7 @@ const BlogDetails = () => {
                         You May Also Like
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {blogPosts.blogPosts
+                        {allBlogs
                             .filter((post) => post.id !== blog.id)
                             .slice(0, 3)
                             .map((relatedBlog) => (
@@ -340,14 +430,14 @@ const BlogDetails = () => {
                                     className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow"
                                 >
                                     <img
-                                        src={relatedBlog.image}
+                                        src={getImageUrl(relatedBlog.image)}
                                         alt={relatedBlog.title}
                                         className="w-full h-48 object-cover"
                                     />
                                     <div className="p-6">
                                         <div className="flex items-center gap-2 mb-3">
                                             <span className="bg-purple-100 text-purple-600 px-2 py-1 rounded text-xs font-semibold">
-                                                {relatedBlog.category}
+                                                {getCategoryName(relatedBlog)}
                                             </span>
                                         </div>
                                         <h4 className="font-semibold text-gray-900 mb-2 line-clamp-2">
@@ -357,8 +447,8 @@ const BlogDetails = () => {
                                             {relatedBlog.excerpt}
                                         </p>
                                         <div className="flex items-center justify-between text-xs text-gray-500">
-                                            <span>{relatedBlog.date}</span>
-                                            <span>{relatedBlog.readTime}</span>
+                                            <span>{formatDate(relatedBlog.created_at)}</span>
+                                            <span>{relatedBlog.read_time}</span>
                                         </div>
                                     </div>
                                 </Link>

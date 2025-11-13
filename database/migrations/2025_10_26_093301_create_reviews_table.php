@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // reference users table
-            $table->foreignId('product_id')->constrained()->onDelete('cascade'); // reference products table
-            $table->tinyInteger('rating')->unsigned()->comment('1-5 rating'); // rating out of 5
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); 
+            $table->foreignId('product_id')->constrained()->onDelete('cascade'); 
+            $table->tinyInteger('rating')->unsigned()->comment('1-5 rating'); 
             $table->text('comment')->nullable();
             $table->timestamps();
         });

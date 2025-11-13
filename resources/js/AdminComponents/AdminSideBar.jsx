@@ -51,7 +51,8 @@ const AdminSideBar = ({
             testimonials: "Testimonials",
             "activity-log": "Activity Logs",
             'order-products': "Order Products",
-            "admin-setting": "Setting",
+            "admin-setting": "Settings",
+            "messages": "Messages",
         };
 
         setActiveItem(activeMap[path] || "Dashboard");
@@ -110,13 +111,13 @@ const AdminSideBar = ({
                 {/* Header with logo and close button */}
                 <div className="flex h-16 items-center justify-between p-4 border-b border-gray-200 relative">
                     {!isCollapsed && (
-                        <div className="flex items-center gap-2 flex-1 pr-10">
+                        <Link href={'/'} className="flex items-center gap-2 flex-1 pr-10">
                             <img
                                 src="logo/logo.png"
                                 alt="Logo"
                                 className="h-12 w-[5rem] rounded-lg object-contain"
                             />
-                        </div>
+                        </Link>
                     )}
                     <button
                         onClick={toggleSidebar}
@@ -168,7 +169,7 @@ const AdminSideBar = ({
                                     </Link>
 
                                     {isCollapsed && (
-                                        <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                        <div className="fixed left-full ml-2 top-auto transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                                             <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
                                                 <span className="text-sm font-medium">
                                                     Dashboard
@@ -206,7 +207,7 @@ const AdminSideBar = ({
                                     </Link>
 
                                     {isCollapsed && (
-                                        <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                        <div className="fixed left-full ml-2 top-auto transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                                             <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
                                                 <span className="text-sm font-medium">
                                                     Home
@@ -244,7 +245,7 @@ const AdminSideBar = ({
                                     </Link>
 
                                     {isCollapsed && (
-                                        <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                        <div className="fixed left-16 ml-0 top-auto transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                                             <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
                                                 <span className="text-sm font-medium">
                                                     Users
@@ -282,7 +283,7 @@ const AdminSideBar = ({
                                     </Link>
 
                                     {isCollapsed && (
-                                        <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                        <div className="fixed left-16 ml-0 top-auto transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                                             <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
                                                 <span className="text-sm font-medium">
                                                     Testimonials
@@ -320,7 +321,7 @@ const AdminSideBar = ({
                                     </Link>
 
                                     {isCollapsed && (
-                                        <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                        <div className="fixed left-16 ml-0 top-auto transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                                             <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
                                                 <span className="text-sm font-medium">
                                                     Order Products
@@ -358,10 +359,49 @@ const AdminSideBar = ({
                                     </Link>
 
                                     {isCollapsed && (
-                                        <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                        <div className="fixed left-16 ml-0 top-auto transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                                             <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
                                                 <span className="text-sm font-medium">
                                                     Activity Logs
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+
+                                {/* Messages */}
+                                <div className="relative group">
+                                    <Link
+                                        href="/messages"
+                                        className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 hover:scale-[1.02] ${
+                                            activeItem === "Messages"
+                                                ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 shadow-lg shadow-blue-500/25"
+                                                : "hover:bg-gray-100 text-gray-600 hover:text-gray-900"
+                                        } ${
+                                            isCollapsed ? "justify-center" : ""
+                                        }`}
+                                    >
+                                        <Activity
+                                            size={20}
+                                            className={`flex-shrink-0 ${
+                                                activeItem === "Messages"
+                                                    ? "text-blue-400"
+                                                    : ""
+                                            }`}
+                                        />
+                                        {!isCollapsed && (
+                                            <span className="font-medium flex-1 text-left">
+                                                Messages
+                                            </span>
+                                        )}
+                                    </Link>
+
+                                    {isCollapsed && (
+                                        <div className="fixed left-16 ml-0 top-auto transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                            <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
+                                                <span className="text-sm font-medium">
+                                                   Messages
                                                 </span>
                                             </div>
                                         </div>
@@ -401,7 +441,7 @@ const AdminSideBar = ({
                                     </Link>
 
                                     {isCollapsed && (
-                                        <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                        <div className="fixed left-16 ml-0 top-auto transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                                             <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
                                                 <span className="text-sm font-medium">
                                                     Dashboard
@@ -439,7 +479,7 @@ const AdminSideBar = ({
                             </Link>
 
                             {isCollapsed && (
-                                <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                <div className="fixed left-16 ml-0 top-auto transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                                     <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
                                         <span className="text-sm font-medium">
                                             Category
@@ -475,7 +515,7 @@ const AdminSideBar = ({
                             </Link>
 
                             {isCollapsed && (
-                                <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                <div className="fixed left-16 ml-0 top-auto transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                                     <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
                                         <span className="text-sm font-medium">
                                             Sub Category
@@ -511,7 +551,7 @@ const AdminSideBar = ({
                             </Link>
 
                             {isCollapsed && (
-                                <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                <div className="fixed left-16 ml-0 top-auto transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                                     <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
                                         <span className="text-sm font-medium">
                                             Products
@@ -547,7 +587,7 @@ const AdminSideBar = ({
                             </Link>
 
                             {isCollapsed && (
-                                <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                <div className="fixed left-16 ml-0 top-auto transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                                     <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
                                         <span className="text-sm font-medium">
                                             Blog
@@ -577,16 +617,16 @@ const AdminSideBar = ({
                                 />
                                 {!isCollapsed && (
                                     <span className="font-medium flex-1 text-left">
-                                        Setting
+                                        Settings
                                     </span>
                                 )}
                             </Link>
 
                             {isCollapsed && (
-                                <div className="absolute left-full ml-2 top-1/2 transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
+                                <div className="fixed left-16 ml-0 top-auto transform -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50">
                                     <div className="px-3 py-2 rounded-lg shadow-lg whitespace-nowrap bg-gray-900 text-white">
                                         <span className="text-sm font-medium">
-                                            Setting
+                                            Settings
                                         </span>
                                     </div>
                                 </div>

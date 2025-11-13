@@ -268,7 +268,7 @@ const LatestProducts = () => {
 
                       {/* Rating */}
                       <div className="mb-2">
-                        {renderStars(product.rating || 0)}
+                        {renderStars(product.rating || 4)}
                       </div>
 
                       {/* Price */}

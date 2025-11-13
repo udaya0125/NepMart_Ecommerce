@@ -39,13 +39,12 @@ const Navbar = () => {
     // Get auth data from Inertia page props
     const { auth } = usePage().props;
     const isLoggedIn = !!auth.user;
-    const userRole = auth.user?.role; // 'super_admin', 'admin', or 'customer'
+    const userRole = auth.user?.role; 
 
     // Get user image URL
     const getUserImage = () => {
         if (!auth.user?.image) return null;
 
-        // Remove 'storage/' prefix if it exists as Laravel already serves from storage
         const imagePath = auth.user.image.replace("storage/", "");
         return `/storage/${imagePath}`;
     };
@@ -132,16 +131,6 @@ const Navbar = () => {
         setActiveDropdown(null);
     };
 
-    // Get user initials for avatar
-    // const getUserInitials = () => {
-    //     if (!auth.user?.name) return "U";
-    //     return auth.user.name
-    //         .split(" ")
-    //         .map((part) => part[0])
-    //         .join("")
-    //         .toUpperCase()
-    //         .slice(0, 2);
-    // };
 
     // Get dashboard route based on user role
     const getDashboardRoute = () => {
@@ -160,13 +149,13 @@ const Navbar = () => {
     // Get settings route based on user role
     const getSettingsRoute = () => {
         switch (userRole) {
-            case "super_admin":
+            case "super admin":             
             case "admin":
                 return "/admin-setting";
             case "customer":
                 return "/customer-setting";
-            default:
-                return "/settings";
+            // default:
+            //     return "/settings";
         }
     };
 
@@ -192,9 +181,9 @@ const Navbar = () => {
             { name: "Featured", icon: Star, href: "/shop/featured" },
         ],
         category: [
-            { name: "Men's Clothing", icon: Shirt, href: "/category/mens" },
-            { name: "Women's Clothing", icon: Shirt, href: "/category/womens" },
-            { name: "Accessories", icon: Watch, href: "/category/accessories" },
+            { name: "Electronics", icon: Shirt, href: "/category/?category=1" },
+            { name: "Clothing", icon: Shirt, href: "/category/?category=2" },
+            { name: "Accessories", icon: Watch, href: "/category/?category=4" },
             { name: "All Categories", icon: Grid3x3, href: "/category" },
         ],
         products: [
@@ -234,7 +223,7 @@ const Navbar = () => {
         items.push({
             name: "Help & Support",
             icon: HelpCircle,
-            href: "/help",
+            href: "/help-support",
             action: "help",
         });
 
@@ -258,8 +247,8 @@ const Navbar = () => {
             <div
                 className={`fixed top-0 left-0 right-0 z-40 w-full transition-all duration-500 ease-in-out ${
                     isScrolled
-                        ? "bg-white/95 backdrop-blur-xl shadow-lg border-b border-gray-100"
-                        : "bg-gradient-to-b from-black/40 to-transparent backdrop-blur-sm"
+                        ? "bg-[#EFE9E3] backdrop-blur-xl shadow-lg border-b border-gray-100"
+                        : "bg-black/30 backdrop-blur-sm"
                 }`}
             >
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -272,7 +261,7 @@ const Navbar = () => {
                                 className="group"
                             >
                                 <div className="flex items-center space-x-3">
-                                    <img src="logo/logo.png" alt="" className="w-full h-12 object-contain" />
+                                    <img src="/logo/logo.png" alt="logo" className="w-full h-12 object-contain" />
                                 </div>
                             </Link>
                         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     ChevronLeft,
     ChevronRight,
@@ -7,25 +7,57 @@ import {
     ShoppingCart,
     ExternalLink,
 } from "lucide-react";
-import productsData from "../../JsonData/Products.json";
 import ProductsPopup from "./ProductsPopup";
 import { useCart } from '../contexts/CartContext';
-import { useWishlist } from '../contexts/WishlistContext'; // Import the useWishlist hook
+import { useWishlist } from '../contexts/WishlistContext';
+import axios from "axios";
 
 const DiscountedProducts = () => {
     const [showDetails, setShowDetails] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    
+    const [discountedProducts, setDiscountedProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Use Effect for fetching discounted products
+    useEffect(() => {
+        const fetchDiscountedProducts = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                console.log("Fetching discounted products from:", route("ourproducts.index"));
+                
+                const response = await axios.get(route("ourproducts.index"));
+                console.log("Products response:", response.data);
+                
+                // Extract products from response
+                const products = response.data.data || response.data;
+                
+                // Filter only products with discount
+                const discounted = products.filter(product => 
+                    product.discount !== null && 
+                    product.discount > 0
+                );
+                
+                console.log("Discounted products:", discounted);
+                setDiscountedProducts(discounted);
+            } catch (err) {
+                console.error("Fetching error:", err);
+                console.error("Error response:", err.response);
+                setError("Failed to load discounted products. Please try again later.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchDiscountedProducts();
+    }, []);
+
     // Use the cart context
     const { addToCart } = useCart();
     
     // Use the wishlist context
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-
-    // Flatten all products and filter only those with discounts
-    const discountedProducts = Object.values(productsData.products)
-        .flat()
-        .filter((product) => product.discount !== null && product.discount > 0);
 
     const scroll = (direction) => {
         const container = document.getElementById(
@@ -47,8 +79,10 @@ const DiscountedProducts = () => {
         const cartProduct = {
             id: product.id,
             name: product.name,
-            price: product.price,
-            images: product.images,
+            price: product.discounted_price || product.price, // Use discounted price if available
+            originalPrice: product.price,
+            discount: product.discount,
+            images: product.images ? product.images.map(img => img.image_path) : [],
             slug: product.slug
         };
         
@@ -65,11 +99,13 @@ const DiscountedProducts = () => {
         const wishlistProduct = {
             id: product.id,
             name: product.name,
-            price: product.price,
-            images: product.images,
+            price: product.discounted_price || product.price,
+            originalPrice: product.price,
+            discount: product.discount,
+            images: product.images ? product.images.map(img => img.image_path) : [],
             slug: product.slug,
-            rating: product.rating,
-            inStock: true // You can modify this based on your product data
+            rating: product.rating || 4, // Default rating if not available
+            inStock: product.in_stock || product.stock_quantity > 0
         };
 
         if (isInWishlist(product.id)) {
@@ -82,13 +118,14 @@ const DiscountedProducts = () => {
     };
 
     const renderStars = (rating) => {
+        const productRating = rating || 4; // Default to 4 stars if rating not available
         return (
             <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
                     <svg
                         key={i}
                         className={`w-4 h-4 ${
-                            i < rating ? "text-yellow-400" : "text-gray-300"
+                            i < productRating ? "text-yellow-400" : "text-gray-300"
                         }`}
                         fill="currentColor"
                         viewBox="0 0 20 20"
@@ -105,6 +142,48 @@ const DiscountedProducts = () => {
         setShowDetails(true);
     };
 
+    console.log("Rendering DiscountedProducts with products:", discountedProducts);
+
+    // Get primary image for a product
+   const getPrimaryImage = (product) => {
+    if (product.images && product.images.length > 0) {
+        const primaryImage = product.images.find(img => img.is_primary);
+        const imagePath = primaryImage
+            ? primaryImage.image_path
+            : product.images?.[0]?.image_path;
+
+        return `/storage/${imagePath}`;
+    }
+
+    // fallback placeholder
+    return '/images/placeholder-product.jpg';
+};
+
+
+    if (loading) {
+        return (
+            <div className="w-full bg-white py-16">
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="text-center">
+                        <div className="animate-pulse">Loading discounted products...</div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="w-full bg-white py-16">
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="text-center text-red-500">
+                        {error}
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="w-full bg-white py-16">
             <div className="max-w-7xl mx-auto px-4">
@@ -114,8 +193,7 @@ const DiscountedProducts = () => {
                         Special Discounted Products
                     </h1>
                     <p className="text-gray-600">
-                        Exclusive deals on premium products - Limited time
-                        offers
+                        Exclusive deals on premium products - Limited time offers
                     </p>
                 </div>
 
@@ -135,7 +213,7 @@ const DiscountedProducts = () => {
                     {/* Scrollable Container */}
                     <div
                         id="discounted-products-container"
-                        className="flex gap-6 overflow-x-auto scroll-smooth pb-4"
+                        className="flex gap-6 overflow-x-auto scroll-smooth pb-4 hide-scrollbar"
                         style={{
                             scrollbarWidth: "none",
                             msOverflowStyle: "none",
@@ -152,7 +230,7 @@ const DiscountedProducts = () => {
                                         {/* Image Container */}
                                         <div className="relative bg-white h-72 flex items-center justify-center overflow-hidden">
                                             <img
-                                                src={product.images[0]}
+                                                src={getPrimaryImage(product)}
                                                 alt={product.name}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                             />
@@ -179,13 +257,10 @@ const DiscountedProducts = () => {
                                             {/* Price */}
                                             <div className="flex items-center gap-2">
                                                 <span className="line-through text-gray-400 text-sm">
-                                                    Rs.
-                                                    {product.originalPrice ||
-                                                        product.priceMax ||
-                                                        product.price}
+                                                    Rs. {product.price}
                                                 </span>
                                                 <span className="text-lg font-semibold text-red-600">
-                                                    Rs.{product.price}
+                                                    Rs. {product.discounted_price || product.price}
                                                 </span>
                                             </div>
                                         </div>

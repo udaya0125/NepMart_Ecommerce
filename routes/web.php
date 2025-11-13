@@ -16,6 +16,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\OrderProductController;
 use App\Http\Controllers\CartItemController;
+use App\Http\Controllers\MessageController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -84,6 +85,13 @@ Route::middleware('auth')->group(function () {
     // user for Update
     Route::put('/ouruser/{id}', [UserController::class, 'update'])->name('ouruser.update');
 
+Route::get('/ouruser', [UserController::class, 'index'])->name('ouruser.index');
+    Route::post('/ouruser', [UserController::class, 'store'])->name('ouruser.store');
+    // Route::put('/ouruser/{id}', [UserController::class, 'update'])->name('ouruser.update');
+    Route::delete('/ouruser/{id}', [UserController::class, 'destroy'])->name('ouruser.destroy');
+
+    
+
 
 
 
@@ -95,6 +103,8 @@ Route::middleware('auth')->group(function () {
 Route::get('/payment/failure',function(){
     return Inertia::render('ShoppingPages/PaymentFailure'); // Or whatever your actual component name is
 });
+
+Route::post('/ourmessage', [MessageController::class, 'store'])->name('ourmessage.store');
 });
 
 
@@ -112,7 +122,7 @@ Route::middleware(['auth', 'role:super admin'])->group(function() {
     Route::get('/home',function(){
         return Inertia::render('SuperAdminPage/Home');
     });
-    Route::get('/ourhome', [HomeController::class, 'index'])->name('ourhome.index');
+    
     Route::post('/ourhome', [HomeController::class, 'store'])->name('ourhome.store');
     Route::post('/ourhome/{id}', [HomeController::class, 'update'])->name('ourhome.update'); 
     Route::delete('/ourhome/{id}', [HomeController::class, 'destroy'])->name('ourhome.destroy');
@@ -140,10 +150,10 @@ Route::middleware(['auth', 'role:super admin'])->group(function() {
         return Inertia::render('SuperAdminPage/OrderProducts');
     });
     
-    Route::get('/ouruser', [UserController::class, 'index'])->name('ouruser.index');
-    Route::post('/ouruser', [UserController::class, 'store'])->name('ouruser.store');
-    Route::put('/ouruser/{id}', [UserController::class, 'update'])->name('ouruser.update');
-    Route::delete('/ouruser/{id}', [UserController::class, 'destroy'])->name('ouruser.destroy');
+    // Route::get('/ouruser', [UserController::class, 'index'])->name('ouruser.index');
+    // Route::post('/ouruser', [UserController::class, 'store'])->name('ouruser.store');
+    // // Route::put('/ouruser/{id}', [UserController::class, 'update'])->name('ouruser.update');
+    // Route::delete('/ouruser/{id}', [UserController::class, 'destroy'])->name('ouruser.destroy');
 
 
 
@@ -151,7 +161,24 @@ Route::middleware(['auth', 'role:super admin'])->group(function() {
     Route::get('/message', function(){
         return Inertia::render('SuperAdminPage/Message');
     });
+
+
+    Route::get('/messages', function(){
+        return Inertia::render('SuperAdminPage/AdminMessage');
+    });
+
+
+    Route::get('/ourmessage', [MessageController::class, 'index'])->name('ourmessage.index');
+// Route::post('/ourmessage', [MessageController::class, 'store'])->name('ourmessage.store');
+Route::put('/ourmessage/{id}', [MessageController::class, 'update'])->name('ourmessage.update');
+Route::delete('/ourmessage/{id}', [MessageController::class, 'destroy'])->name('ourmessage.destroy');
+Route::post('/ourmessage/{id}/approve', [MessageController::class, 'approve'])->name('ourmessage.approve');
+Route::post('/ourmessage/{id}/reject', [MessageController::class, 'reject'])->name('ourmessage.reject');
+
+
+    
 });
+
 
 
 // Super Admin and Admin Route
@@ -164,7 +191,7 @@ Route::middleware(['auth', 'role:super admin|admin'])->group(function() {
         return Inertia::render('AdminPage/Category');
     });
 
-    Route::get('/ourcategory', [CategoryController::class, 'index'])->name('ourcategory.index');      
+       
     Route::post('/ourcategory', [CategoryController::class, 'store'])->name('ourcategory.store');     
     Route::put('/ourcategory/{id}', [CategoryController::class, 'update'])->name('ourcategory.update'); 
     Route::delete('/ourcategory/{id}', [CategoryController::class, 'destroy'])->name('ourcategory.destroy');
@@ -189,11 +216,15 @@ Route::middleware(['auth', 'role:super admin|admin'])->group(function() {
         return Inertia::render('AdminPage/Products');
     });
 
+    
 
-    Route::get('/ourproducts', [ProductController::class, 'index'])->name('ourproducts.index');      
-    Route::post('/ourproducts', [ProductController::class, 'store'])->name('ourproducts.store');     
+
+         
+    Route::post('/ourproducts', [ProductController::class, 'store'])->name('ourproducts.store'); 
+    Route::get('/ourproducts/{id}', [ProductController::class, 'show'])->name('ourproducts.show');    
     Route::put('/ourproducts/{id}', [ProductController::class, 'update'])->name('ourproducts.update'); 
     Route::delete('/ourproducts/{id}', [ProductController::class, 'destroy'])->name('ourproducts.destroy');
+    Route::post('/ourproducts/{id}/reviews', [ProductController::class, 'addReview'])->name('ourproducts.addReview');
 
 
     Route::get('/blogs',function(){
@@ -210,6 +241,8 @@ Route::middleware(['auth', 'role:super admin|admin'])->group(function() {
     Route::get('/admin-setting',function(){
         return Inertia::render('AdminPage/AdminSetting');
     });
+
+   
 
 });
 
@@ -248,6 +281,12 @@ Route::middleware(['auth', 'role:customer'])->group(function() {
     });
 
 });
+
+Route::get('/ourhome', [HomeController::class, 'index'])->name('ourhome.index');
+
+ Route::get('/ourcategory', [CategoryController::class, 'index'])->name('ourcategory.index');  
+
+Route::get('/ourproducts', [ProductController::class, 'index'])->name('ourproducts.index'); 
 
 
  // FOR THE MAIN PAGES
@@ -313,6 +352,53 @@ Route::get('/logged',function(){
 Route::get('/sign-up',function(){
     return Inertia::render('MainPages/SignUp');
 });
+
+
+
+Route::get('/help-support',function(){
+        return Inertia::render('CustomerSupportPage/HelpandSupport');
+    });
+
+    Route::get('/faq',function(){
+        return Inertia::render('CustomerSupportPage/FAQPage');
+    });
+
+
+     Route::get('/privacy-security',function(){
+        return Inertia::render('CustomerSupportPage/PrivacyandSecurity');
+    });
+
+
+    Route::get('/return-refund',function(){
+        return Inertia::render('CustomerSupportPage/ReturnAndRefund');
+    });
+
+    Route::get('/my-account',function(){
+        return Inertia::render('CustomerSupportPage/MyAccount');
+    });
+
+
+    Route::get('/cookie-policy',function(){
+        return Inertia::render('CustomerSupportPage/CookiePolicy');
+    });
+
+
+    Route::get('/privacy-policy',function(){
+        return Inertia::render('CustomerSupportPage/PrivacyPolicy');
+    });
+
+
+    Route::get('/terms-and-condition',function(){
+        return Inertia::render('CustomerSupportPage/TermsandConditions');
+    });
+
+    Route::get('/about-us',function(){
+        return Inertia::render('CustomerSupportPage/AboutUs');
+    });
+
+
+
+
 
 
 require __DIR__.'/auth.php';

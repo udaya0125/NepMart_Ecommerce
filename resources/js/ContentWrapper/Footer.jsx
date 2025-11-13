@@ -1,3 +1,4 @@
+import { Link } from "@inertiajs/react";
 import { Store, Mail, Phone, MapPin, Facebook, Twitter, Instagram, Youtube, Send } from "lucide-react";
 import React, { useState } from "react";
 
@@ -46,19 +47,19 @@ const Footer = () => {
                         <h3 className="text-white text-lg font-semibold mb-4">Quick Links</h3>
                         <ul className="space-y-3">
                             <li>
-                                <a href="#" className="hover:text-red-500 transition-colors">About Us</a>
+                                <Link href={'/about-us'} className="hover:text-red-500 transition-colors">About Us</Link>
                             </li>
                             <li>
                                 <a href="#" className="hover:text-red-500 transition-colors">Shop</a>
                             </li>
                             <li>
-                                <a href="#" className="hover:text-red-500 transition-colors">Categories</a>
+                                <Link href={'/category'} className="hover:text-red-500 transition-colors">Categories</Link>
                             </li>
                             <li>
-                                <a href="#" className="hover:text-red-500 transition-colors">Blog</a>
+                                <Link href={'/blog'} className="hover:text-red-500 transition-colors">Blog</Link>
                             </li>
                             <li>
-                                <a href="#" className="hover:text-red-500 transition-colors">Contact</a>
+                                <Link href={'/contact-us'} className="hover:text-red-500 transition-colors">Contact</Link>
                             </li>
                         </ul>
                     </div>
@@ -68,19 +69,19 @@ const Footer = () => {
                         <h3 className="text-white text-lg font-semibold mb-4">Customer Service</h3>
                         <ul className="space-y-3">
                             <li>
-                                <a href="#" className="hover:text-red-500 transition-colors">My Account</a>
+                                <Link href={'/my-account'} className="hover:text-red-500 transition-colors">My Account</Link>
                             </li>
                             <li>
-                                <a href="#" className="hover:text-red-500 transition-colors">Order Tracking</a>
+                                <Link href={'/privacy-security'} className="hover:text-red-500 transition-colors">Privacy & Security</Link>
                             </li>
                             <li>
-                                <a href="#" className="hover:text-red-500 transition-colors">Shipping Info</a>
+                                <Link href={'/help-support'} className="hover:text-red-500 transition-colors">Help & Support</Link>
                             </li>
                             <li>
-                                <a href="#" className="hover:text-red-500 transition-colors">Returns & Refunds</a>
+                                <Link href={'/return-refund'} className="hover:text-red-500 transition-colors">Returns & Refunds</Link>
                             </li>
                             <li>
-                                <a href="#" className="hover:text-red-500 transition-colors">FAQs</a>
+                                <Link href={'/faq'} className="hover:text-red-500 transition-colors">FAQs</Link>
                             </li>
                         </ul>
                     </div>
@@ -114,7 +115,7 @@ const Footer = () => {
                         <div className="mt-6 space-y-2">
                             <div className="flex items-center gap-2 text-sm">
                                 <Phone className="h-4 w-4 text-red-500" />
-                                <span>+1 (555) 123-4567</span>
+                                <span>+977 9800000001</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm">
                                 <Mail className="h-4 w-4 text-red-500" />
@@ -122,7 +123,7 @@ const Footer = () => {
                             </div>
                             <div className="flex items-start gap-2 text-sm">
                                 <MapPin className="h-4 w-4 text-red-500 mt-0.5" />
-                                <span>123 Commerce Street, NY 10001</span>
+                                <span>123 Commerce Street, Lovelly Hill</span>
                             </div>
                         </div>
                     </div>
@@ -134,18 +135,18 @@ const Footer = () => {
                 <div className="max-w-7xl mx-auto px-6 py-6">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-4">
                         <p className="text-sm text-gray-400">
-                            © 2025 ShopNow. All rights reserved.
+                            © 2025 NepMart. All rights reserved.
                         </p>
                         <div className="flex gap-6 text-sm">
-                            <a href="#" className="hover:text-red-500 transition-colors">
+                            <Link href={'/privacy-policy'} className="hover:text-red-500 transition-colors">
                                 Privacy Policy
-                            </a>
-                            <a href="#" className="hover:text-red-500 transition-colors">
+                            </Link>
+                            <Link href={'/terms-and-condition'} className="hover:text-red-500 transition-colors">
                                 Terms of Service
-                            </a>
-                            <a href="#" className="hover:text-red-500 transition-colors">
+                            </Link>
+                            <Link href={'/cookie-policy'} className="hover:text-red-500 transition-colors">
                                 Cookie Policy
-                            </a>
+                            </Link>
                         </div>
                     </div>
                 </div>

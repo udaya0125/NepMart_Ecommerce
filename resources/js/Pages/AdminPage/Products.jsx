@@ -62,12 +62,12 @@ const Products = () => {
             {
                 Header: "Price",
                 accessor: "price",
-                Cell: ({ value }) => `$${parseFloat(value).toFixed(2)}`,
+                Cell: ({ value }) => `Rs.${parseFloat(value).toFixed(2)}`,
             },
             {
                 Header: "Discounted Price",
                 accessor: "discounted_price",
-                Cell: ({ value }) => value ? `$${parseFloat(value).toFixed(2)}` : "-",
+                Cell: ({ value }) => value ? `Rs.${parseFloat(value).toFixed(2)}` : "-",
             },
             {
                 Header: "Discount",

@@ -31,7 +31,7 @@ const ToptoBottom = () => {
                     onClick={scrollToTop}
                     className="
                         fixed bottom-5 right-5
-                        bg-black text-white p-3 rounded-full shadow-lg
+                        bg-red-500 text-white p-3 rounded-full shadow-lg
                         transition duration-300 z-50
                        
                     "

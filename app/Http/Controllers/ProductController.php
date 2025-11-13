@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\Review;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
@@ -25,6 +26,21 @@ class ProductController extends Controller
     }
 
     /**
+     * Show a single product with related data.
+     */
+    public function show($id)
+    {
+        $product = Product::with(['images', 'reviews.user', 'category', 'subCategory'])
+            ->findOrFail($id);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Product fetched successfully.',
+            'data' => $product
+        ], 200);
+    }
+
+    /**
      * Store a newly created product.
      */
     public function store(Request $request)
@@ -33,8 +49,8 @@ class ProductController extends Controller
             'name' => 'required|string|max:255|unique:products,name',
             'sku' => 'nullable|string|unique:products,sku',
             'brand' => 'nullable|string|max:255',
-            'category_id' => 'nullable|string|max:255',
-            'sub_category_id' => 'nullable|string|max:255',
+            'category_id' => 'nullable|integer|exists:categories,id',
+            'sub_category_id' => 'nullable|integer|exists:sub_categories,id',
             'price' => 'required|numeric|min:0',
             'discount' => 'nullable|numeric|min:0|max:100',
             'stock_quantity' => 'required|integer|min:0',
@@ -50,10 +66,7 @@ class ProductController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors(),
-            ], 422);
+            return response()->json(['status' => false, 'errors' => $validator->errors()], 422);
         }
 
         $product = Product::create($request->only([
@@ -95,8 +108,8 @@ class ProductController extends Controller
             'name' => 'nullable|string|max:255|unique:products,name,' . $id,
             'sku' => 'nullable|string|unique:products,sku,' . $id,
             'brand' => 'nullable|string|max:255',
-            'category_id' => 'nullable|string|max:255',
-            'sub_category_id' => 'nullable|string|max:255',
+            'category_id' => 'nullable|integer|exists:categories,id',
+            'sub_category_id' => 'nullable|integer|exists:sub_categories,id',
             'price' => 'nullable|numeric|min:0',
             'discount' => 'nullable|numeric|min:0|max:100',
             'stock_quantity' => 'required|integer|min:0',
@@ -114,10 +127,7 @@ class ProductController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'errors' => $validator->errors(),
-            ], 422);
+            return response()->json(['status' => false, 'errors' => $validator->errors()], 422);
         }
 
         $product->update($request->only([
@@ -126,15 +136,27 @@ class ProductController extends Controller
             'short_description', 'long_description', 'sizes', 'colors', 'features'
         ]));
 
-        // Handle existing images - delete images that are not in the existing_images array
+        // Handle existing images - delete images not in the existing_images array
         if ($request->has('existing_images')) {
-            $product->images()->whereNotIn('id', $request->existing_images)->delete();
+            $imagesToDelete = $product->images()->whereNotIn('id', $request->existing_images)->get();
+
+            foreach ($imagesToDelete as $img) {
+                if (File::exists(public_path('storage/' . $img->image_path))) {
+                    File::delete(public_path('storage/' . $img->image_path));
+                }
+                $img->delete();
+            }
         } else {
-            // If no existing_images array is provided, delete all existing images
-            $product->images()->delete();
+            // If no existing_images provided, delete all
+            foreach ($product->images as $img) {
+                if (File::exists(public_path('storage/' . $img->image_path))) {
+                    File::delete(public_path('storage/' . $img->image_path));
+                }
+                $img->delete();
+            }
         }
 
-        // Handle new images
+        // Add new images
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $imageFile) {
                 $filename = time() . '_' . uniqid() . '.' . $imageFile->getClientOriginalExtension();
@@ -176,5 +198,39 @@ class ProductController extends Controller
             'status' => true,
             'message' => 'Product deleted successfully.',
         ], 200);
+    }
+
+    /**
+     * Add a review to a product.
+     */
+    public function addReview(Request $request, $productId)
+    {
+        $product = Product::findOrFail($productId);
+
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'nullable|integer|exists:users,id',
+            'user_name' => 'required|string|max:255',
+            'email' => 'nullable|email',
+            'rating' => 'required|numeric|min:1|max:5',
+            'comment' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'errors' => $validator->errors()], 422);
+        }
+
+        $review = $product->reviews()->create([
+            'user_id' => $request->user_id,
+            'user_name' => $request->user_name,
+            'email' => $request->email,
+            'rating' => $request->rating,
+            'comment' => $request->comment,
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Review added successfully.',
+            'data' => $review,
+        ], 201);
     }
 }

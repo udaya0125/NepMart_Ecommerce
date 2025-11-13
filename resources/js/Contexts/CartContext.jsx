@@ -110,50 +110,52 @@ export const CartProvider = ({ children, user = null }) => {
     }, []);
 
     // Load cart from backend on mount
-    const loadCartFromBackend = async () => {
-        if (!isMounted.current) return;
-        
-        dispatch({ type: 'SET_LOADING', payload: true });
-        
-        try {
-            const response = await axios.get(route('ourcart.index'));
-            if (response.data.success) {
-                const cartItems = response.data.data.map(item => ({
-                    cartItemId: String(item.id), // Ensure cartItemId is string
-                    id: item.product_id,
-                    product_id: item.product_id,
-                    name: item.product_name,
-                    price: parseFloat(item.price),
-                    discounted_price: item.discounted_price ? parseFloat(item.discounted_price) : null,
-                    quantity: parseInt(item.quantity),
-                    size: item.size,
-                    color: item.color,
-                    image: item.product?.images?.[0] || null,
-                    product_name: item.product_name,
-                    product_sku: item.product_sku,
-                    product_brand: item.product_brand,
-                    user_name: item.user_name,
-                    total_price: parseFloat(item.total_price)
-                }));
-                
-                if (isMounted.current) {
-                    dispatch({
-                        type: 'SYNC_CART_SUCCESS',
-                        payload: {
-                            items: cartItems,
-                            totalItems: cartItems.reduce((total, item) => total + item.quantity, 0)
-                        }
-                    });
-                }
-            }
-        } catch (error) {
-            console.error('Error loading cart from backend:', error);
-        } finally {
+   const loadCartFromBackend = async () => {
+    if (!isMounted.current) return;
+    
+    dispatch({ type: 'SET_LOADING', payload: true });
+    
+    try {
+        const response = await axios.get(route('ourcart.index'));
+        if (response.data.success) {
+            const cartItems = response.data.data.map(item => ({
+                cartItemId: String(item.id),
+                id: item.product_id,
+                product_id: item.product_id,
+                name: item.product_name,
+                price: parseFloat(item.price),
+                discounted_price: item.discounted_price ? parseFloat(item.discounted_price) : null,
+                quantity: parseInt(item.quantity),
+                size: item.size,
+                color: item.color,
+                images: item.product?.images?.[0]?.image_path || '',
+                product_name: item.product_name,
+                product_sku: item.product_sku,
+                product_brand: item.product_brand,
+                user_name: item.user_name,
+                total_price: parseFloat(item.total_price)
+            }));
+
+            console.log('Loaded cart items from backend:', cartItems);
+            
             if (isMounted.current) {
-                dispatch({ type: 'SET_LOADING', payload: false });
+                dispatch({
+                    type: 'SYNC_CART_SUCCESS',
+                    payload: {
+                        items: cartItems,
+                        totalItems: cartItems.reduce((total, item) => total + item.quantity, 0)
+                    }
+                });
             }
         }
-    };
+    } catch (error) {
+        console.error('Error loading cart from backend:', error);
+    } finally {
+        if (isMounted.current) {
+            dispatch({ type: 'SET_LOADING', payload: false });
+        }
+    }
+};
 
     // Sync cart to backend
     const syncCartToBackend = async (product, quantity = 1) => {

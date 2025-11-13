@@ -12,7 +12,8 @@ class CartItemController extends Controller
      */
     public function index()
     {
-        $cartItems = CartItem::with('product')->get();
+        // Load cart items with product AND product images
+        $cartItems = CartItem::with('product.images')->get();
 
         return response()->json([
             'success' => true,
@@ -30,7 +31,7 @@ class CartItemController extends Controller
             'user_name' => 'required|string|max:255',
             'product_id' => 'required|exists:products,id',
             'product_name' => 'required|string|max:255',
-            'product_sku' => 'nullable|string|max:100', // Changed to nullable
+            'product_sku' => 'nullable|string|max:100',
             'product_brand' => 'nullable|string|max:100',
             'price' => 'required|numeric|min:0',
             'discounted_price' => 'nullable|numeric|min:0',
@@ -38,7 +39,6 @@ class CartItemController extends Controller
             'size' => 'nullable|string|max:50',
             'color' => 'nullable|string|max:50',
         ]);
-
 
         // Check if item already exists in cart
         $existingCartItem = CartItem::where('user_name', $validatedData['user_name'])
@@ -54,7 +54,7 @@ class CartItemController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Cart item quantity updated successfully.',
-                'data' => $existingCartItem->load('product'),
+                'data' => $existingCartItem->load('product.images'), // Load images here too
             ], 200);
         }
 
@@ -63,7 +63,7 @@ class CartItemController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Item added to cart successfully.',
-            'data' => $cartItem->load('product'),
+            'data' => $cartItem->load('product.images'), // Load images here too
         ], 201);
     }
 
@@ -72,7 +72,7 @@ class CartItemController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $cartItem = CartItem::with('product')->find($id);
+        $cartItem = CartItem::with('product.images')->find($id); // Load images here too
 
         if (!$cartItem) {
             return response()->json([

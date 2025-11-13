@@ -24,6 +24,15 @@ class Blog extends Model
         return $this->belongsTo(Category::class);
     }
 
+    // Accessor for image URL
+    public function getImageUrlAttribute()
+    {
+        if ($this->image) {
+            return asset('storage/' . $this->image);
+        }
+        return null;
+    }
+
     // Boot function for automatic slug creation
     protected static function boot()
     {

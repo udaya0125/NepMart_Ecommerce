@@ -1,47 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 
 const Testimonial = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
+    const [testimonials, setAllReview] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [reloadTrigger, setReloadTrigger] = useState(0);
 
-    const testimonials = [
-        {
-            id: 1,
-            title: "Excellent Product, A+ Customer Service.",
-            description:
-                "The point of using Lorem Ipsum is that it has a more is normal they always wash up well no matter how many versions of Lorem Ipsum.",
-            name: "Augusta Wind",
-            rating: 3,
-        },
-        {
-            id: 2,
-            title: "Impressive Quality, Durable & Reliable",
-            description:
-                "The point of using Lorem Ipsum is that it has a more is normal they always wash up well no matter how many versions of Lorem Ipsum.",
-            name: "Stefanie Rashford",
-            rating: 3,
-        },
-        {
-            id: 3,
-            title: "Reliable Product, Consistently Delivers.",
-            description:
-                "The point of using Lorem Ipsum is that it has a more is normal they always wash up well no matter how many versions of Lorem Ipsum.",
-            name: "Chelsea Handler",
-            rating: 3,
-        },
-    ];
+    useEffect(() => {
+        const fetchReview = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get(route("ourreview.index"));
+                const reviewsData = Array.isArray(response.data) 
+                    ? response.data 
+                    : response.data.data || [];
+                setAllReview(reviewsData);
+            } catch (error) {
+                console.error("fetching error ", error);
+                setAllReview([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchReview();
+    }, [reloadTrigger]);
 
     const nextSlide = () => {
+        if (testimonials.length === 0) return;
         setCurrentIndex((prev) => (prev + 1) % testimonials.length);
     };
 
     const prevSlide = () => {
+        if (testimonials.length === 0) return;
         setCurrentIndex(
             (prev) => (prev - 1 + testimonials.length) % testimonials.length
         );
     };
 
     const getVisibleTestimonials = () => {
+        if (testimonials.length === 0) return [];
+        
         const visible = [];
         for (let i = 0; i < 3; i++) {
             visible.push(
@@ -65,6 +66,28 @@ const Testimonial = () => {
             </div>
         );
     };
+
+    // Show loading state
+    if (loading) {
+        return (
+            <div className="w-full min-h-screen bg-white py-16 px-4">
+                <div className="max-w-7xl mx-auto text-center">
+                    <div className="text-2xl">Loading testimonials...</div>
+                </div>
+            </div>
+        );
+    }
+
+    // Show empty state
+    if (testimonials.length === 0) {
+        return (
+            <div className="w-full min-h-screen bg-white py-16 px-4">
+                <div className="max-w-7xl mx-auto text-center">
+                    <div className="text-2xl text-gray-500">No testimonials available</div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full min-h-screen bg-white py-16 px-4">
@@ -109,13 +132,15 @@ const Testimonial = () => {
                                     {testimonial.title}
                                 </h3>
 
+                                {/* Fixed: Use 'comment' instead of 'description' */}
                                 <p className="text-gray-600 leading-relaxed mb-6">
-                                    {testimonial.description}
+                                    {testimonial.comment}
                                 </p>
 
                                 <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                                    {/* Fixed: Use 'user' instead of 'name' */}
                                     <span className="text-gray-900 font-medium">
-                                        - {testimonial.name}
+                                        - {testimonial.user}
                                     </span>
                                     <StarRating rating={testimonial.rating} />
                                 </div>
