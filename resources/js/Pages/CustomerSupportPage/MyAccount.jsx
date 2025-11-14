@@ -27,6 +27,15 @@ const MyAccount = () => {
     const [activeTab, setActiveTab] = useState("profile");
     const [isEditing, setIsEditing] = useState(false);
     const [imagePreview, setImagePreview] = useState(null);
+    const [isRedirecting, setIsRedirecting] = useState(false);
+
+    // Redirect if not authenticated
+    useEffect(() => {
+        if (!currentUser) {
+            setIsRedirecting(true);
+            router.visit('/login');
+        }
+    }, [currentUser]);
 
     // Profile form using Inertia's form helper
     const {
@@ -81,6 +90,20 @@ const MyAccount = () => {
             }
         }
     }, [currentUser]);
+
+    // Show loading while redirecting or checking authentication
+    if (!currentUser) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">
+                        {isRedirecting ? "Redirecting to login..." : "Checking authentication..."}
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -293,10 +316,6 @@ const MyAccount = () => {
         { id: 3, name: "Laptop Bag", price: "$79.99", image: "💼" },
     ];
 
-    if (!currentUser) {
-        return <div>Loading...</div>;
-    }
-
     return (
         <>
             <Navbar />
@@ -418,7 +437,7 @@ const MyAccount = () => {
                                                         });
                                                         if (currentUser.image) {
                                                             setImagePreview(
-                                                                `/storage/${currentUser.image} `
+                                                                `/storage/${currentUser.image}`
                                                             );
                                                         } else {
                                                             setImagePreview(
@@ -675,9 +694,6 @@ const MyAccount = () => {
                                                 key={method.id}
                                                 className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-all duration-300"
                                             >
-                                                {/* Decorative gradient highlight on hover */}
-                                                {/* <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-green-50 via-green-100/50 to-white transition-opacity duration-300"></div> */}
-
                                                 <div className="relative z-10 flex items-center justify-between p-6">
                                                     {/* Left Section - eSewa Info */}
                                                     <div className="flex items-center gap-5">

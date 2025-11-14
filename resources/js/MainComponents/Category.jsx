@@ -1,69 +1,53 @@
 import React, { useState } from "react";
-import {
-    Watch,
-    Shirt,
-    Wind,
-    Glasses,
-    ShoppingBag,
-    Footprints,
-    ChevronLeft,
-    ChevronRight,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Category = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
-    
+
     const categories = [
         {
             name: "Watch",
             products: 17,
-            icon: Watch,
             image: "https://images.unsplash.com/photo-1524805444758-089113d48a6d?w=400&h=400&fit=crop",
         },
         {
-            name: "Fashionista",
+            name: "Fashion",
             products: 6,
-            icon: Shirt,
             image: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=400&h=400&fit=crop",
         },
         {
             name: "Ethnic Wear",
             products: 4,
-            icon: Wind,
-            image: "https://images.unsplash.com/photo-1610652492500-ded49c0199bb?w=400&h=400&fit=crop",
+            image: "https://images.pexels.com/photos/297933/pexels-photo-297933.jpeg",
         },
         {
             name: "Goggles",
             products: 10,
-            icon: Glasses,
             image: "https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=400&h=400&fit=crop",
         },
         {
-            name: "Tote Bag",
+            name: "Bag",
             products: 4,
-            icon: ShoppingBag,
             image: "https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=400&h=400&fit=crop",
         },
         {
             name: "Shoes",
             products: 5,
-            icon: Footprints,
             image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400&h=400&fit=crop",
         },
-        
     ];
 
     const itemsPerView = 6; // Number of items to show at once
     const maxIndex = Math.ceil(categories.length / itemsPerView) - 1;
 
     const nextSlide = () => {
-        setCurrentIndex((prevIndex) => 
+        setCurrentIndex((prevIndex) =>
             prevIndex >= maxIndex ? 0 : prevIndex + 1
         );
     };
 
     const prevSlide = () => {
-        setCurrentIndex((prevIndex) => 
+        setCurrentIndex((prevIndex) =>
             prevIndex <= 0 ? maxIndex : prevIndex - 1
         );
     };
@@ -95,7 +79,7 @@ const Category = () => {
                     >
                         <ChevronLeft className="w-8 h-8 text-gray-600" />
                     </button>
-                    
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-8">
                         {getVisibleCategories().map((category, index) => (
                             <div
@@ -124,7 +108,7 @@ const Category = () => {
                             </div>
                         ))}
                     </div>
-                    
+
                     <button
                         onClick={nextSlide}
                         className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white rounded-full p-2 shadow-lg hover:bg-gray-50 transition-colors"
@@ -141,8 +125,8 @@ const Category = () => {
                             key={index}
                             onClick={() => setCurrentIndex(index)}
                             className={`w-3 h-3 rounded-full transition-colors ${
-                                index === currentIndex 
-                                    ? "bg-gray-900" 
+                                index === currentIndex
+                                    ? "bg-gray-900"
                                     : "bg-gray-300"
                             }`}
                             aria-label={`Go to slide ${index + 1}`}

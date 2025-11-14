@@ -18,6 +18,7 @@ const DiscountedProducts = () => {
     const [discountedProducts, setDiscountedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [notification, setNotification] = useState({ show: false, message: '', type: 'success' });
 
     // Use Effect for fetching discounted products
     useEffect(() => {
@@ -59,6 +60,20 @@ const DiscountedProducts = () => {
     // Use the wishlist context
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
+    // Notification handler
+    const showNotificationMessage = (message, type = 'success') => {
+        setNotification({
+            show: true,
+            message,
+            type
+        });
+        
+        // Auto hide after 3 seconds
+        setTimeout(() => {
+            setNotification({ show: false, message: '', type: 'success' });
+        }, 3000);
+    };
+
     const scroll = (direction) => {
         const container = document.getElementById(
             "discounted-products-container"
@@ -71,54 +86,77 @@ const DiscountedProducts = () => {
         });
     };
 
-    const handleAddToCart = (product, e) => {
-        e.preventDefault();
-        e.stopPropagation();
+    // Helper function to prepare product data for cart/wishlist
+    const prepareProductData = (product) => {
+        const primaryImage = product.images?.find(img => img.is_primary) || product.images?.[0];
         
-        // Create a cart-ready product object
-        const cartProduct = {
+        return {
             id: product.id,
             name: product.name,
-            price: product.discounted_price || product.price, // Use discounted price if available
-            originalPrice: product.price,
-            discount: product.discount,
+            product_name: product.name,
+            price: parseFloat(product.price),
+            discounted_price: product.discounted_price ? parseFloat(product.discounted_price) : parseFloat(product.price),
+            discount: product.discount || 0,
             images: product.images ? product.images.map(img => img.image_path) : [],
-            slug: product.slug
+            image: primaryImage ? `/storage/${primaryImage.image_path}` : '/images/placeholder-product.jpg',
+            slug: product.slug,
+            sku: product.sku || product.product_sku || `SKU-${product.id}`,
+            product_sku: product.sku || product.product_sku || `SKU-${product.id}`,
+            brand: product.brand || product.product_brand || 'Unknown Brand',
+            product_brand: product.brand || product.product_brand || 'Unknown Brand',
+            rating: product.rating || 4,
+            inStock: product.in_stock !== false && (product.stock_quantity > 0 || product.in_stock === true),
+            stock_quantity: product.stock_quantity || 0
         };
-        
-        addToCart(cartProduct);
-        
-        // Optional: Show feedback (you can add a toast notification here)
-        console.log(`Added ${product.name} to cart`);
     };
 
-    const handleWishlistToggle = (product, e) => {
+    const handleAddToCart = async (product, e) => {
         e.preventDefault();
         e.stopPropagation();
         
-        const wishlistProduct = {
-            id: product.id,
-            name: product.name,
-            price: product.discounted_price || product.price,
-            originalPrice: product.price,
-            discount: product.discount,
-            images: product.images ? product.images.map(img => img.image_path) : [],
-            slug: product.slug,
-            rating: product.rating || 4, // Default rating if not available
-            inStock: product.in_stock || product.stock_quantity > 0
-        };
+        // Check if product is in stock
+        const isInStock = product.in_stock !== false && (product.stock_quantity > 0 || product.in_stock === true);
+        if (!isInStock) {
+            showNotificationMessage(`${product.name} is out of stock!`, 'error');
+            return;
+        }
 
-        if (isInWishlist(product.id)) {
-            removeFromWishlist(product.id);
-            console.log(`Removed ${product.name} from wishlist`);
-        } else {
-            addToWishlist(wishlistProduct);
-            console.log(`Added ${product.name} to wishlist`);
+        try {
+            // Prepare the product data with all required fields
+            const cartProduct = prepareProductData(product);
+            
+            await addToCart(cartProduct, 1);
+            
+            // Show success notification
+            showNotificationMessage(`${product.name} added to cart!`);
+        } catch (error) {
+            console.error('Failed to add to cart:', error);
+            showNotificationMessage('Failed to add product to cart. Please try again.', 'error');
+        }
+    };
+
+    const handleWishlistToggle = async (product, e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        try {
+            const wishlistProduct = prepareProductData(product);
+
+            if (isInWishlist(product.id)) {
+                await removeFromWishlist(product.id);
+                showNotificationMessage(`${product.name} removed from wishlist`, 'info');
+            } else {
+                await addToWishlist(wishlistProduct);
+                showNotificationMessage(`${product.name} added to wishlist!`);
+            }
+        } catch (error) {
+            console.error('Failed to toggle wishlist:', error);
+            showNotificationMessage('Failed to update wishlist. Please try again.', 'error');
         }
     };
 
     const renderStars = (rating) => {
-        const productRating = rating || 4; // Default to 4 stars if rating not available
+        const productRating = rating || 4;
         return (
             <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
@@ -145,20 +183,35 @@ const DiscountedProducts = () => {
     console.log("Rendering DiscountedProducts with products:", discountedProducts);
 
     // Get primary image for a product
-   const getPrimaryImage = (product) => {
-    if (product.images && product.images.length > 0) {
-        const primaryImage = product.images.find(img => img.is_primary);
-        const imagePath = primaryImage
-            ? primaryImage.image_path
-            : product.images?.[0]?.image_path;
+    const getPrimaryImage = (product) => {
+        if (product.images && product.images.length > 0) {
+            const primaryImage = product.images.find(img => img.is_primary);
+            const imagePath = primaryImage
+                ? primaryImage.image_path
+                : product.images?.[0]?.image_path;
 
-        return `/storage/${imagePath}`;
-    }
+            return `/storage/${imagePath}`;
+        }
 
-    // fallback placeholder
-    return '/images/placeholder-product.jpg';
-};
+        // fallback placeholder
+        return '/images/placeholder-product.jpg';
+    };
 
+    // Notification component styles based on type
+    const getNotificationStyles = () => {
+        const baseStyles = "fixed top-4 right-4 z-50 max-w-sm p-4 rounded-lg shadow-lg transition-all duration-300 transform";
+        
+        switch (notification.type) {
+            case 'success':
+                return `${baseStyles} bg-green-500 text-white`;
+            case 'error':
+                return `${baseStyles} bg-red-500 text-white`;
+            case 'info':
+                return `${baseStyles} bg-blue-500 text-white`;
+            default:
+                return `${baseStyles} bg-gray-500 text-white`;
+        }
+    };
 
     if (loading) {
         return (
@@ -186,6 +239,21 @@ const DiscountedProducts = () => {
 
     return (
         <div className="w-full bg-white py-16">
+            {/* Notification */}
+            {notification.show && (
+                <div className={getNotificationStyles()}>
+                    <div className="flex items-center">
+                        <span className="flex-1">{notification.message}</span>
+                        <button 
+                            onClick={() => setNotification({ show: false, message: '', type: 'success' })}
+                            className="ml-4 text-white hover:text-gray-200"
+                        >
+                            ×
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div className="max-w-7xl mx-auto px-4">
                 {/* Header */}
                 <div className="text-center mb-12">
@@ -241,6 +309,15 @@ const DiscountedProducts = () => {
                                                     -{product.discount}%
                                                 </div>
                                             )}
+
+                                            {/* Out of Stock Overlay */}
+                                            {!(product.in_stock !== false && (product.stock_quantity > 0 || product.in_stock === true)) && (
+                                                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                                                    <span className="text-white font-bold text-lg bg-red-600 px-3 py-1 rounded">
+                                                        Out of Stock
+                                                    </span>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Product Info */}
@@ -284,10 +361,15 @@ const DiscountedProducts = () => {
                                         </button>
                                         <button
                                             onClick={(e) => handleAddToCart(product, e)}
-                                            className="bg-white p-2 rounded-full shadow-md hover:bg-red-50 transition-colors"
+                                            disabled={!(product.in_stock !== false && (product.stock_quantity > 0 || product.in_stock === true))}
+                                            className={`p-2 rounded-full shadow-md transition-colors ${
+                                                product.in_stock !== false && (product.stock_quantity > 0 || product.in_stock === true)
+                                                    ? "bg-white text-gray-700 hover:bg-red-50"
+                                                    : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                                            }`}
                                             aria-label="Add to cart"
                                         >
-                                            <ShoppingCart className="w-4 h-4 text-gray-700" />
+                                            <ShoppingCart className="w-4 h-4" />
                                         </button>
                                         <button
                                             onClick={(e) => {

@@ -12,6 +12,7 @@ const LatestProducts = () => {
   const [error, setError] = useState(null)
   const [showDetails, setShowDetails] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState(null)
+  const [notification, setNotification] = useState({ show: false, message: "", type: "success" })
 
   // Get auth from page props
   const { auth } = usePage().props;
@@ -28,6 +29,16 @@ const LatestProducts = () => {
     getWishlistItemId,
     wishlist: { isLoading: wishlistLoading }
   } = useWishlist()
+
+  // Show notification message
+  const showNotificationMessage = (message, type = "success") => {
+    setNotification({ show: true, message, type });
+    
+    // Auto hide after 3 seconds
+    setTimeout(() => {
+      setNotification({ show: false, message: "", type: "success" });
+    }, 3000);
+  };
 
   // Use Effect for fetching products
   useEffect(() => {
@@ -67,40 +78,62 @@ const LatestProducts = () => {
     setShowDetails(true)
   }
 
-  const handleAddToCart = async (product, e) => {
-    e.preventDefault()
-    e.stopPropagation()
+  // Helper function to prepare product data for cart/wishlist
+  const prepareProductData = (product) => {
+    const primaryImage = product.images?.find(img => img.is_primary) || product.images?.[0];
     
-    try {
-      const cartProduct = {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        images: product.images || [],
-        slug: product.slug,
-        sku: product.sku || product.product_sku || `SKU-${product.id}`,
-        product_sku: product.product_sku || product.sku || `SKU-${product.id}`,
-        brand: product.brand || product.product_brand || 'Unknown Brand',
-        product_brand: product.product_brand || product.brand || 'Unknown Brand',
-        product_name: product.name,
-        discounted_price: product.discounted_price || product.sale_price || product.price
-      }
+    return {
+      id: product.id,
+      name: product.name,
+      product_name: product.name,
+      price: parseFloat(product.price),
+      discounted_price: product.discounted_price ? parseFloat(product.discounted_price) : parseFloat(product.price),
+      discount: product.discount || 0,
+      images: product.images ? product.images.map(img => img.image_path) : [],
+      image: primaryImage ? `/storage/${primaryImage.image_path}` : '/images/placeholder-product.jpg',
+      slug: product.slug,
+      sku: product.sku || product.product_sku || `SKU-${product.id}`,
+      product_sku: product.sku || product.product_sku || `SKU-${product.id}`,
+      brand: product.brand || product.product_brand || 'Unknown Brand',
+      product_brand: product.brand || product.product_brand || 'Unknown Brand',
+      rating: product.rating || 4,
+      inStock: product.in_stock !== false && (product.stock_quantity > 0 || product.in_stock === true),
+      stock_quantity: product.stock_quantity || 0
+    };
+  };
 
-      console.log('Adding to cart:', cartProduct)
-      await addToCart(cartProduct, 1)
-      console.log(`Added ${product.name} to cart`)
-      
-    } catch (error) {
-      console.error('Failed to add to cart:', error)
-      alert(`Failed to add ${product.name} to cart: ${error.message}`)
+  const handleAddToCart = async (product, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    // Check if product is in stock
+    const isInStock = product.in_stock !== false && (product.stock_quantity > 0 || product.in_stock === true);
+    if (!isInStock) {
+      showNotificationMessage(`${product.name} is out of stock!`, 'error');
+      return;
     }
-  }
+
+    try {
+      // Prepare the product data with all required fields
+      const cartProduct = prepareProductData(product);
+      
+      await addToCart(cartProduct, 1);
+      
+      // Show success notification
+      showNotificationMessage(`${product.name} added to cart!`);
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      showNotificationMessage('Failed to add product to cart. Please try again.', 'error');
+    }
+  };
 
   const handleWishlistToggle = async (product, e) => {
     e.preventDefault()
     e.stopPropagation()
     
     try {
+      const wishlistProduct = prepareProductData(product);
+
       if (isInWishlist(product.id)) {
         const wishlistItemId = getWishlistItemId(product.id)
         console.log('Removing from wishlist - Product ID:', product.id, 'Wishlist Item ID:', wishlistItemId)
@@ -108,37 +141,25 @@ const LatestProducts = () => {
         if (wishlistItemId) {
           await removeFromWishlist(wishlistItemId)
           console.log(`Removed ${product.name} from wishlist`)
+          showNotificationMessage(`${product.name} removed from wishlist`, "info");
         } else {
           console.error('Could not find wishlist item ID for product:', product.id)
+          showNotificationMessage('Failed to remove from wishlist', "error");
         }
       } else {
-        const wishlistProduct = {
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          images: product.images || [],
-          slug: product.slug,
-          rating: product.rating || 0,
-          inStock: product.inStock !== false,
-          sku: product.sku || product.product_sku || `SKU-${product.id}`,
-          product_sku: product.product_sku || product.sku || `SKU-${product.id}`,
-          product_brand: product.brand || product.product_brand || 'Unknown Brand',
-          product_name: product.name,
-          discounted_price: product.discounted_price || product.sale_price || product.price
-        }
-
         console.log('Adding to wishlist:', wishlistProduct)
         await addToWishlist(wishlistProduct)
         console.log(`Added ${product.name} to wishlist`)
+        showNotificationMessage(`${product.name} added to wishlist!`);
         
         // Show message if user is not authenticated
         if (!user) {
-          alert('Product added to local wishlist. Sign in to sync across devices.');
+          showNotificationMessage('Product added to local wishlist. Sign in to sync across devices.', "info");
         }
       }
     } catch (error) {
       console.error('Failed to update wishlist:', error)
-      alert(`Failed to update wishlist: ${error.message}`)
+      showNotificationMessage(`Failed to update wishlist: ${error.message}`, "error");
     }
   }
 
@@ -163,18 +184,36 @@ const LatestProducts = () => {
     )
   }
 
-  // Get first image or placeholder
-  const getProductImage = (product) => {
+  // Get primary image for a product
+  const getPrimaryImage = (product) => {
     if (product.images && product.images.length > 0) {
-      const firstImage = product.images[0];
-      return typeof firstImage === 'object' 
-        ? firstImage.image_path 
-          ? `/storage/${firstImage.image_path}`
-          : firstImage.url || '/placeholder-image.jpg'
-        : firstImage;
+      const primaryImage = product.images.find(img => img.is_primary);
+      const imagePath = primaryImage
+        ? primaryImage.image_path
+        : product.images?.[0]?.image_path;
+
+      return `/storage/${imagePath}`;
     }
-    return '/placeholder-image.jpg';
-  }
+
+    // fallback placeholder
+    return '/images/placeholder-product.jpg';
+  };
+
+  // Notification styles based on type
+  const getNotificationStyles = () => {
+    const baseStyles = "fixed top-4 right-4 z-50 max-w-sm p-4 rounded-lg shadow-lg transition-all duration-300 transform";
+    
+    switch (notification.type) {
+      case "success":
+        return `${baseStyles} bg-green-500 text-white`;
+      case "error":
+        return `${baseStyles} bg-red-500 text-white`;
+      case "info":
+        return `${baseStyles} bg-blue-500 text-white`;
+      default:
+        return `${baseStyles} bg-gray-500 text-white`;
+    }
+  };
 
   if (loading) {
     return (
@@ -204,6 +243,21 @@ const LatestProducts = () => {
 
   return (
     <div className="w-full bg-white py-16">
+      {/* Notification */}
+      {notification.show && (
+        <div className={getNotificationStyles()}>
+          <div className="flex items-center">
+            <span className="flex-1">{notification.message}</span>
+            <button 
+              onClick={() => setNotification({ show: false, message: "", type: "success" })}
+              className="ml-4 text-white hover:text-gray-200"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4">
         {/* Header */}
         <div className="text-center mb-12">
@@ -231,99 +285,129 @@ const LatestProducts = () => {
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {allProducts.length > 0 ? (
-              allProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="flex-shrink-0 w-72 bg-gray-50 rounded-lg overflow-hidden group relative"
-                >
-                  {/* Product Link Wrapper */}
-                  <Link
-                    href={`/products/${product.slug || product.id}`}
-                    className="block"
+              allProducts.map((product) => {
+                const isInStock = product.in_stock !== false && (product.stock_quantity > 0 || product.in_stock === true);
+                
+                return (
+                  <div
+                    key={product.id}
+                    className="flex-shrink-0 w-72 bg-gray-50 rounded-lg overflow-hidden group relative"
                   >
-                    {/* Image Container */}
-                    <div className="relative bg-white h-72 flex items-center justify-center overflow-hidden">
-                      <img
-                        src={getProductImage(product)}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          e.target.src = '/placeholder-image.jpg'
-                        }}
-                      />
+                    {/* Product Link Wrapper */}
+                    <Link
+                      href={`/products/${product.slug || product.id}`}
+                      className="block"
+                    >
+                      {/* Image Container */}
+                      <div className="relative bg-white h-72 flex items-center justify-center overflow-hidden">
+                        <img
+                          src={getPrimaryImage(product)}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            e.target.src = '/placeholder-image.jpg'
+                          }}
+                        />
 
-                      {/* Discount Badge */}
-                      {product.discount && (
-                        <div className="absolute top-3 left-3 bg-black text-white px-2 py-1 text-xs font-semibold">
-                          -{product.discount}%
+                        {/* Discount Badge */}
+                        {product.discount && product.discount > 0 && (
+                          <div className="absolute top-3 left-3 bg-black text-white px-2 py-1 text-xs font-semibold">
+                            -{product.discount}%
+                          </div>
+                        )}
+
+                        {/* Out of Stock Overlay */}
+                        {!isInStock && (
+                          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                            <span className="text-white font-bold text-lg bg-red-600 px-3 py-1 rounded">
+                              Out of Stock
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Product Info */}
+                      <div className="p-4 items-center justify-center flex flex-col">
+                        <h3 className="text-sm font-medium text-gray-900 mb-2 h-10 line-clamp-2">
+                          {product.name}
+                        </h3>
+
+                        {/* Rating */}
+                        <div className="mb-2">
+                          {renderStars(product.rating || 4)}
                         </div>
-                      )}
-                    </div>
 
-                    {/* Product Info */}
-                    <div className="p-4 items-center justify-center flex flex-col">
-                      <h3 className="text-sm font-medium text-gray-900 mb-2 h-10 line-clamp-2">
-                        {product.name}
-                      </h3>
-
-                      {/* Rating */}
-                      <div className="mb-2">
-                        {renderStars(product.rating || 4)}
+                        {/* Price */}
+                        <div className="flex items-center gap-2">
+                          {product.discount && product.discount > 0 ? (
+                            <>
+                              <span className="line-through text-gray-400 text-sm">
+                                Rs.{product.price}
+                              </span>
+                              <span className="text-lg font-semibold text-gray-900">
+                                Rs.{product.discounted_price || product.price}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-lg font-semibold text-gray-900">
+                              Rs.{product.price}
+                            </span>
+                          )}
+                        </div>
                       </div>
+                    </Link>
 
-                      {/* Price */}
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-semibold text-gray-900">
-                          Rs.{product.price}
-                        </span>
-                      </div>
+                    {/* Action Icons */}
+                    <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={(e) => handleWishlistToggle(product, e)}
+                        disabled={wishlistLoading}
+                        className={`p-2 rounded-full shadow-md transition-colors ${
+                          isInWishlist(product.id) 
+                            ? "bg-pink-50 text-pink-500 hover:bg-pink-100" 
+                            : "bg-white text-gray-700 hover:bg-gray-100"
+                        } ${wishlistLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
+                      >
+                        <Heart 
+                          className="w-4 h-4" 
+                          fill={isInWishlist(product.id) ? "currentColor" : "none"}
+                        />
+                      </button>
+                      <button
+                        onClick={(e) => handleAddToCart(product, e)}
+                        disabled={!isInStock}
+                        className={`p-2 rounded-full shadow-md transition-colors ${
+                          isInStock
+                            ? "bg-white text-gray-700 hover:bg-gray-100"
+                            : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        }`}
+                        aria-label="Add to cart"
+                      >
+                        <ShoppingCart className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
+                          handleShowDetails(product)
+                        }}
+                        className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
+                        aria-label="View details"
+                      >
+                        <Eye className="w-4 h-4 text-gray-700" />
+                      </button>
+                      <Link
+                        href={`/products/${product.slug || product.id}`}
+                        className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
+                        aria-label="View product details"
+                      >
+                        <ExternalLink className="w-4 h-4 text-gray-700" />
+                      </Link>
                     </div>
-                  </Link>
-
-                  {/* Action Icons */}
-                  <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={(e) => handleWishlistToggle(product, e)}
-                      disabled={wishlistLoading}
-                      className={`p-2 rounded-full shadow-md transition-colors ${
-                        isInWishlist(product.id) 
-                          ? "bg-pink-50 text-pink-500 hover:bg-pink-100" 
-                          : "bg-white text-gray-700 hover:bg-gray-100"
-                      } ${wishlistLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                      aria-label={isInWishlist(product.id) ? "Remove from wishlist" : "Add to wishlist"}
-                    >
-                      <Heart 
-                        className="w-4 h-4" 
-                        fill={isInWishlist(product.id) ? "currentColor" : "none"}
-                      />
-                    </button>
-                    <button
-                      onClick={(e) => handleAddToCart(product, e)}
-                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
-                      aria-label="Add to cart"
-                    >
-                      <ShoppingCart className="w-4 h-4 text-gray-700" />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.preventDefault()
-                        e.stopPropagation()
-                        handleShowDetails(product)
-                      }}
-                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
-                      aria-label="View details"
-                    >
-                      <Eye className="w-4 h-4 text-gray-700" />
-                    </button>
-                    <button
-                      className="bg-white p-2 rounded-full shadow-md hover:bg-gray-100 transition-colors"
-                      aria-label="View on external site"
-                    >
-                      <ExternalLink className="w-4 h-4 text-gray-700" />
-                    </button>
                   </div>
-                </div>
-              ))
+                );
+              })
             ) : (
               <div className="text-center text-gray-500 w-full py-12">
                 No products available.

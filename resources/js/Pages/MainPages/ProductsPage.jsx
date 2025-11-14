@@ -40,18 +40,27 @@ const ProductsPage = () => {
     });
     const [reviewSubmitting, setReviewSubmitting] = useState(false);
     const [reviewSuccess, setReviewSuccess] = useState(false);
-    const [addingToCart, setAddingToCart] = useState(false);
-    const [buyNowLoading, setBuyNowLoading] = useState(false);
+    const [notification, setNotification] = useState({ show: false, message: "", type: "success" });
 
     // Use the cart context
     const { addToCart } = useCart();
 
     // Use the wishlist context
-    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+    const { addToWishlist, removeFromWishlist, isInWishlist, getWishlistItemId } = useWishlist();
 
     // Get the current route parameters
     const { props } = usePage();
     const slug = window.location.pathname.split("/").pop();
+
+    // Show notification message
+    const showNotificationMessage = (message, type = "success") => {
+        setNotification({ show: true, message, type });
+        
+        // Auto hide after 3 seconds
+        setTimeout(() => {
+            setNotification({ show: false, message: "", type: "success" });
+        }, 3000);
+    };
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -68,7 +77,7 @@ const ProductsPage = () => {
                 console.log("Fetching product with slug:", slug);
 
                 // Fetch all products and find the one with matching slug
-                const response = await axios.get(route("ourproducts.index")); // Adjust this to your actual API endpoint
+                const response = await axios.get(route("ourproducts.index"));
                 console.log("Products response:", response.data);
 
                 const allProducts = response.data.data || response.data;
@@ -93,125 +102,125 @@ const ProductsPage = () => {
         fetchProduct();
     }, [slug]);
 
+    // Helper function to prepare product data for cart/wishlist
+    const prepareProductData = (product) => {
+        const primaryImage = product.images?.find(img => img.is_primary) || product.images?.[0];
+        
+        return {
+            id: product.id,
+            name: product.name,
+            product_name: product.name,
+            price: parseFloat(product.price),
+            discounted_price: product.discounted_price ? parseFloat(product.discounted_price) : parseFloat(product.price),
+            discount: product.discount || 0,
+            images: product.images ? product.images.map(img => img.image_path) : [],
+            image: primaryImage ? `/storage/${primaryImage.image_path}` : '/images/placeholder-product.jpg',
+            slug: product.slug,
+            sku: product.sku || product.product_sku || `SKU-${product.id}`,
+            product_sku: product.sku || product.product_sku || `SKU-${product.id}`,
+            brand: product.brand || product.product_brand || 'Unknown Brand',
+            product_brand: product.brand || product.product_brand || 'Unknown Brand',
+            rating: product.rating || 4,
+            inStock: product.in_stock !== false && (product.stock_quantity > 0 || product.in_stock === true),
+            stock_quantity: product.stock_quantity || 0,
+            selectedSize: selectedSize,
+            selectedColor: selectedColor,
+            size: selectedSize,
+            color: selectedColor,
+            // Create a unique identifier for cart items with variants
+            variantId: `${product.id}-${selectedSize}-${selectedColor}`
+        };
+    };
+
     const handleAddToCart = async () => {
-        if (!product || !product.in_stock) {
-            console.error("Product not available or out of stock");
+        if (!product) return;
+        
+        // Check if product is in stock
+        const isInStock = product.in_stock !== false && (product.stock_quantity > 0 || product.in_stock === true);
+        if (!isInStock) {
+            showNotificationMessage(`${product.name} is out of stock!`, "error");
             return;
         }
 
-        setAddingToCart(true);
         try {
-            // Create a cart-ready product object with proper structure
-            const cartProduct = {
-                id: product.id,
-                name: product.name,
-                price: parseFloat(product.price),
-                discounted_price: product.discounted_price ? parseFloat(product.discounted_price) : null,
-                images: product.images ? product.images.map((img) => img.image_path) : [],
-                slug: product.slug,
-                size: selectedSize,
-                color: selectedColor,
-                sku: product.sku,
-                brand: product.brand,
-                product_name: product.name,
-                product_sku: product.sku,
-                product_brand: product.brand,
-            };
-
-            console.log("Adding to cart:", cartProduct, "Quantity:", quantity);
-
-            // Use the addToCart function with both product and quantity
+            // Prepare the product data with all required fields
+            const cartProduct = prepareProductData(product);
+            
+            // Add the product to cart with the selected quantity
             await addToCart(cartProduct, quantity);
             
-            console.log(`Successfully added ${quantity} ${product.name} to cart`);
+            console.log(`Added ${quantity} ${product.name} to cart`, {
+                size: selectedSize,
+                color: selectedColor
+            });
             
-            // Optional: Show success message
-            // You can add a toast notification here
+            showNotificationMessage(`${product.name} added to cart!`);
             
         } catch (error) {
-            console.error("Failed to add to cart:", error);
-            // Handle error (show error message to user)
-            alert("Failed to add product to cart. Please try again.");
-        } finally {
-            setAddingToCart(false);
+            console.error('Failed to add to cart:', error);
+            showNotificationMessage('Failed to add item to cart. Please try again.', "error");
         }
     };
 
     const handleBuyNow = async () => {
-        if (!product || !product.in_stock) {
-            console.error("Product not available or out of stock");
+        if (!product) return;
+        
+        // Check if product is in stock
+        const isInStock = product.in_stock !== false && (product.stock_quantity > 0 || product.in_stock === true);
+        if (!isInStock) {
+            showNotificationMessage(`${product.name} is out of stock!`, "error");
             return;
         }
 
-        setBuyNowLoading(true);
         try {
-            // Create a cart-ready product object with proper structure
-            const cartProduct = {
-                id: product.id,
-                name: product.name,
-                price: parseFloat(product.price),
-                discounted_price: product.discounted_price ? parseFloat(product.discounted_price) : null,
-                images: product.images ? product.images.map((img) => img.image_path) : [],
-                slug: product.slug,
-                size: selectedSize,
-                color: selectedColor,
-                sku: product.sku,
-                brand: product.brand,
-                product_name: product.name,
-                product_sku: product.sku,
-                product_brand: product.brand,
-            };
-
-            console.log("Buy Now - Adding to cart:", cartProduct, "Quantity:", quantity);
-
+            // Prepare the product data with all required fields
+            const cartProduct = prepareProductData(product);
+            
             // Add to cart first
             await addToCart(cartProduct, quantity);
             
             console.log(`Successfully added ${quantity} ${product.name} to cart, redirecting to checkout`);
             
-            // Then redirect to checkout
-            window.location.href = "/check-out";
+            // Show success message
+            showNotificationMessage(`${product.name} added to cart! Redirecting to checkout...`);
+            
+            // Then redirect to checkout after a brief delay
+            setTimeout(() => {
+                window.location.href = "/check-out";
+            }, 1000);
             
         } catch (error) {
-            console.error("Failed to add to cart for Buy Now:", error);
-            alert("Failed to proceed with Buy Now. Please try again.");
-        } finally {
-            setBuyNowLoading(false);
+            console.error('Failed to add to cart for Buy Now:', error);
+            showNotificationMessage('Failed to proceed with Buy Now. Please try again.', "error");
         }
     };
 
     const handleWishlistToggle = async () => {
         if (!product) return;
-
+        
         try {
-            const wishlistProduct = {
-                id: product.id,
-                name: product.name,
-                price: parseFloat(product.price),
-                discounted_price: product.discounted_price ? parseFloat(product.discounted_price) : null,
-                images: product.images ? product.images.map((img) => img.image_path) : [],
-                slug: product.slug,
-                rating: product.reviews && product.reviews.length > 0
-                    ? product.reviews.reduce((acc, review) => acc + review.rating, 0) / product.reviews.length
-                    : 0,
-                inStock: product.in_stock,
-                sku: product.sku,
-                brand: product.brand,
-                product_name: product.name,
-                product_sku: product.sku,
-                product_brand: product.brand,
-            };
+            const wishlistProduct = prepareProductData(product);
 
             if (isInWishlist(product.id)) {
-                await removeFromWishlist(product.id);
-                console.log(`Removed ${product.name} from wishlist`);
+                const wishlistItemId = getWishlistItemId(product.id);
+                console.log('Removing from wishlist - Product ID:', product.id, 'Wishlist Item ID:', wishlistItemId);
+                
+                if (wishlistItemId) {
+                    await removeFromWishlist(wishlistItemId);
+                    console.log(`Removed ${product.name} from wishlist`);
+                    showNotificationMessage(`${product.name} removed from wishlist`, "info");
+                } else {
+                    console.error('Could not find wishlist item ID for product:', product.id);
+                    showNotificationMessage('Failed to remove from wishlist', "error");
+                }
             } else {
                 await addToWishlist(wishlistProduct);
                 console.log(`Added ${product.name} to wishlist`);
+                showNotificationMessage(`${product.name} added to wishlist!`);
             }
         } catch (error) {
-            console.error("Wishlist operation failed:", error);
-            alert("Failed to update wishlist. Please try again.");
+            console.error('Failed to toggle wishlist:', error);
+            showNotificationMessage(`Failed to update wishlist: ${error.message}`, "error");
         }
     };
 
@@ -368,6 +377,22 @@ const ProductsPage = () => {
         ));
     };
 
+    // Notification styles based on type
+    const getNotificationStyles = () => {
+        const baseStyles = "fixed top-4 right-4 z-50 max-w-sm p-4 rounded-lg shadow-lg transition-all duration-300 transform";
+        
+        switch (notification.type) {
+            case "success":
+                return `${baseStyles} bg-green-500 text-white`;
+            case "error":
+                return `${baseStyles} bg-red-500 text-white`;
+            case "info":
+                return `${baseStyles} bg-blue-500 text-white`;
+            default:
+                return `${baseStyles} bg-gray-500 text-white`;
+        }
+    };
+
     // Early return if loading or error
     if (loading) {
         return (
@@ -432,8 +457,26 @@ const ProductsPage = () => {
               reviews.length
             : 0;
 
+    // Check stock status
+    const isInStock = product.in_stock !== false && (product.stock_quantity > 0 || product.in_stock === true);
+
     return (
         <div>
+            {/* Notification */}
+            {notification.show && (
+                <div className={getNotificationStyles()}>
+                    <div className="flex items-center">
+                        <span className="flex-1">{notification.message}</span>
+                        <button 
+                            onClick={() => setNotification({ show: false, message: "", type: "success" })}
+                            className="ml-4 text-white hover:text-gray-200"
+                        >
+                            ×
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <Navbar />
             <div className="">
                 <div className="relative h-[550px] overflow-hidden">
@@ -496,6 +539,13 @@ const ProductsPage = () => {
                                     {product.discount && (
                                         <div className="absolute top-4 right-4 bg-red-600 text-white px-3 py-1 text-sm font-semibold rounded-full z-10">
                                             -{product.discount}%
+                                        </div>
+                                    )}
+                                    {!isInStock && (
+                                        <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
+                                            <span className="text-white font-bold text-2xl bg-red-600 px-4 py-2 rounded-lg">
+                                                Out of Stock
+                                            </span>
                                         </div>
                                     )}
                                     <div className="aspect-square flex items-center justify-center p-8">
@@ -653,12 +703,12 @@ const ProductsPage = () => {
                             <div>
                                 <span
                                     className={`inline-flex items-center px-3 py-1.5 rounded-full text-sm font-medium ${
-                                        product.in_stock
+                                        isInStock
                                             ? "bg-green-50 text-green-700 border border-green-200"
                                             : "bg-red-50 text-red-700 border border-red-200"
                                     }`}
                                 >
-                                    {product.in_stock
+                                    {isInStock
                                         ? `✓ ${
                                               product.stock_quantity || 0
                                           } in stock`
@@ -692,36 +742,20 @@ const ProductsPage = () => {
                                     </div>
                                     <button
                                         onClick={handleAddToCart}
-                                        disabled={!product.in_stock || addingToCart}
+                                        disabled={!isInStock}
                                         className="flex-1 bg-gray-900 text-white font-semibold py-3.5 rounded-xl hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2"
                                     >
-                                        {addingToCart ? (
-                                            <>
-                                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                                ADDING...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <ShoppingCart className="w-4 h-4" />
-                                                ADD TO CART
-                                            </>
-                                        )}
+                                        <ShoppingCart className="w-4 h-4" />
+                                        ADD TO CART
                                     </button>
                                 </div>
 
                                 <button
                                     onClick={handleBuyNow}
-                                    disabled={!product.in_stock || buyNowLoading}
+                                    disabled={!isInStock}
                                     className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold py-3.5 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2"
                                 >
-                                    {buyNowLoading ? (
-                                        <>
-                                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                            PROCESSING...
-                                        </>
-                                    ) : (
-                                        "BUY NOW"
-                                    )}
+                                    BUY NOW
                                 </button>
                             </div>
 
@@ -908,7 +942,7 @@ const ProductsPage = () => {
                                                         ["SKU", product.sku],
                                                         [
                                                             "In Stock",
-                                                            product.in_stock
+                                                            isInStock
                                                                 ? "Yes"
                                                                 : "No",
                                                         ],

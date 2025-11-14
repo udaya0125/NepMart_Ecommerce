@@ -17,8 +17,8 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
     useEffect(() => {
         // Check if we're coming from eSewa redirect
         const urlParams = new URLSearchParams(window.location.search);
-        const fromEsewa = urlParams.get('from_esewa');
-        
+        const fromEsewa = urlParams.get("from_esewa");
+
         const storedOrder = sessionStorage.getItem("pendingOrder");
 
         if (storedOrder) {
@@ -100,6 +100,8 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
         }
     };
 
+    console.log("Order Data:", orderData);
+
     const processOrderData = (order) => {
         if (!order) return null;
 
@@ -108,14 +110,14 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
         // Ensure customer info has all required fields
         if (processedOrder.customerInfo) {
             processedOrder.customerInfo = {
-                fullName: processedOrder.customerInfo.fullName || '',
-                email: processedOrder.customerInfo.email || '',
-                address: processedOrder.customerInfo.address || '',
-                city: processedOrder.customerInfo.city || '',
-                state: processedOrder.customerInfo.state || '',
-                zipCode: processedOrder.customerInfo.zipCode || '',
-                country: processedOrder.customerInfo.country || '',
-                phone: processedOrder.customerInfo.phone || '',
+                fullName: processedOrder.customerInfo.fullName || "",
+                email: processedOrder.customerInfo.email || "",
+                address: processedOrder.customerInfo.address || "",
+                city: processedOrder.customerInfo.city || "",
+                state: processedOrder.customerInfo.state || "",
+                zipCode: processedOrder.customerInfo.zipCode || "",
+                country: processedOrder.customerInfo.country || "",
+                phone: processedOrder.customerInfo.phone || "",
             };
         }
 
@@ -161,7 +163,7 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
     };
 
     const generateInvoice = () => {
-        if (!orderData) return '';
+        if (!orderData) return "";
 
         const invoiceNumber = orderData.transactionUuid || `INV-${Date.now()}`;
         const invoiceDate = new Date().toLocaleDateString();
@@ -219,7 +221,9 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
                         <div>
                             <strong>Payment Method:</strong> eSewa (Online)<br>
                             <strong>Payment Status:</strong> Paid<br>
-                            <strong>Transaction ID:</strong> ${orderData.transactionUuid || 'N/A'}
+                            <strong>Transaction ID:</strong> ${
+                                orderData.transactionUuid || "N/A"
+                            }
                         </div>
                     </div>
 
@@ -227,7 +231,9 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
                         <div class="section-title">Bill To</div>
                         <strong>${orderData.customerInfo.fullName}</strong><br>
                         ${orderData.customerInfo.address}<br>
-                        ${orderData.customerInfo.city}, ${orderData.customerInfo.state} ${orderData.customerInfo.zipCode}<br>
+                        ${orderData.customerInfo.city}, ${
+            orderData.customerInfo.state
+        } ${orderData.customerInfo.zipCode}<br>
                         ${orderData.customerInfo.country}<br>
                         Phone: ${orderData.customerInfo.phone}<br>
                         Email: ${orderData.customerInfo.email}
@@ -248,17 +254,25 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                ${orderData.orderItems.map(item => `
+                                ${orderData.orderItems
+                                    .map(
+                                        (item) => `
                                     <tr>
                                         <td>${item.product_name}</td>
-                                        <td>${item.product_sku || 'N/A'}</td>
-                                        <td>${item.size || 'N/A'}</td>
-                                        <td>${item.color || 'N/A'}</td>
+                                        <td>${item.product_sku || "N/A"}</td>
+                                        <td>${item.size || "N/A"}</td>
+                                        <td>${item.color || "N/A"}</td>
                                         <td>${item.quantity}</td>
-                                        <td class="text-right">Rs. ${formatPrice(item.price)}</td>
-                                        <td class="text-right">Rs. ${formatPrice(item.price * item.quantity)}</td>
+                                        <td class="text-right">Rs. ${formatPrice(
+                                            item.price
+                                        )}</td>
+                                        <td class="text-right">Rs. ${formatPrice(
+                                            item.price * item.quantity
+                                        )}</td>
                                     </tr>
-                                `).join('')}
+                                `
+                                    )
+                                    .join("")}
                             </tbody>
                         </table>
                     </div>
@@ -318,20 +332,20 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
     // Method 1: Using html2pdf.js (recommended - better formatting)
     const downloadWithHtml2Pdf = async () => {
         // Check if html2pdf is available
-        if (typeof window.html2pdf === 'undefined') {
+        if (typeof window.html2pdf === "undefined") {
             // Load html2pdf from CDN if not available
             await loadHtml2Pdf();
         }
 
-        const element = document.createElement('div');
+        const element = document.createElement("div");
         element.innerHTML = generateInvoice();
-        
+
         const opt = {
             margin: 10,
             filename: `invoice-${orderData.transactionUuid || Date.now()}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
+            image: { type: "jpeg", quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
         };
 
         window.html2pdf().set(opt).from(element).save();
@@ -340,15 +354,17 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
     // Load html2pdf from CDN
     const loadHtml2Pdf = () => {
         return new Promise((resolve, reject) => {
-            if (typeof window.html2pdf !== 'undefined') {
+            if (typeof window.html2pdf !== "undefined") {
                 resolve();
                 return;
             }
 
-            const script = document.createElement('script');
-            script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-            script.integrity = 'sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusVA+e4tXggjvR/qWdLpILxvr6l2p8g8O4A==';
-            script.crossOrigin = 'anonymous';
+            const script = document.createElement("script");
+            script.src =
+                "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+            script.integrity =
+                "sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusVA+e4tXggjvR/qWdLpILxvr6l2p8g8O4A==";
+            script.crossOrigin = "anonymous";
             script.onload = resolve;
             script.onerror = reject;
             document.head.appendChild(script);
@@ -358,10 +374,10 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
     // Method 2: Fallback using print method (works without external libraries)
     const downloadWithPrintMethod = () => {
         const invoiceContent = generateInvoice();
-        const printWindow = window.open('', '_blank');
+        const printWindow = window.open("", "_blank");
         printWindow.document.write(invoiceContent);
         printWindow.document.close();
-        
+
         // Wait for content to load then trigger print
         setTimeout(() => {
             printWindow.print();
@@ -373,11 +389,13 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
     // Alternative Method: Generate and download as PDF using browser print
     const downloadAsPDF = () => {
         const invoiceContent = generateInvoice();
-        const blob = new Blob([invoiceContent], { type: 'text/html' });
+        const blob = new Blob([invoiceContent], { type: "text/html" });
         const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
+        const link = document.createElement("a");
         link.href = url;
-        link.download = `invoice-${orderData.transactionUuid || Date.now()}.html`;
+        link.download = `invoice-${
+            orderData.transactionUuid || Date.now()
+        }.html`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -393,7 +411,7 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
     };
 
     const formatPrice = (price) => {
-        if (typeof price !== 'number' || isNaN(price)) {
+        if (typeof price !== "number" || isNaN(price)) {
             return "0.00";
         }
         return price.toFixed(2);
@@ -405,7 +423,9 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
                 <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
                     <div className="text-center">
                         <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                        <p className="text-gray-600">Loading order details...</p>
+                        <p className="text-gray-600">
+                            Loading order details...
+                        </p>
                     </div>
                 </div>
             </div>
@@ -417,9 +437,11 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
             <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 w-full max-w-full sm:max-w-2xl md:max-w-4xl max-h-[90vh] overflow-y-auto">
                 {/* Close Button */}
                 <div className="flex justify-between items-center mb-4 sm:mb-6">
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Payment Successful</h2>
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                        Payment Successful
+                    </h2>
                     <Link
-                        href="/"                     
+                        href="/"
                         className="text-gray-500 hover:text-gray-700 text-xl sm:text-2xl font-bold"
                     >
                         <X size={24} />
@@ -478,19 +500,27 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
                                     </h3>
                                     <div className="space-y-2 text-sm">
                                         <div className="flex justify-between">
-                                            <span className="text-gray-600">Order ID:</span>
+                                            <span className="text-gray-600">
+                                                Order ID:
+                                            </span>
                                             <span className="font-medium text-gray-900">
                                                 {orderData.transactionUuid}
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-gray-600">Date:</span>
+                                            <span className="text-gray-600">
+                                                Date:
+                                            </span>
                                             <span className="font-medium text-gray-900">
-                                                {new Date(orderData.timestamp).toLocaleDateString()}
+                                                {new Date(
+                                                    orderData.timestamp
+                                                ).toLocaleDateString()}
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-gray-600">Payment Method:</span>
+                                            <span className="text-gray-600">
+                                                Payment Method:
+                                            </span>
                                             <span className="font-medium text-gray-900">
                                                 eSewa (Online)
                                             </span>
@@ -504,27 +534,47 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
                                     </h3>
                                     <div className="space-y-2 text-sm">
                                         <div className="flex justify-between">
-                                            <span className="text-gray-600">Subtotal:</span>
+                                            <span className="text-gray-600">
+                                                Subtotal:
+                                            </span>
                                             <span className="font-medium text-gray-900">
-                                                Rs. ${formatPrice(orderData.amounts.subtotal)}
+                                                Rs. $
+                                                {formatPrice(
+                                                    orderData.amounts.subtotal
+                                                )}
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-gray-600">Shipping:</span>
+                                            <span className="text-gray-600">
+                                                Shipping:
+                                            </span>
                                             <span className="font-medium text-gray-900">
-                                                Rs. ${formatPrice(orderData.amounts.shipping)}
+                                                Rs. $
+                                                {formatPrice(
+                                                    orderData.amounts.shipping
+                                                )}
                                             </span>
                                         </div>
                                         <div className="flex justify-between">
-                                            <span className="text-gray-600">Tax (13%):</span>
+                                            <span className="text-gray-600">
+                                                Tax (13%):
+                                            </span>
                                             <span className="font-medium text-gray-900">
-                                                Rs. ${formatPrice(orderData.amounts.tax)}
+                                                Rs. $
+                                                {formatPrice(
+                                                    orderData.amounts.tax
+                                                )}
                                             </span>
                                         </div>
                                         <div className="flex justify-between border-t border-gray-200 pt-2">
-                                            <span className="font-semibold text-gray-900">Total:</span>
+                                            <span className="font-semibold text-gray-900">
+                                                Total:
+                                            </span>
                                             <span className="font-bold text-orange-500">
-                                                Rs. ${formatPrice(orderData.amounts.total)}
+                                                Rs. $
+                                                {formatPrice(
+                                                    orderData.amounts.total
+                                                )}
                                             </span>
                                         </div>
                                     </div>
@@ -542,14 +592,22 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
                                     </p>
                                     <p>{orderData.customerInfo.address}</p>
                                     <p>
-                                        {orderData.customerInfo.city}, {orderData.customerInfo.state} {orderData.customerInfo.zipCode}
+                                        {orderData.customerInfo.city},{" "}
+                                        {orderData.customerInfo.state}{" "}
+                                        {orderData.customerInfo.zipCode}
                                     </p>
                                     <p>{orderData.customerInfo.country}</p>
                                     <p className="mt-2">
-                                        <span className="font-medium">Phone:</span> {orderData.customerInfo.phone}
+                                        <span className="font-medium">
+                                            Phone:
+                                        </span>{" "}
+                                        {orderData.customerInfo.phone}
                                     </p>
                                     <p>
-                                        <span className="font-medium">Email:</span> {orderData.customerInfo.email}
+                                        <span className="font-medium">
+                                            Email:
+                                        </span>{" "}
+                                        {orderData.customerInfo.email}
                                     </p>
                                 </div>
                             </div>
@@ -566,26 +624,43 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
                                             className="flex items-center gap-3 p-3 bg-white rounded-lg border"
                                         >
                                             <img
-                                                src={item.images?.[0]}
+                                                src={
+                                                    item.images
+                                                        ? `/storage/${item.images}`
+                                                        : "https://images.pexels.com/photos/258196/pexels-photo-258196.jpeg"
+                                                }
                                                 alt={item.product_name}
                                                 className="w-12 h-12 object-cover rounded"
+                                                onError={(e) => {
+                                                    e.target.src =
+                                                        "https://images.pexels.com/photos/258196/pexels-photo-258196.jpeg";
+                                                }}
                                             />
+
                                             <div className="flex-1 min-w-0">
                                                 <h4 className="font-medium text-gray-900 text-sm truncate">
                                                     {item.product_name}
                                                 </h4>
                                                 <p className="text-xs text-gray-600">
                                                     Qty: {item.quantity}
-                                                    {item.size && ` • Size: ${item.size}`}
-                                                    {item.color && ` • Color: ${item.color}`}
+                                                    {item.size &&
+                                                        ` • Size: ${item.size}`}
+                                                    {item.color &&
+                                                        ` • Color: ${item.color}`}
                                                 </p>
                                             </div>
                                             <div className="text-right">
                                                 <p className="font-semibold text-orange-500 text-sm">
-                                                    Rs. {formatPrice(item.price * item.quantity)}
+                                                    Rs.{" "}
+                                                    {formatPrice(
+                                                        item.price *
+                                                            item.quantity
+                                                    )}
                                                 </p>
                                                 <p className="text-xs text-gray-600">
-                                                    Rs. {formatPrice(item.price)} each
+                                                    Rs.{" "}
+                                                    {formatPrice(item.price)}{" "}
+                                                    each
                                                 </p>
                                             </div>
                                         </div>
@@ -595,7 +670,9 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
                         </div>
                     ) : (
                         <div className="text-center py-6">
-                            <p className="text-gray-600 mb-4">No order data found.</p>
+                            <p className="text-gray-600 mb-4">
+                                No order data found.
+                            </p>
                             <button
                                 onClick={handleContinueShopping}
                                 className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-lg transition-colors"
@@ -624,7 +701,7 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
                                         Download Invoice
                                     </>
                                 )}
-                            </button>                           
+                            </button>
                             <button
                                 onClick={handleContinueShopping}
                                 className="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition-colors text-sm"
@@ -642,7 +719,6 @@ const PaymentSuccess = ({ showForm, setShowForm }) => {
 
 export default PaymentSuccess;
 
-
 // import React, { useEffect, useState } from "react";
 // import { CheckCircle, Truck, Download, Home } from "lucide-react";
 // import Navbar from "@/ContentWrapper/Navbar";
@@ -658,15 +734,15 @@ export default PaymentSuccess;
 
 //     useEffect(() => {
 //         const storedOrder = sessionStorage.getItem("pendingOrder");
-        
+
 //         if (storedOrder) {
 //             try {
 //                 const order = JSON.parse(storedOrder);
 //                 const processedOrder = processOrderData(order);
 //                 setOrderData(processedOrder);
-                
+
 //                 sessionStorage.removeItem("pendingOrder");
-                
+
 //                 // Store online payment order in database
 //                 storeOnlineOrder(processedOrder);
 //             } catch (error) {
@@ -674,7 +750,7 @@ export default PaymentSuccess;
 //                 setStorageError("Failed to process order data");
 //             }
 //         }
-        
+
 //         setIsLoading(false);
 //     }, []);
 
@@ -707,13 +783,13 @@ export default PaymentSuccess;
 //             console.log("Sending order data to backend:", orderItemsData);
 
 //             // Send each order item to the backend
-//             const orderPromises = orderItemsData.map(orderItem => 
+//             const orderPromises = orderItemsData.map(orderItem =>
 //                 axios.post(route('ourorder.store'), orderItem)
 //             );
 
 //             const results = await Promise.all(orderPromises);
 //             console.log("Order storage results:", results);
-            
+
 //             console.log("Online order stored successfully");
 
 //         } catch (error) {
@@ -729,7 +805,7 @@ export default PaymentSuccess;
 //         if (!order) return null;
 
 //         const processedOrder = JSON.parse(JSON.stringify(order));
-        
+
 //         // Ensure amounts are numbers
 //         if (processedOrder.amounts) {
 //             processedOrder.amounts.subtotal = parseFloat(processedOrder.amounts.subtotal) || 0;
@@ -737,7 +813,7 @@ export default PaymentSuccess;
 //             processedOrder.amounts.tax = parseFloat(processedOrder.amounts.tax) || 0;
 //             processedOrder.amounts.total = parseFloat(processedOrder.amounts.total) || 0;
 //         }
-        
+
 //         // Ensure order items have proper structure
 //         if (processedOrder.orderItems && Array.isArray(processedOrder.orderItems)) {
 //             processedOrder.orderItems = processedOrder.orderItems.map(item => ({
@@ -753,7 +829,7 @@ export default PaymentSuccess;
 //                 color: item.color || "",
 //             }));
 //         }
-        
+
 //         return processedOrder;
 //     };
 
@@ -763,7 +839,7 @@ export default PaymentSuccess;
 //         const invoiceNumber = orderData.transactionUuid || `INV-${Date.now()}`;
 //         const invoiceDate = new Date().toLocaleDateString();
 //         const orderDate = new Date(orderData.timestamp).toLocaleDateString();
-        
+
 //         const customerName = `${orderData.customerInfo.firstName} ${orderData.customerInfo.lastName}`;
 
 //         return `
@@ -773,114 +849,114 @@ export default PaymentSuccess;
 //                 <meta charset="UTF-8">
 //                 <title>Invoice - ${invoiceNumber}</title>
 //                 <style>
-//                     body { 
-//                         font-family: 'Arial', sans-serif; 
-//                         margin: 0; 
-//                         padding: 20px; 
-//                         color: #333; 
+//                     body {
+//                         font-family: 'Arial', sans-serif;
+//                         margin: 0;
+//                         padding: 20px;
+//                         color: #333;
 //                         background: #f8f9fa;
 //                     }
-//                     .invoice-container { 
-//                         max-width: 800px; 
-//                         margin: 0 auto; 
-//                         background: white; 
+//                     .invoice-container {
+//                         max-width: 800px;
+//                         margin: 0 auto;
+//                         background: white;
 //                         padding: 40px;
 //                         box-shadow: 0 0 20px rgba(0,0,0,0.1);
 //                         border-radius: 8px;
 //                     }
-//                     .header { 
-//                         text-align: center; 
-//                         margin-bottom: 40px; 
-//                         border-bottom: 3px solid #f97316; 
-//                         padding-bottom: 20px; 
+//                     .header {
+//                         text-align: center;
+//                         margin-bottom: 40px;
+//                         border-bottom: 3px solid #f97316;
+//                         padding-bottom: 20px;
 //                     }
-//                     .company-name { 
-//                         font-size: 28px; 
-//                         font-weight: bold; 
-//                         color: #f97316; 
-//                         margin-bottom: 10px; 
+//                     .company-name {
+//                         font-size: 28px;
+//                         font-weight: bold;
+//                         color: #f97316;
+//                         margin-bottom: 10px;
 //                     }
-//                     .invoice-title { 
-//                         font-size: 36px; 
-//                         font-weight: bold; 
-//                         margin: 20px 0; 
+//                     .invoice-title {
+//                         font-size: 36px;
+//                         font-weight: bold;
+//                         margin: 20px 0;
 //                         color: #1f2937;
 //                     }
-//                     .invoice-details { 
-//                         display: flex; 
-//                         justify-content: space-between; 
+//                     .invoice-details {
+//                         display: flex;
+//                         justify-content: space-between;
 //                         margin-bottom: 30px;
 //                         background: #f8f9fa;
 //                         padding: 20px;
 //                         border-radius: 8px;
 //                     }
-//                     .section { 
-//                         margin-bottom: 25px; 
+//                     .section {
+//                         margin-bottom: 25px;
 //                     }
-//                     .section-title { 
-//                         font-size: 20px; 
-//                         font-weight: bold; 
-//                         margin-bottom: 15px; 
-//                         color: #f97316; 
-//                         border-bottom: 2px solid #e5e7eb; 
-//                         padding-bottom: 8px; 
+//                     .section-title {
+//                         font-size: 20px;
+//                         font-weight: bold;
+//                         margin-bottom: 15px;
+//                         color: #f97316;
+//                         border-bottom: 2px solid #e5e7eb;
+//                         padding-bottom: 8px;
 //                     }
-//                     table { 
-//                         width: 100%; 
-//                         border-collapse: collapse; 
-//                         margin: 25px 0; 
+//                     table {
+//                         width: 100%;
+//                         border-collapse: collapse;
+//                         margin: 25px 0;
 //                         background: white;
 //                     }
-//                     th { 
-//                         background-color: #f97316; 
-//                         color: white; 
-//                         text-align: left; 
-//                         padding: 15px; 
+//                     th {
+//                         background-color: #f97316;
+//                         color: white;
+//                         text-align: left;
+//                         padding: 15px;
 //                         font-weight: bold;
 //                     }
-//                     td { 
-//                         padding: 15px; 
-//                         border-bottom: 1px solid #e5e7eb; 
+//                     td {
+//                         padding: 15px;
+//                         border-bottom: 1px solid #e5e7eb;
 //                     }
-//                     .text-right { 
-//                         text-align: right; 
+//                     .text-right {
+//                         text-align: right;
 //                     }
-//                     .text-center { 
-//                         text-align: center; 
+//                     .text-center {
+//                         text-align: center;
 //                     }
-//                     .totals { 
-//                         width: 350px; 
-//                         margin-left: auto; 
+//                     .totals {
+//                         width: 350px;
+//                         margin-left: auto;
 //                         background: #f8f9fa;
 //                         padding: 20px;
 //                         border-radius: 8px;
 //                     }
-//                     .totals-row { 
-//                         display: flex; 
-//                         justify-content: space-between; 
-//                         margin-bottom: 12px; 
+//                     .totals-row {
+//                         display: flex;
+//                         justify-content: space-between;
+//                         margin-bottom: 12px;
 //                         padding: 8px 0;
 //                     }
-//                     .total-row { 
-//                         font-weight: bold; 
-//                         font-size: 20px; 
-//                         border-top: 3px solid #1f2937; 
-//                         padding-top: 12px; 
-//                         margin-top: 12px; 
+//                     .total-row {
+//                         font-weight: bold;
+//                         font-size: 20px;
+//                         border-top: 3px solid #1f2937;
+//                         padding-top: 12px;
+//                         margin-top: 12px;
 //                         color: #f97316;
 //                     }
-//                     .footer { 
-//                         text-align: center; 
-//                         margin-top: 50px; 
-//                         padding-top: 30px; 
-//                         border-top: 2px solid #e5e7eb; 
-//                         color: #6b7280; 
+//                     .footer {
+//                         text-align: center;
+//                         margin-top: 50px;
+//                         padding-top: 30px;
+//                         border-top: 2px solid #e5e7eb;
+//                         color: #6b7280;
 //                     }
-//                     .thank-you { 
-//                         font-size: 18px; 
-//                         font-weight: bold; 
-//                         color: #f97316; 
-//                         margin: 25px 0; 
+//                     .thank-you {
+//                         font-size: 18px;
+//                         font-weight: bold;
+//                         color: #f97316;
+//                         margin: 25px 0;
 //                     }
 //                     .status-badge {
 //                         background: #10b981;
@@ -1022,20 +1098,20 @@ export default PaymentSuccess;
 //     const downloadWithHtml2Pdf = async () => {
 //         const element = document.createElement('div');
 //         element.innerHTML = generateInvoiceHTML();
-        
+
 //         const opt = {
 //             margin: 10,
 //             filename: `invoice-${orderData.transactionUuid || Date.now()}.pdf`,
 //             image: { type: 'jpeg', quality: 0.98 },
-//             html2canvas: { 
-//                 scale: 2, 
+//             html2canvas: {
+//                 scale: 2,
 //                 useCORS: true,
 //                 logging: false
 //             },
-//             jsPDF: { 
-//                 unit: 'mm', 
-//                 format: 'a4', 
-//                 orientation: 'portrait' 
+//             jsPDF: {
+//                 unit: 'mm',
+//                 format: 'a4',
+//                 orientation: 'portrait'
 //             }
 //         };
 
@@ -1064,7 +1140,7 @@ export default PaymentSuccess;
 //         const printWindow = window.open('', '_blank');
 //         printWindow.document.write(invoiceContent);
 //         printWindow.document.close();
-        
+
 //         setTimeout(() => {
 //             printWindow.print();
 //         }, 500);
@@ -1107,7 +1183,7 @@ export default PaymentSuccess;
 //     return (
 //         <>
 //             <Navbar />
-            
+
 //             {/* Hero Section */}
 //             <div className="relative h-48 md:h-64 overflow-hidden mb-8">
 //                 <img
@@ -1142,7 +1218,7 @@ export default PaymentSuccess;
 //                             <p className="text-green-100 text-lg">
 //                                 Your order has been confirmed and is being processed
 //                             </p>
-                            
+
 //                             {/* Storage Status */}
 //                             {isStoringOrder && (
 //                                 <div className="mt-4 flex items-center justify-center gap-2">
@@ -1150,7 +1226,7 @@ export default PaymentSuccess;
 //                                     <span>Saving order details...</span>
 //                                 </div>
 //                             )}
-                            
+
 //                             {storageError && (
 //                                 <div className="mt-4 p-3 bg-red-500/80 rounded-lg">
 //                                     <p className="text-white text-sm">{storageError}</p>
@@ -1350,5 +1426,3 @@ export default PaymentSuccess;
 // };
 
 // export default PaymentSuccess;
-
-

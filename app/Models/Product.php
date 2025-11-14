@@ -32,24 +32,51 @@ class Product extends Model
     /**
      * Automatically generate a unique slug before creating a product.
      */
+    // protected static function boot()
+    // {
+    //     parent::boot();
+
+    //     static::creating(function ($product) {
+    //         $slug = Str::slug($product->name);
+    //         $originalSlug = $slug;
+    //         $count = 1;
+
+    //         // Ensure slug uniqueness
+    //         while (Product::where('slug', $slug)->exists()) {
+    //             $slug = "{$originalSlug}-{$count}";
+    //             $count++;
+    //         }
+
+    //         $product->slug = $slug;
+    //     });
+    // }
+
     protected static function boot()
-    {
-        parent::boot();
+{
+    parent::boot();
 
-        static::creating(function ($product) {
-            $slug = Str::slug($product->name);
-            $originalSlug = $slug;
-            $count = 1;
+    static::created(function ($product) {
+        // Generate base slug from product name
+        $baseSlug = Str::slug($product->name);
 
-            // Ensure slug uniqueness
-            while (Product::where('slug', $slug)->exists()) {
-                $slug = "{$originalSlug}-{$count}";
-                $count++;
-            }
+        // Generate random 6-digit number
+        $random = random_int(100000, 999999);
 
-            $product->slug = $slug;
-        });
-    }
+        // Create unique slug pattern: name + id + random number
+        $slug = "{$baseSlug}-{$product->id}-{$random}";
+
+        // Ensure uniqueness
+        while (Product::where('slug', $slug)->exists()) {
+            $random = random_int(100000, 999999);
+            $slug = "{$baseSlug}-{$random}";
+        }
+
+        // Update slug AFTER creation
+        $product->slug = $slug;
+        $product->save();
+    });
+}
+
 
     /**
      * Accessor: Discounted price.
